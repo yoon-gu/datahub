@@ -1,12 +1,12 @@
 # DataJob Entity
 
-The DataJob entity represents a unit of work in a data processing pipeline (e.g., an Airflow task, a dbt model, a Spark job). DataJobs belong to DataFlows (pipelines) and can have lineage to datasets and other DataJobs. This guide covers comprehensive DataJob operations in SDK V2.
+DataJob entity는 데이터 처리 파이프라인 내의 작업 단위를 나타냅니다 (예: Airflow 태스크, dbt 모델, Spark job). DataJob은 DataFlow(파이프라인)에 속하며 dataset 및 다른 DataJob과 lineage를 가질 수 있습니다. 이 가이드는 SDK V2에서의 포괄적인 DataJob 작업을 다룹니다.
 
-## Creating a DataJob
+## DataJob 생성
 
-### Minimal DataJob
+### 최소 DataJob
 
-Orchestrator, flowId, and jobId are required:
+orchestrator, flowId, jobId가 필수입니다:
 
 ```java
 DataJob dataJob = DataJob.builder()
@@ -16,9 +16,9 @@ DataJob dataJob = DataJob.builder()
     .build();
 ```
 
-### With Cluster
+### 클러스터 지정
 
-Specify cluster (default is "prod"):
+클러스터 지정 (기본값은 "prod"):
 
 ```java
 DataJob dataJob = DataJob.builder()
@@ -30,9 +30,9 @@ DataJob dataJob = DataJob.builder()
 // URN: urn:li:dataJob:(urn:li:dataFlow:(airflow,analytics_pipeline,staging),transform_data)
 ```
 
-### With Metadata
+### 메타데이터와 함께 생성
 
-Add description and name at construction (requires both name AND type):
+생성 시 설명과 이름 추가 (name과 type 모두 필요):
 
 ```java
 DataJob dataJob = DataJob.builder()
@@ -46,9 +46,9 @@ DataJob dataJob = DataJob.builder()
     .build();
 ```
 
-### With Custom Properties
+### 사용자 정의 속성과 함께 생성
 
-Include custom properties in builder (requires name and type when using customProperties):
+빌더에 사용자 정의 속성 포함 (customProperties 사용 시 name과 type 필요):
 
 ```java
 Map<String, String> props = new HashMap<>();
@@ -66,15 +66,15 @@ DataJob dataJob = DataJob.builder()
     .build();
 ```
 
-## URN Construction
+## URN 구성
 
-DataJob URNs follow the pattern:
+DataJob URN은 다음 패턴을 따릅니다:
 
 ```
 urn:li:dataJob:(urn:li:dataFlow:({orchestrator},{flowId},{cluster}),{jobId})
 ```
 
-**Automatic URN creation:**
+**자동 URN 생성:**
 
 ```java
 DataJob dataJob = DataJob.builder()
@@ -88,57 +88,57 @@ DataJobUrn urn = dataJob.getDataJobUrn();
 // urn:li:dataJob:(urn:li:dataFlow:(airflow,finance_reporting,prod),aggregate_transactions)
 ```
 
-## Description Operations
+## 설명 작업
 
-### Setting Description
+### 설명 설정
 
 ```java
 dataJob.setDescription("Processes daily customer transactions");
 ```
 
-### Reading Description
+### 설명 읽기
 
-Get description (lazy-loaded from DataJobInfo):
+DataJobInfo에서 지연 로딩으로 설명 가져오기:
 
 ```java
 String description = dataJob.getDescription();
 ```
 
-## Display Name Operations
+## 표시 이름 작업
 
-### Setting Name
+### 이름 설정
 
 ```java
 dataJob.setName("Process Customer Transactions");
 ```
 
-### Reading Name
+### 이름 읽기
 
 ```java
 String name = dataJob.getName();
 ```
 
-## Tags
+## 태그
 
-### Adding Tags
+### 태그 추가
 
 ```java
-// Simple tag name (auto-prefixed)
+// 간단한 태그 이름 (자동 접두사 추가)
 dataJob.addTag("critical");
-// Creates: urn:li:tag:critical
+// 생성됨: urn:li:tag:critical
 
-// Full tag URN
+// 전체 태그 URN
 dataJob.addTag("urn:li:tag:etl");
 ```
 
-### Removing Tags
+### 태그 제거
 
 ```java
 dataJob.removeTag("critical");
 dataJob.removeTag("urn:li:tag:etl");
 ```
 
-### Tag Chaining
+### 태그 체이닝
 
 ```java
 dataJob.addTag("critical")
@@ -146,67 +146,67 @@ dataJob.addTag("critical")
        .addTag("production");
 ```
 
-## Owners
+## 소유자
 
-### Adding Owners
+### 소유자 추가
 
 ```java
 import com.linkedin.common.OwnershipType;
 
-// Technical owner
+// 기술 소유자
 dataJob.addOwner(
     "urn:li:corpuser:data_team",
     OwnershipType.TECHNICAL_OWNER
 );
 
-// Data steward
+// 데이터 스튜어드
 dataJob.addOwner(
     "urn:li:corpuser:compliance",
     OwnershipType.DATA_STEWARD
 );
 
-// Business owner
+// 비즈니스 소유자
 dataJob.addOwner(
     "urn:li:corpuser:product_team",
     OwnershipType.BUSINESS_OWNER
 );
 ```
 
-### Removing Owners
+### 소유자 제거
 
 ```java
 dataJob.removeOwner("urn:li:corpuser:data_team");
 ```
 
-### Owner Types
+### 소유권 타입
 
-Available ownership types:
+사용 가능한 소유권 타입:
 
-- `TECHNICAL_OWNER` - Maintains the technical implementation
-- `BUSINESS_OWNER` - Business stakeholder
-- `DATA_STEWARD` - Manages data quality and compliance
-- `DATAOWNER` - Generic data owner
-- `DEVELOPER` - Software developer
-- `PRODUCER` - Data producer
-- `CONSUMER` - Data consumer
-- `STAKEHOLDER` - Other stakeholder
+- `TECHNICAL_OWNER` - 기술적 구현을 유지 관리하는 사람
+- `BUSINESS_OWNER` - 비즈니스 이해관계자
+- `DATA_STEWARD` - 데이터 품질 및 컴플라이언스 관리자
+- `DATAOWNER` - 일반 데이터 소유자
+- `DEVELOPER` - 소프트웨어 개발자
+- `PRODUCER` - 데이터 생산자
+- `CONSUMER` - 데이터 소비자
+- `STAKEHOLDER` - 기타 이해관계자
 
-## Glossary Terms
+## 용어 (Glossary Terms)
 
-### Adding Terms
+### 용어 추가
 
 ```java
 dataJob.addTerm("urn:li:glossaryTerm:DataProcessing");
 dataJob.addTerm("urn:li:glossaryTerm:ETL");
 ```
 
-### Removing Terms
+### 용어 제거
 
 ```java
 dataJob.removeTerm("urn:li:glossaryTerm:DataProcessing");
 ```
 
-### Term Chaining
+### 용어 체이닝
 
 ```java
 dataJob.addTerm("urn:li:glossaryTerm:DataProcessing")
@@ -214,23 +214,23 @@ dataJob.addTerm("urn:li:glossaryTerm:DataProcessing")
        .addTerm("urn:li:glossaryTerm:FinancialReporting");
 ```
 
-## Domain
+## 도메인
 
-### Setting Domain
+### 도메인 설정
 
 ```java
 dataJob.setDomain("urn:li:domain:Engineering");
 ```
 
-### Removing Domain
+### 도메인 제거
 
 ```java
 dataJob.removeDomain();
 ```
 
-## Custom Properties
+## 사용자 정의 속성
 
-### Adding Individual Properties
+### 개별 속성 추가
 
 ```java
 dataJob.addCustomProperty("schedule", "0 2 * * *");
@@ -238,9 +238,9 @@ dataJob.addCustomProperty("retries", "3");
 dataJob.addCustomProperty("timeout", "3600");
 ```
 
-### Setting All Properties
+### 모든 속성 설정
 
-Replace all custom properties:
+모든 사용자 정의 속성 대체:
 
 ```java
 Map<String, String> properties = new HashMap<>();
@@ -252,60 +252,60 @@ properties.put("priority", "high");
 dataJob.setCustomProperties(properties);
 ```
 
-### Removing Properties
+### 속성 제거
 
 ```java
 dataJob.removeCustomProperty("timeout");
 ```
 
-## Lineage Operations
+## Lineage 작업
 
-DataJob lineage defines the relationship between data jobs and the datasets they operate on. Lineage enables impact analysis, data provenance tracking, and understanding data flows through your pipelines.
+DataJob lineage는 데이터 job과 그것이 작동하는 dataset 간의 관계를 정의합니다. Lineage는 영향 분석, 데이터 출처 추적, 파이프라인을 통한 데이터 흐름 이해를 가능하게 합니다.
 
-The DataJob SDK supports four types of lineage:
+DataJob SDK는 네 가지 유형의 lineage를 지원합니다:
 
-1. **Dataset-level lineage** - Track which datasets a job reads from and writes to
-2. **DataJob dependencies** - Track which jobs depend on other jobs (task dependencies)
-3. **Field-level lineage** - Track specific columns consumed and produced
-4. **Fine-grained lineage** - Track column-to-column transformations
+1. **dataset 수준 lineage** - job이 읽고 쓰는 dataset 추적
+2. **DataJob 의존성** - 다른 job에 의존하는 job 추적 (태스크 의존성)
+3. **필드 수준 lineage** - 소비 및 생성되는 특정 컬럼 추적
+4. **세밀한 lineage** - 컬럼 간 변환 추적
 
-### Understanding Input and Output Datasets
+### 입력 및 출력 Dataset 이해
 
-**Input Datasets** - Datasets that the job reads from:
+**입력 Dataset** - job이 읽는 dataset:
 
-- Represent source data for the job
-- Create upstream lineage: Dataset → DataJob
+- job의 소스 데이터를 나타냅니다
+- upstream lineage 생성: Dataset → DataJob
 
-**Output Datasets** - Datasets that the job writes to:
+**출력 Dataset** - job이 쓰는 dataset:
 
-- Represent destination data from the job
-- Create downstream lineage: DataJob → Dataset
+- job의 결과 데이터를 나타냅니다
+- downstream lineage 생성: DataJob → Dataset
 
-### Input Datasets
+### 입력 Dataset
 
-#### Adding Single Inlet
+#### 단일 입력 추가
 
 ```java
-// Using string URN
+// 문자열 URN 사용
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)");
 
-// Using DatasetUrn object for type safety
+// 타입 안전성을 위해 DatasetUrn 객체 사용
 DatasetUrn datasetUrn = DatasetUrn.createFromString(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)"
 );
 dataJob.addInputDataset(datasetUrn);
 ```
 
-#### Adding Multiple Inlets
+#### 여러 입력 추가
 
 ```java
-// Chain multiple calls
+// 여러 호출 체이닝
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.customers,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:kafka,events.purchases,PROD)");
 ```
 
-#### Setting All Inlets at Once
+#### 모든 입력 한 번에 설정
 
 ```java
 List<String> inletUrns = Arrays.asList(
@@ -316,45 +316,45 @@ List<String> inletUrns = Arrays.asList(
 dataJob.setInputDatasets(inletUrns);
 ```
 
-#### Removing Inlets
+#### 입력 제거
 
 ```java
-// Remove single inlet
+// 단일 입력 제거
 dataJob.removeInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)");
 
-// Or using DatasetUrn
+// 또는 DatasetUrn 사용
 DatasetUrn datasetUrn = DatasetUrn.createFromString(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)"
 );
 dataJob.removeInputDataset(datasetUrn);
 ```
 
-#### Reading Inlets
+#### 입력 읽기
 
 ```java
-// Get all inlets (lazy-loaded)
+// 모든 입력 가져오기 (지연 로딩)
 List<DatasetUrn> inlets = dataJob.getInputDatasets();
 for (DatasetUrn inlet : inlets) {
     System.out.println("Input: " + inlet);
 }
 ```
 
-### Output Datasets (Outlets)
+### 출력 Dataset
 
-#### Adding Single Outlet
+#### 단일 출력 추가
 
 ```java
-// Using string URN
+// 문자열 URN 사용
 dataJob.addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales_summary,PROD)");
 
-// Using DatasetUrn object
+// DatasetUrn 객체 사용
 DatasetUrn datasetUrn = DatasetUrn.createFromString(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales_summary,PROD)"
 );
 dataJob.addOutputDataset(datasetUrn);
 ```
 
-#### Adding Multiple Outlets
+#### 여러 출력 추가
 
 ```java
 dataJob.addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.daily_summary,PROD)")
@@ -362,7 +362,7 @@ dataJob.addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytic
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:s3,reports/summary.parquet,PROD)");
 ```
 
-#### Setting All Outlets at Once
+#### 모든 출력 한 번에 설정
 
 ```java
 List<String> outletUrns = Arrays.asList(
@@ -372,88 +372,88 @@ List<String> outletUrns = Arrays.asList(
 dataJob.setOutputDatasets(outletUrns);
 ```
 
-#### Removing Outlets
+#### 출력 제거
 
 ```java
-// Remove single outlet
+// 단일 출력 제거
 dataJob.removeOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales_summary,PROD)");
 
-// Or using DatasetUrn
+// 또는 DatasetUrn 사용
 DatasetUrn datasetUrn = DatasetUrn.createFromString(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales_summary,PROD)"
 );
 dataJob.removeOutputDataset(datasetUrn);
 ```
 
-#### Reading Outlets
+#### 출력 읽기
 
 ```java
-// Get all outlets (lazy-loaded)
+// 모든 출력 가져오기 (지연 로딩)
 List<DatasetUrn> outlets = dataJob.getOutputDatasets();
 for (DatasetUrn outlet : outlets) {
     System.out.println("Output: " + outlet);
 }
 ```
 
-### DataJob Dependencies
+### DataJob 의존성
 
-DataJob dependencies model task-to-task relationships within workflows. This enables DataHub to track which jobs depend on other jobs completing first.
+DataJob 의존성은 워크플로 내의 태스크 간 관계를 모델링합니다. 이를 통해 DataHub는 어떤 job이 다른 job의 완료를 기다려야 하는지 추적할 수 있습니다.
 
-**Use cases:**
+**사용 사례:**
 
-- Airflow task dependencies (task A → task B → task C)
-- Cross-DAG dependencies (jobs in different pipelines)
-- Workflow orchestration visualization
+- Airflow 태스크 의존성 (태스크 A → 태스크 B → 태스크 C)
+- 크로스 DAG 의존성 (서로 다른 파이프라인의 job)
+- 워크플로 오케스트레이션 시각화
 
-#### Adding Job Dependencies
+#### job 의존성 추가
 
 ```java
-// Using string URN
+// 문자열 URN 사용
 dataJob.addInputDataJob("urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),upstream_task)");
 
-// Using DataJobUrn object for type safety
+// 타입 안전성을 위해 DataJobUrn 객체 사용
 DataJobUrn upstreamJob = DataJobUrn.createFromString(
     "urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),upstream_task)"
 );
 dataJob.addInputDataJob(upstreamJob);
 ```
 
-#### Chaining Job Dependencies
+#### job 의존성 체이닝
 
 ```java
-// Multiple dependencies (task runs after all complete)
+// 여러 의존성 (모두 완료 후 태스크 실행)
 dataJob.addInputDataJob("urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),task_1)")
        .addInputDataJob("urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),task_2)")
        .addInputDataJob("urn:li:dataJob:(urn:li:dataFlow:(dagster,other_pipeline,prod),external_task)");
 ```
 
-#### Removing Job Dependencies
+#### job 의존성 제거
 
 ```java
-// Remove single dependency
+// 단일 의존성 제거
 dataJob.removeInputDataJob("urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),task_1)");
 
-// Or using DataJobUrn
+// 또는 DataJobUrn 사용
 DataJobUrn jobUrn = DataJobUrn.createFromString(
     "urn:li:dataJob:(urn:li:dataFlow:(airflow,pipeline,prod),task_1)"
 );
 dataJob.removeInputDataJob(jobUrn);
 ```
 
-#### Reading Job Dependencies
+#### job 의존성 읽기
 
 ```java
-// Get all upstream job dependencies (lazy-loaded)
+// 모든 upstream job 의존성 가져오기 (지연 로딩)
 List<DataJobUrn> dependencies = dataJob.getInputDataJobs();
 for (DataJobUrn dependency : dependencies) {
     System.out.println("Depends on: " + dependency);
 }
 ```
 
-#### Example: Airflow Task Dependencies
+#### 예시: Airflow 태스크 의존성
 
 ```java
-// Model a typical Airflow DAG task chain
+// 일반적인 Airflow DAG 태스크 체인 모델링
 DataJob extractTask = DataJob.builder()
     .orchestrator("airflow")
     .flowId("etl_pipeline")
@@ -466,7 +466,7 @@ DataJob validateTask = DataJob.builder()
     .jobId("validate_data")
     .build();
 
-// validate_data depends on extract_data
+// validate_data는 extract_data에 의존
 validateTask.addInputDataJob(extractTask.getUrn().toString());
 
 DataJob transformTask = DataJob.builder()
@@ -475,76 +475,76 @@ DataJob transformTask = DataJob.builder()
     .jobId("transform_data")
     .build();
 
-// transform_data depends on validate_data
+// transform_data는 validate_data에 의존
 transformTask.addInputDataJob(validateTask.getUrn().toString());
 
-// Save all tasks
+// 모든 태스크 저장
 client.entities().upsert(extractTask);
 client.entities().upsert(validateTask);
 client.entities().upsert(transformTask);
 
-// Result: extract_data → validate_data → transform_data
+// 결과: extract_data → validate_data → transform_data
 ```
 
-### Field-Level Lineage
+### 필드 수준 Lineage
 
-Field-level lineage tracks which specific columns (fields) a job consumes and produces. This provides finer granularity than dataset-level lineage.
+필드 수준 lineage는 job이 소비하고 생성하는 특정 컬럼(필드)을 추적합니다. dataset 수준 lineage보다 더 세밀한 정보를 제공합니다.
 
-**Use cases:**
+**사용 사례:**
 
-- Track which columns are read/written by transformations
-- Understand field-level dependencies
-- Validate that jobs only access necessary columns
+- 변환에서 읽고 쓰는 컬럼 추적
+- 필드 수준 의존성 이해
+- job이 필요한 컬럼에만 접근하는지 검증
 
-**Field URN Format:**
+**필드 URN 형식:**
 
 ```
 urn:li:schemaField:(DATASET_URN,COLUMN_NAME)
 ```
 
-#### Adding Input Fields
+#### 입력 필드 추가
 
 ```java
-// Track which columns the job reads
+// job이 읽는 컬럼 추적
 dataJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,db.orders,PROD),order_id)");
 dataJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,db.orders,PROD),customer_id)");
 dataJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,db.orders,PROD),total_amount)");
 ```
 
-#### Adding Output Fields
+#### 출력 필드 추가
 
 ```java
-// Track which columns the job writes
+// job이 쓰는 컬럼 추적
 dataJob.addOutputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),order_id)");
 dataJob.addOutputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),customer_id)");
 dataJob.addOutputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),revenue)");
 ```
 
-#### Removing Fields
+#### 필드 제거
 
 ```java
-// Remove field lineage
+// 필드 lineage 제거
 dataJob.removeInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,db.orders,PROD),order_id)");
 dataJob.removeOutputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),revenue)");
 ```
 
-#### Reading Fields
+#### 필드 읽기
 
 ```java
-// Get all input fields (lazy-loaded)
+// 모든 입력 필드 가져오기 (지연 로딩)
 List<Urn> inputFields = dataJob.getInputFields();
 for (Urn field : inputFields) {
     System.out.println("Reads field: " + field);
 }
 
-// Get all output fields (lazy-loaded)
+// 모든 출력 필드 가져오기 (지연 로딩)
 List<Urn> outputFields = dataJob.getOutputFields();
 for (Urn field : outputFields) {
     System.out.println("Writes field: " + field);
 }
 ```
 
-#### Example: Column-Level Tracking
+#### 예시: 컬럼 수준 추적
 
 ```java
 DataJob aggregateJob = DataJob.builder()
@@ -556,11 +556,11 @@ DataJob aggregateJob = DataJob.builder()
     .type("BATCH")
     .build();
 
-// Dataset-level lineage
+// dataset 수준 lineage
 aggregateJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD)");
 aggregateJob.addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.customer_sales,PROD)");
 
-// Field-level lineage - specify exact columns used
+// 필드 수준 lineage - 사용하는 정확한 컬럼 지정
 aggregateJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD),customer_id)");
 aggregateJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD),amount)");
 aggregateJob.addInputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.transactions,PROD),transaction_date)");
@@ -572,21 +572,21 @@ aggregateJob.addOutputField("urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlat
 client.entities().upsert(aggregateJob);
 ```
 
-### Fine-Grained Lineage
+### 세밀한 Lineage
 
-Fine-grained lineage captures column-to-column transformations, showing exactly which input columns produce which output columns and how they're transformed.
+세밀한 lineage는 컬럼 간 변환을 캡처하여 어떤 입력 컬럼이 어떤 출력 컬럼을 생성하는지, 그리고 어떻게 변환되는지를 정확히 보여줍니다.
 
-**Use cases:**
+**사용 사례:**
 
-- Document transformation logic (e.g., "SUM(amount)")
-- Track column-level impact analysis
-- Understand data derivations
-- Compliance and audit trails
+- 변환 로직 문서화 (예: "SUM(amount)")
+- 컬럼 수준 영향 분석 추적
+- 데이터 파생 이해
+- 컴플라이언스 및 감사 추적
 
-#### Adding Fine-Grained Lineage
+#### 세밀한 Lineage 추가
 
 ```java
-// Basic transformation (no confidence score)
+// 기본 변환 (신뢰도 점수 없음)
 dataJob.addFineGrainedLineage(
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.orders,PROD),customer_id)",
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),customer_id)",
@@ -594,57 +594,57 @@ dataJob.addFineGrainedLineage(
     null
 );
 
-// Transformation with confidence score (0.0 to 1.0)
+// 신뢰도 점수가 있는 변환 (0.0~1.0)
 dataJob.addFineGrainedLineage(
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.orders,PROD),amount)",
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),revenue)",
     "SUM",
-    1.0f  // High confidence
+    1.0f  // 높은 신뢰도
 );
 ```
 
-#### Common Transformation Types
+#### 일반적인 변환 타입
 
 ```java
-// IDENTITY - direct copy
+// IDENTITY - 직접 복사
 dataJob.addFineGrainedLineage(upstream, downstream, "IDENTITY", 1.0f);
 
-// Aggregations
+// 집계 함수
 dataJob.addFineGrainedLineage(upstream, downstream, "SUM", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "COUNT", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "AVG", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "MAX", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "MIN", 1.0f);
 
-// String operations
+// 문자열 연산
 dataJob.addFineGrainedLineage(upstream, downstream, "CONCAT", 0.9f);
 dataJob.addFineGrainedLineage(upstream, downstream, "UPPER", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "SUBSTRING", 0.95f);
 
-// Date operations
+// 날짜 연산
 dataJob.addFineGrainedLineage(upstream, downstream, "DATE_TRUNC", 1.0f);
 dataJob.addFineGrainedLineage(upstream, downstream, "EXTRACT", 1.0f);
 
-// Custom transformations
+// 사용자 정의 변환
 dataJob.addFineGrainedLineage(upstream, downstream, "CUSTOM_FUNCTION", 0.8f);
 ```
 
-#### Removing Fine-Grained Lineage
+#### 세밀한 Lineage 제거
 
 ```java
-// Remove specific transformation
+// 특정 변환 제거
 dataJob.removeFineGrainedLineage(
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.orders,PROD),amount)",
     "urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales,PROD),revenue)",
     "SUM",
-    null  // queryUrn (optional)
+    null  // queryUrn (선택 사항)
 );
 ```
 
-#### Reading Fine-Grained Lineage
+#### 세밀한 Lineage 읽기
 
 ```java
-// Get all fine-grained lineage (lazy-loaded)
+// 모든 세밀한 lineage 가져오기 (지연 로딩)
 List<FineGrainedLineage> lineages = dataJob.getFineGrainedLineages();
 for (FineGrainedLineage lineage : lineages) {
     System.out.println("Upstreams: " + lineage.getUpstreams());
@@ -654,7 +654,7 @@ for (FineGrainedLineage lineage : lineages) {
 }
 ```
 
-#### Example: Complex Aggregation
+#### 예시: 복잡한 집계
 
 ```java
 DataJob salesAggregation = DataJob.builder()
@@ -665,15 +665,15 @@ DataJob salesAggregation = DataJob.builder()
     .type("BATCH")
     .build();
 
-// Dataset-level lineage
+// dataset 수준 lineage
 salesAggregation.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:postgres,sales.transactions,PROD)");
 salesAggregation.addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.daily_summary,PROD)");
 
-// Fine-grained transformations
+// 세밀한 변환
 String inputDataset = "urn:li:dataset:(urn:li:dataPlatform:postgres,sales.transactions,PROD)";
 String outputDataset = "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.daily_summary,PROD)";
 
-// Date is copied directly
+// 날짜는 직접 복사
 salesAggregation.addFineGrainedLineage(
     "urn:li:schemaField:(" + inputDataset + ",transaction_date)",
     "urn:li:schemaField:(" + outputDataset + ",date)",
@@ -681,7 +681,7 @@ salesAggregation.addFineGrainedLineage(
     1.0f
 );
 
-// Revenue is SUM of amounts
+// 매출은 금액의 합계
 salesAggregation.addFineGrainedLineage(
     "urn:li:schemaField:(" + inputDataset + ",amount)",
     "urn:li:schemaField:(" + outputDataset + ",total_revenue)",
@@ -689,7 +689,7 @@ salesAggregation.addFineGrainedLineage(
     1.0f
 );
 
-// Transaction count
+// 거래 건수
 salesAggregation.addFineGrainedLineage(
     "urn:li:schemaField:(" + inputDataset + ",transaction_id)",
     "urn:li:schemaField:(" + outputDataset + ",transaction_count)",
@@ -697,7 +697,7 @@ salesAggregation.addFineGrainedLineage(
     1.0f
 );
 
-// Average order value
+// 평균 주문 금액
 salesAggregation.addFineGrainedLineage(
     "urn:li:schemaField:(" + inputDataset + ",amount)",
     "urn:li:schemaField:(" + outputDataset + ",avg_order_value)",
@@ -708,10 +708,10 @@ salesAggregation.addFineGrainedLineage(
 client.entities().upsert(salesAggregation);
 ```
 
-#### Example: Multi-Column Derivation
+#### 예시: 다중 컬럼 파생
 
 ```java
-// Model a transformation where output depends on multiple input columns
+// 여러 입력 컬럼에 의존하는 출력을 모델링
 DataJob enrichmentJob = DataJob.builder()
     .orchestrator("airflow")
     .flowId("enrichment")
@@ -722,7 +722,7 @@ String inputDataset = "urn:li:dataset:(urn:li:dataPlatform:postgres,crm.customer
 String outputDataset = "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.customers_enriched,PROD)";
 
 // full_name = CONCAT(first_name, ' ', last_name)
-// Both first_name and last_name contribute to full_name
+// first_name과 last_name 모두 full_name에 기여
 enrichmentJob.addFineGrainedLineage(
     "urn:li:schemaField:(" + inputDataset + ",first_name)",
     "urn:li:schemaField:(" + outputDataset + ",full_name)",
@@ -748,33 +748,33 @@ enrichmentJob.addFineGrainedLineage(
 client.entities().upsert(enrichmentJob);
 ```
 
-#### Confidence Scores
+#### 신뢰도 점수
 
-Confidence scores (0.0 to 1.0) indicate how certain you are about the transformation:
+신뢰도 점수(0.0~1.0)는 변환에 대한 확신 정도를 나타냅니다:
 
-- **1.0** - Exact, deterministic transformation (e.g., IDENTITY, SUM)
-- **0.9-0.99** - High confidence (e.g., simple string operations)
-- **0.7-0.89** - Medium confidence (e.g., complex transformations with some uncertainty)
-- **0.5-0.69** - Low confidence (e.g., ML-derived lineage, heuristic-based)
-- **< 0.5** - Very uncertain (generally not recommended)
+- **1.0** - 정확하고 결정론적인 변환 (예: IDENTITY, SUM)
+- **0.9-0.99** - 높은 신뢰도 (예: 단순 문자열 연산)
+- **0.7-0.89** - 중간 신뢰도 (예: 일부 불확실성이 있는 복잡한 변환)
+- **0.5-0.69** - 낮은 신뢰도 (예: ML 기반 lineage, 휴리스틱 기반)
+- **< 0.5** - 매우 불확실함 (일반적으로 권장하지 않음)
 
 ```java
-// High confidence - exact transformation known
+// 높은 신뢰도 - 정확한 변환이 알려져 있음
 dataJob.addFineGrainedLineage(source, target, "UPPER", 1.0f);
 
-// Medium confidence - inferred from SQL parsing
+// 중간 신뢰도 - SQL 파싱에서 추론됨
 dataJob.addFineGrainedLineage(source, target, "CASE_WHEN", 0.85f);
 
-// Low confidence - ML-predicted transformation
+// 낮은 신뢰도 - ML로 예측된 변환
 dataJob.addFineGrainedLineage(source, target, "INFERRED", 0.6f);
 ```
 
-### Complete Lineage Example
+### 완전한 Lineage 예시
 
-This example demonstrates all four types of lineage working together:
+이 예시는 네 가지 유형의 lineage가 함께 동작하는 방식을 보여줍니다:
 
 ```java
-// Create upstream validation job
+// upstream 검증 job 생성
 DataJob validateJob = DataJob.builder()
     .orchestrator("airflow")
     .flowId("analytics_pipeline")
@@ -789,7 +789,7 @@ validateJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.t
 
 client.entities().upsert(validateJob);
 
-// Create main transformation job with comprehensive lineage
+// 포괄적인 lineage를 가진 주요 변환 job 생성
 DataJob transformJob = DataJob.builder()
     .orchestrator("airflow")
     .flowId("analytics_pipeline")
@@ -800,20 +800,20 @@ DataJob transformJob = DataJob.builder()
     .type("BATCH")
     .build();
 
-// 1. Dataset-level lineage - Which tables are read/written
+// 1. dataset 수준 lineage - 어떤 테이블을 읽고 쓰는지
 transformJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,validated.transactions,PROD)")
             .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.customers,PROD)")
             .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.daily_sales,PROD)");
 
-// 2. DataJob dependencies - This job depends on the validation job
+// 2. DataJob 의존성 - 이 job은 검증 job에 의존
 transformJob.addInputDataJob(validateJob.getUrn().toString());
 
-// 3. Field-level lineage - Which specific columns are accessed
+// 3. 필드 수준 lineage - 어떤 특정 컬럼에 접근하는지
 String transactionsDataset = "urn:li:dataset:(urn:li:dataPlatform:snowflake,validated.transactions,PROD)";
 String customersDataset = "urn:li:dataset:(urn:li:dataPlatform:snowflake,raw.customers,PROD)";
 String outputDataset = "urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.daily_sales,PROD)";
 
-// Input fields
+// 입력 필드
 transformJob.addInputField("urn:li:schemaField:(" + transactionsDataset + ",transaction_id)")
             .addInputField("urn:li:schemaField:(" + transactionsDataset + ",customer_id)")
             .addInputField("urn:li:schemaField:(" + transactionsDataset + ",amount)")
@@ -821,14 +821,14 @@ transformJob.addInputField("urn:li:schemaField:(" + transactionsDataset + ",tran
             .addInputField("urn:li:schemaField:(" + customersDataset + ",customer_id)")
             .addInputField("urn:li:schemaField:(" + customersDataset + ",customer_name)");
 
-// Output fields
+// 출력 필드
 transformJob.addOutputField("urn:li:schemaField:(" + outputDataset + ",date)")
             .addOutputField("urn:li:schemaField:(" + outputDataset + ",customer_name)")
             .addOutputField("urn:li:schemaField:(" + outputDataset + ",total_revenue)")
             .addOutputField("urn:li:schemaField:(" + outputDataset + ",transaction_count)");
 
-// 4. Fine-grained lineage - Specific column-to-column transformations
-// Date column (identity transformation)
+// 4. 세밀한 lineage - 특정 컬럼 간 변환
+// 날짜 컬럼 (identity 변환)
 transformJob.addFineGrainedLineage(
     "urn:li:schemaField:(" + transactionsDataset + ",transaction_date)",
     "urn:li:schemaField:(" + outputDataset + ",date)",
@@ -836,7 +836,7 @@ transformJob.addFineGrainedLineage(
     1.0f
 );
 
-// Customer name (join + identity)
+// 고객 이름 (join + identity)
 transformJob.addFineGrainedLineage(
     "urn:li:schemaField:(" + customersDataset + ",customer_name)",
     "urn:li:schemaField:(" + outputDataset + ",customer_name)",
@@ -844,7 +844,7 @@ transformJob.addFineGrainedLineage(
     1.0f
 );
 
-// Total revenue (aggregation)
+// 총 매출 (집계)
 transformJob.addFineGrainedLineage(
     "urn:li:schemaField:(" + transactionsDataset + ",amount)",
     "urn:li:schemaField:(" + outputDataset + ",total_revenue)",
@@ -852,7 +852,7 @@ transformJob.addFineGrainedLineage(
     1.0f
 );
 
-// Transaction count (aggregation)
+// 거래 건수 (집계)
 transformJob.addFineGrainedLineage(
     "urn:li:schemaField:(" + transactionsDataset + ",transaction_id)",
     "urn:li:schemaField:(" + outputDataset + ",transaction_count)",
@@ -860,34 +860,34 @@ transformJob.addFineGrainedLineage(
     1.0f
 );
 
-// Add other metadata
+// 기타 메타데이터 추가
 transformJob.addTag("critical")
             .addOwner("urn:li:corpuser:data_team", OwnershipType.TECHNICAL_OWNER);
 
-// Save to DataHub
+// DataHub에 저장
 client.entities().upsert(transformJob);
 
-// Result: Creates comprehensive lineage showing:
-// - Job dependency: validate_transactions → aggregate_sales
-// - Dataset flow: raw.transactions → validated.transactions → analytics.daily_sales
+// 결과: 다음을 보여주는 포괄적인 lineage 생성:
+// - job 의존성: validate_transactions → aggregate_sales
+// - dataset 흐름: raw.transactions → validated.transactions → analytics.daily_sales
 //                 raw.customers → analytics.daily_sales
-// - Column-level: transaction_date → date (IDENTITY)
+// - 컬럼 수준: transaction_date → date (IDENTITY)
 //                 amount → total_revenue (SUM)
 //                 transaction_id → transaction_count (COUNT)
 //                 customer_name → customer_name (IDENTITY via JOIN)
 ```
 
-### Lineage Flow Visualization
+### Lineage 흐름 시각화
 
-The comprehensive lineage example above creates this multi-level lineage graph:
+위의 포괄적인 lineage 예시는 다음과 같은 다단계 lineage 그래프를 생성합니다:
 
 ```
-Job-to-Job Level:
+Job-to-Job 수준:
 ┌────────────────────────┐         ┌──────────────────────┐
 │ Validate Transactions  │────────→│  Aggregate Sales Job │
 └────────────────────────┘         └──────────────────────┘
 
-Dataset Level:
+Dataset 수준:
 ┌─────────────────────┐    ┌─────────────────────────┐    ┌─────────────────────────┐
 │ raw.transactions    │───→│ validated.transactions  │───→│                         │
 └─────────────────────┘    └─────────────────────────┘    │  analytics.daily_sales  │
@@ -896,16 +896,16 @@ Dataset Level:
 │ raw.customers       │──────────────────────────────────→│                         │
 └─────────────────────┘                                   └─────────────────────────┘
 
-Column Level (Fine-Grained):
+컬럼 수준 (세밀한):
 validated.transactions.transaction_date ──[IDENTITY]──→ daily_sales.date
 validated.transactions.amount           ──[SUM]──────→ daily_sales.total_revenue
 validated.transactions.transaction_id   ──[COUNT]────→ daily_sales.transaction_count
 raw.customers.customer_name             ──[IDENTITY]──→ daily_sales.customer_name
 ```
 
-### ETL Pipeline Example
+### ETL 파이프라인 예시
 
-Model a complete Extract-Transform-Load pipeline:
+완전한 Extract-Transform-Load 파이프라인 모델링:
 
 ```java
 // Extract job
@@ -944,68 +944,68 @@ loadJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:s3,staging/orders_c
 
 client.entities().upsert(loadJob);
 
-// Creates end-to-end lineage:
+// 엔드투엔드 lineage 생성:
 // mysql.orders → [Extract] → s3.raw → [Transform] → s3.clean → [Load] → snowflake.analytics
 ```
 
-### Updating Lineage
+### Lineage 업데이트
 
 ```java
-// Load existing job
+// 기존 job 로드
 DataJobUrn urn = DataJobUrn.createFromString(
     "urn:li:dataJob:(urn:li:dataFlow:(airflow,my_pipeline,prod),my_task)"
 );
 DataJob dataJob = client.entities().get(urn);
 
-// Add new inlet (e.g., requirements changed)
+// 새 입력 추가 (예: 요구사항 변경)
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:kafka,events.new_source,PROD)");
 
-// Remove old outlet (e.g., deprecated table)
+// 이전 출력 제거 (예: 더 이상 사용하지 않는 테이블)
 dataJob.removeOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,old.deprecated_table,PROD)");
 
-// Apply changes
+// 변경 사항 적용
 client.entities().update(dataJob);
 ```
 
-### Lineage Best Practices
+### Lineage 모범 사례
 
-1. **Be Complete** - Define both inputs and outputs for accurate lineage
-2. **Use Correct URNs** - Ensure dataset URNs match existing datasets in DataHub
-3. **Update When Changed** - Keep lineage current as pipelines evolve
-4. **Document Transformations** - Use descriptions to explain what the job does
-5. **Model All Jobs** - Include every step in your pipeline for complete lineage
-6. **Use Typed URNs** - Prefer DatasetUrn/DataJobUrn objects over strings for compile-time safety
-7. **Layer Your Lineage** - Start with dataset-level, add field-level and fine-grained as needed
-8. **Track Dependencies** - Use DataJob dependencies to model task orchestration
-9. **Be Precise with Transformations** - Use accurate transformation types in fine-grained lineage
-10. **Set Confidence Scores** - Use appropriate confidence scores to indicate lineage quality
+1. **완전하게 정의** - 정확한 lineage를 위해 입력과 출력 모두 정의
+2. **올바른 URN 사용** - dataset URN이 DataHub의 기존 dataset과 일치하는지 확인
+3. **변경 시 업데이트** - 파이프라인 변경에 따라 lineage를 최신 상태로 유지
+4. **변환 문서화** - 설명을 사용하여 job이 수행하는 작업 설명
+5. **모든 job 모델링** - 완전한 lineage를 위해 파이프라인의 모든 단계 포함
+6. **타입 있는 URN 사용** - 컴파일 타임 안전성을 위해 문자열 대신 DatasetUrn/DataJobUrn 객체 선호
+7. **lineage 계층화** - dataset 수준부터 시작하여 필요에 따라 필드 수준과 세밀한 lineage 추가
+8. **의존성 추적** - DataJob 의존성을 사용하여 태스크 오케스트레이션 모델링
+9. **변환 정밀도** - 세밀한 lineage에서 정확한 변환 타입 사용
+10. **신뢰도 점수 설정** - lineage 품질을 나타내는 적절한 신뢰도 점수 사용
 
-### Common Patterns
+### 일반적인 패턴
 
-#### Multiple Sources to Single Destination
+#### 여러 소스에서 단일 대상으로
 
 ```java
-// Data aggregation job
+// 데이터 집계 job
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:postgres,sales.orders,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:postgres,sales.customers,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:postgres,sales.products,PROD)")
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,analytics.sales_summary,PROD)");
 ```
 
-#### Single Source to Multiple Destinations
+#### 단일 소스에서 여러 대상으로
 
 ```java
-// Data fanout job
+// 데이터 팬아웃 job
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:kafka,events.raw,PROD)")
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:s3,archive/events,PROD)")
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,events.processed,PROD)")
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:elasticsearch,events.searchable,PROD)");
 ```
 
-#### Cross-Platform Lineage
+#### 크로스 플랫폼 Lineage
 
 ```java
-// ETL across different platforms
+// 서로 다른 플랫폼에 걸친 ETL
 dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:mysql,production.transactions,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:kafka,events.user_activity,PROD)")
        .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:s3,raw/reference_data,PROD)")
@@ -1013,7 +1013,7 @@ dataJob.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:mysql,production.tr
        .addOutputDataset("urn:li:dataset:(urn:li:dataPlatform:bigquery,reporting.customer_metrics,PROD)");
 ```
 
-## Complete Example
+## 전체 예시
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -1024,13 +1024,13 @@ import java.util.concurrent.ExecutionException;
 
 public class DataJobExample {
     public static void main(String[] args) {
-        // Create client
+        // 클라이언트 생성
         DataHubClientV2 client = DataHubClientV2.builder()
             .server("http://localhost:8080")
             .build();
 
         try {
-            // Build data job with all metadata
+            // 모든 메타데이터를 포함한 data job 빌드
             DataJob dataJob = DataJob.builder()
                 .orchestrator("airflow")
                 .flowId("customer_analytics")
@@ -1041,28 +1041,28 @@ public class DataJobExample {
                 .type("BATCH")
                 .build();
 
-            // Add tags
+            // 태그 추가
             dataJob.addTag("critical")
                    .addTag("etl")
                    .addTag("pii");
 
-            // Add owners
+            // 소유자 추가
             dataJob.addOwner("urn:li:corpuser:data_team", OwnershipType.TECHNICAL_OWNER)
                    .addOwner("urn:li:corpuser:product_team", OwnershipType.BUSINESS_OWNER);
 
-            // Add glossary terms
+            // 용어 추가
             dataJob.addTerm("urn:li:glossaryTerm:DataProcessing")
                    .addTerm("urn:li:glossaryTerm:CustomerData");
 
-            // Set domain
+            // 도메인 설정
             dataJob.setDomain("urn:li:domain:Analytics");
 
-            // Add custom properties
+            // 사용자 정의 속성 추가
             dataJob.addCustomProperty("schedule", "0 2 * * *")
                    .addCustomProperty("retries", "3")
                    .addCustomProperty("timeout", "7200");
 
-            // Upsert to DataHub
+            // DataHub에 upsert
             client.entities().upsert(dataJob);
 
             System.out.println("Successfully created data job: " + dataJob.getUrn());
@@ -1080,55 +1080,55 @@ public class DataJobExample {
 }
 ```
 
-## Updating Existing DataJobs
+## 기존 DataJob 업데이트
 
-### Load and Modify
+### 로드 및 수정
 
 ```java
-// Load existing data job
+// 기존 data job 로드
 DataJobUrn urn = DataJobUrn.createFromString(
     "urn:li:dataJob:(urn:li:dataFlow:(airflow,my_dag,prod),my_task)"
 );
 DataJob dataJob = client.entities().get(urn);
 
-// Add new metadata (creates patches)
+// 새 메타데이터 추가 (패치 생성)
 dataJob.addTag("new-tag")
        .addOwner("urn:li:corpuser:new_owner", OwnershipType.TECHNICAL_OWNER);
 
-// Apply patches
+// 패치 적용
 client.entities().update(dataJob);
 ```
 
-### Incremental Updates
+### 점진적 업데이트
 
 ```java
-// Just add what you need
+// 필요한 것만 추가
 dataJob.addTag("critical");
 client.entities().update(dataJob);
 
-// Later, add more
+// 나중에 더 추가
 dataJob.addCustomProperty("priority", "high");
 client.entities().update(dataJob);
 ```
 
-## Builder Options Reference
+## 빌더 옵션 참조
 
-| Method                  | Required | Description                                                                                                     |
-| ----------------------- | -------- | --------------------------------------------------------------------------------------------------------------- |
-| `orchestrator(String)`  | ✅ Yes   | Orchestrator (e.g., "airflow", "dagster")                                                                       |
-| `flowId(String)`        | ✅ Yes   | Flow/DAG identifier                                                                                             |
-| `jobId(String)`         | ✅ Yes   | Job/task identifier                                                                                             |
-| `cluster(String)`       | No       | Cluster name (e.g., "prod", "dev"). Default: "prod"                                                             |
-| `description(String)`   | No       | Job description. **Requires both `name()` and `type()` to be set**                                              |
-| `name(String)`          | No       | Display name shown in UI. **Required if using `description()`, `type()`, or `customProperties()`**              |
-| `type(String)`          | No       | Job type (e.g., "BATCH", "STREAMING"). **Required if using `description()`, `name()`, or `customProperties()`** |
-| `customProperties(Map)` | No       | Map of custom key-value properties. **Requires both `name()` and `type()` to be set**                           |
+| 메서드                  | 필수 여부 | 설명                                                                                                                  |
+| ----------------------- | --------- | --------------------------------------------------------------------------------------------------------------------- |
+| `orchestrator(String)`  | ✅ 필수   | 오케스트레이터 (예: "airflow", "dagster")                                                                             |
+| `flowId(String)`        | ✅ 필수   | Flow/DAG 식별자                                                                                                       |
+| `jobId(String)`         | ✅ 필수   | Job/태스크 식별자                                                                                                     |
+| `cluster(String)`       | 선택      | 클러스터 이름 (예: "prod", "dev"). 기본값: "prod"                                                                    |
+| `description(String)`   | 선택      | Job 설명. **`name()`과 `type()` 모두 설정 필요**                                                                      |
+| `name(String)`          | 선택      | UI에 표시되는 이름. **`description()`, `type()`, 또는 `customProperties()` 사용 시 필수**                             |
+| `type(String)`          | 선택      | Job 타입 (예: "BATCH", "STREAMING"). **`description()`, `name()`, 또는 `customProperties()` 사용 시 필수**            |
+| `customProperties(Map)` | 선택      | 사용자 정의 키-값 속성 맵. **`name()`과 `type()` 모두 설정 필요**                                                    |
 
-**Important:** The DataJobInfo aspect requires both `name` and `type` fields. If you provide any of `description`, `name`, `type`, or `customProperties` in the builder, you must provide both `name` and `type`. Otherwise, you'll get an `IllegalArgumentException` at build time.
+**중요:** DataJobInfo aspect는 `name`과 `type` 필드를 모두 필요로 합니다. 빌더에서 `description`, `name`, `type`, `customProperties` 중 하나라도 제공하면 `name`과 `type` 모두 제공해야 합니다. 그렇지 않으면 빌드 시 `IllegalArgumentException`이 발생합니다.
 
-## Common Patterns
+## 일반적인 패턴
 
-### Creating Multiple DataJobs
+### 여러 DataJob 생성
 
 ```java
 String[] tasks = {"extract", "transform", "load"};
@@ -1147,7 +1147,7 @@ for (String taskName : tasks) {
 }
 ```
 
-### Batch Metadata Addition
+### 배치 메타데이터 추가
 
 ```java
 DataJob dataJob = DataJob.builder()
@@ -1159,10 +1159,10 @@ DataJob dataJob = DataJob.builder()
 List<String> tags = Arrays.asList("critical", "production", "etl");
 tags.forEach(dataJob::addTag);
 
-client.entities().upsert(dataJob);  // Emits all tags in one call
+client.entities().upsert(dataJob);  // 모든 태그를 한 번에 emit
 ```
 
-### Conditional Metadata
+### 조건부 메타데이터
 
 ```java
 if (isCritical(dataJob)) {
@@ -1178,62 +1178,22 @@ if (processesFinancialData(dataJob)) {
 
 ## DataJob vs DataFlow
 
-**DataFlow** represents a pipeline or DAG (e.g., an Airflow DAG):
+**DataFlow**는 파이프라인 또는 DAG를 나타냅니다 (예: Airflow DAG):
 
 - URN: `urn:li:dataFlow:(orchestrator,flowId,cluster)`
-- Contains multiple DataJobs
+- 여러 DataJob을 포함합니다
 
-**DataJob** represents a task within a pipeline:
+**DataJob**은 파이프라인 내의 태스크를 나타냅니다:
 
 - URN: `urn:li:dataJob:(flowUrn,jobId)`
-- Belongs to one DataFlow
-- Can have lineage to datasets and other DataJobs
+- 하나의 DataFlow에 속합니다
+- dataset 및 다른 DataJob과 lineage를 가질 수 있습니다
 
-Example hierarchy:
+예시 계층 구조:
 
 ```
 DataFlow: urn:li:dataFlow:(airflow,customer_pipeline,prod)
 ├── DataJob: urn:li:dataJob:(urn:li:dataFlow:(airflow,customer_pipeline,prod),extract)
 ├── DataJob: urn:li:dataJob:(urn:li:dataFlow:(airflow,customer_pipeline,prod),transform)
 └── DataJob: urn:li:dataJob:(urn:li:dataFlow:(airflow,customer_pipeline,prod),load)
-```
-
-## Orchestrator Examples
-
-Common orchestrator values:
-
-- `airflow` - Apache Airflow
-- `dagster` - Dagster
-- `prefect` - Prefect
-- `dbt` - dbt (data build tool)
-- `spark` - Apache Spark
-- `glue` - AWS Glue
-- `dataflow` - Google Cloud Dataflow
-- `azkaban` - Azkaban
-- `luigi` - Luigi
-
-## Next Steps
-
-- **[Dataset Entity](./dataset-entity.md)** - Working with dataset entities
-- **[Patch Operations](./patch-operations.md)** - Deep dive into patches
-- **[Migration Guide](./migration-from-v1.md)** - Upgrading from V1
-
-## Examples
-
-### Basic DataJob Creation
-
-```java
-{{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DataJobCreateExample.java show_path_as_comment }}
-```
-
-### Comprehensive DataJob with Metadata and Lineage
-
-```java
-{{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DataJobFullExample.java show_path_as_comment }}
-```
-
-### DataJob Lineage Operations
-
-```java
-{{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DataJobLineageExample.java show_path_as_comment }}
 ```

@@ -1,24 +1,24 @@
 # MLModel Entity
 
-## Overview
+## 개요
 
-The `MLModel` entity represents a machine learning model in DataHub. ML models are trained on data and deployed to production environments, with comprehensive metadata including training metrics, hyperparameters, model groups, training jobs, downstream jobs, and deployments.
+`MLModel` entity는 DataHub에서 머신러닝 모델을 나타냅니다. ML 모델은 데이터를 학습하여 프로덕션 환경에 배포되며, 학습 지표, 하이퍼파라미터, model group, training job, downstream job, 배포 정보 등 종합적인 메타데이터를 포함합니다.
 
-## URN Structure
+## URN 구조
 
-MLModel URNs follow this pattern:
+MLModel URN은 다음 패턴을 따릅니다:
 
 ```
 urn:li:mlModel:(urn:li:dataPlatform:{platform},{model_name},{environment})
 ```
 
-**Components:**
+**구성 요소:**
 
-- `platform`: The ML platform (e.g., tensorflow, pytorch, sklearn, sagemaker)
-- `model_name`: Unique identifier for the model
-- `environment`: Fabric type (PROD, DEV, STAGING, TEST, etc.)
+- `platform`: ML 플랫폼 (예: tensorflow, pytorch, sklearn, sagemaker)
+- `model_name`: 모델의 고유 식별자
+- `environment`: 환경 유형 (PROD, DEV, STAGING, TEST 등)
 
-**Examples:**
+**예시:**
 
 ```
 urn:li:mlModel:(urn:li:dataPlatform:tensorflow,user_churn_predictor,PROD)
@@ -26,45 +26,45 @@ urn:li:mlModel:(urn:li:dataPlatform:pytorch,recommendation_model_v2,STAGING)
 urn:li:mlModel:(urn:li:dataPlatform:sklearn,fraud_detector,PROD)
 ```
 
-## ML-Specific Concepts
+## ML 관련 개념
 
 ### Training Metrics
 
-Metrics collected during model training that measure performance:
+모델 학습 중 수집되어 성능을 측정하는 지표:
 
-- Classification: accuracy, precision, recall, f1_score, auc_roc, auc_pr
-- Regression: mse, mae, rmse, r2_score
-- Loss metrics: log_loss, cross_entropy
-- Custom metrics: training_time, validation_accuracy
+- 분류: accuracy, precision, recall, f1_score, auc_roc, auc_pr
+- 회귀: mse, mae, rmse, r2_score
+- 손실 지표: log_loss, cross_entropy
+- 커스텀 지표: training_time, validation_accuracy
 
 ### Hyperparameters
 
-Configuration parameters used during model training:
+모델 학습 시 사용되는 설정 파라미터:
 
-- Learning configuration: learning_rate, batch_size, epochs
-- Architecture: hidden_layers, hidden_units, dropout_rate
-- Optimization: optimizer, learning_rate_decay, momentum
-- Regularization: l1_regularization, l2_regularization
+- 학습 설정: learning_rate, batch_size, epochs
+- 아키텍처: hidden_layers, hidden_units, dropout_rate
+- 최적화: optimizer, learning_rate_decay, momentum
+- 정규화: l1_regularization, l2_regularization
 
 ### Model Groups
 
-Collections of related models (e.g., different versions of the same model family). A model can belong to one group, enabling version tracking and A/B testing scenarios.
+관련 모델들의 모음 (예: 동일한 모델 패밀리의 다양한 버전). 모델은 하나의 그룹에 속할 수 있으며, 버전 추적 및 A/B 테스트 시나리오를 지원합니다.
 
 ### Training Jobs
 
-Data processing jobs or pipelines that produced this model. Creates lineage from training data to model.
+이 모델을 생성한 데이터 처리 job 또는 pipeline. 학습 데이터에서 모델까지의 lineage를 생성합니다.
 
 ### Downstream Jobs
 
-Jobs that consume or use this model for inference, scoring, or predictions. Creates lineage from model to downstream applications.
+추론, 스코어링 또는 예측을 위해 이 모델을 사용하거나 소비하는 job. 모델에서 downstream 애플리케이션까지의 lineage를 생성합니다.
 
 ### Deployments
 
-Production environments where the model is deployed (e.g., SageMaker endpoints, Kubernetes services, REST APIs).
+모델이 배포된 프로덕션 환경 (예: SageMaker 엔드포인트, Kubernetes 서비스, REST API).
 
-## Creating an ML Model
+## ML Model 생성
 
-### Basic Example
+### 기본 예시
 
 ```java
 MLModel model = MLModel.builder()
@@ -94,7 +94,7 @@ model.addTag("production")
 client.entities().upsert(model);
 ```
 
-### Builder Options
+### Builder 옵션
 
 ```java
 MLModel model = MLModel.builder()
@@ -107,7 +107,7 @@ MLModel model = MLModel.builder()
     .build();
 ```
 
-## ML-Specific Operations
+## ML 관련 작업
 
 ### Training Metrics
 
@@ -207,9 +207,9 @@ model.removeDeployment("urn:li:mlModelDeployment:(urn:li:dataPlatform:sagemaker,
 List<String> deployments = model.getDeployments();
 ```
 
-## Standard Property Operations
+## 표준 속성 작업
 
-### Display Name and Description
+### 표시 이름과 설명
 
 ```java
 // Set display name
@@ -245,7 +245,7 @@ model.setCustomProperties(props);
 Map<String, String> customProps = model.getCustomProperties();
 ```
 
-## Standard Metadata Operations
+## 표준 메타데이터 작업
 
 ### Tags
 
@@ -294,9 +294,9 @@ model.removeDomain("urn:li:domain:MachineLearning");
 model.clearDomains();
 ```
 
-## Common Patterns
+## 공통 패턴
 
-### Complete ML Model Workflow
+### 완전한 ML Model 워크플로
 
 ```java
 // 1. Create model with basic metadata
@@ -360,7 +360,7 @@ model.addCustomProperty("framework", "TensorFlow 2.14")
 client.entities().upsert(model);
 ```
 
-### Model Training to Deployment Flow
+### 모델 학습에서 배포까지의 흐름
 
 ```java
 // Step 1: Create model after training
@@ -407,7 +407,7 @@ prodModel.setModelGroup("urn:li:mlModelGroup:(urn:li:dataPlatform:pytorch,fraud_
 client.entities().upsert(prodModel);
 ```
 
-### A/B Testing Scenario
+### A/B 테스트 시나리오
 
 ```java
 // Model A (current champion)
@@ -441,30 +441,30 @@ client.entities().upsert(modelA);
 client.entities().upsert(modelB);
 ```
 
-## Best Practices
+## 모범 사례
 
-1. **Use descriptive names**: Model names should clearly indicate purpose (e.g., `user_churn_predictor_v2`, `fraud_detection_xgboost`)
+1. **서술적인 이름 사용**: 모델 이름은 목적을 명확히 나타내야 합니다 (예: `user_churn_predictor_v2`, `fraud_detection_xgboost`)
 
-2. **Track comprehensive metrics**: Include both training and validation metrics for transparency
+2. **종합적인 지표 추적**: 투명성을 위해 학습 및 검증 지표를 모두 포함하세요.
 
-3. **Document hyperparameters**: Record all hyperparameters used for reproducibility
+3. **하이퍼파라미터 문서화**: 재현성을 위해 사용된 모든 하이퍼파라미터를 기록하세요.
 
-4. **Maintain lineage**: Always link training jobs and downstream consumers
+4. **Lineage 유지**: 항상 training job과 downstream 소비자를 연결하세요.
 
-5. **Use model groups**: Group related models together for easier versioning
+5. **Model group 활용**: 관련 모델을 함께 그룹화하여 더 쉬운 버전 관리를 지원하세요.
 
-6. **Tag appropriately**: Use tags like `production`, `experimental`, `deprecated`
+6. **적절한 태그 사용**: `production`, `experimental`, `deprecated` 같은 태그를 사용하세요.
 
-7. **Set ownership**: Assign technical owners (ML engineers) and data stewards
+7. **소유권 설정**: 기술 담당자(ML 엔지니어)와 데이터 청지기를 지정하세요.
 
-8. **Add deployment info**: Track where models are deployed for operational monitoring
+8. **배포 정보 추가**: 운영 모니터링을 위해 모델이 배포된 위치를 추적하세요.
 
-9. **Use custom properties**: Store framework versions, training dates, performance benchmarks
+9. **Custom properties 활용**: 프레임워크 버전, 학습 날짜, 성능 벤치마크를 저장하세요.
 
-10. **Link to external systems**: Use `externalUrl` to link to MLflow, SageMaker, or other ML platforms
+10. **외부 시스템 연결**: `externalUrl`을 사용하여 MLflow, SageMaker 또는 다른 ML 플랫폼에 연결하세요.
 
-## See Also
+## 참고 항목
 
-- [Dataset Entity](dataset-entity.md) - For training data lineage
-- [DataJob Entity](datajob-entity.md) - For training job metadata
-- [SDK V2 Overview](README.md) - General SDK concepts
+- [Dataset Entity](dataset-entity.md) - 학습 데이터 lineage
+- [DataJob Entity](datajob-entity.md) - Training job 메타데이터
+- [SDK V2 개요](README.md) - 일반 SDK 개념

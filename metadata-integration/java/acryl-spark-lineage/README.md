@@ -1,31 +1,25 @@
 # Spark
 
-To integrate Spark with DataHub, we provide a lightweight Java agent that listens for Spark application and job events
-and pushes metadata out to DataHub in real-time. The agent listens to events such as application start/end, and
-SQLExecution start/end to create pipelines (i.e. DataFlow) and tasks (i.e. DataJob) in DataHub along with lineage to
-datasets that are being read from and written to. Read on to learn how to configure this for different Spark scenarios.
+Spark를 DataHub와 통합하기 위해 Spark 애플리케이션 및 job 이벤트를 수신하고 메타데이터를 DataHub에 실시간으로 push하는 경량 Java 에이전트를 제공합니다. 에이전트는 애플리케이션 시작/종료 및 SQLExecution 시작/종료와 같은 이벤트를 수신하여 DataHub에 파이프라인(즉, DataFlow)과 태스크(즉, DataJob)를 생성하고, 읽기 및 쓰기가 수행되는 dataset에 대한 lineage를 함께 생성합니다. 다양한 Spark 시나리오에서 이를 구성하는 방법을 알아보세요.
 
-## Configuring Spark agent
+## Spark 에이전트 구성
 
-The Spark agent can be configured using a config file or while creating a Spark Session. If you are using Spark on
-Databricks, refer to [Configuration Instructions for Databricks](#configuration-instructions-databricks).
+Spark 에이전트는 설정 파일 또는 Spark Session 생성 시 구성할 수 있습니다. Databricks에서 Spark를 사용하는 경우 [Databricks 구성 지침](#configuration-instructions-databricks)을 참조하세요.
 
-### Before you begin: Versions and Release Notes
+### 시작하기 전에: 버전 및 릴리스 노트
 
-Versioning of the jar artifact will follow the semantic versioning of the
-main [DataHub repo](https://github.com/datahub-project/datahub) and release notes will be
-available [here](https://github.com/datahub-project/datahub/releases).
-Always check [the Maven central repository](https://search.maven.org/search?q=a:acryl-spark-lineage) for the latest
-released version.
+jar 아티팩트의 버전 관리는 메인 [DataHub 저장소](https://github.com/datahub-project/datahub)의 시맨틱 버전 관리를 따르며, 릴리스 노트는
+[여기](https://github.com/datahub-project/datahub/releases)에서 확인할 수 있습니다.
+최신 릴리스 버전은 항상 [Maven 중앙 저장소](https://search.maven.org/search?q=a:acryl-spark-lineage)에서 확인하세요.
 
-**Note**: Starting from version 0.2.18, we provide separate jars for different Scala versions:
+**참고**: 버전 0.2.18부터 서로 다른 Scala 버전에 대해 별도의 jar를 제공합니다:
 
-- For Scala 2.12: `io.acryl:acryl-spark-lineage_2.12:0.2.18`
-- For Scala 2.13: `io.acryl:acryl-spark-lineage_2.13:0.2.18`
+- Scala 2.12의 경우: `io.acryl:acryl-spark-lineage_2.12:0.2.18`
+- Scala 2.13의 경우: `io.acryl:acryl-spark-lineage_2.13:0.2.18`
 
-### Configuration Instructions: spark-submit
+### 구성 지침: spark-submit
 
-When running jobs using spark-submit, the agent needs to be configured in the config file.
+spark-submit으로 job을 실행할 때 에이전트를 설정 파일에 구성해야 합니다.
 
 ```text
 #Configuring DataHub spark agent jar
@@ -34,7 +28,7 @@ spark.extraListeners                         datahub.spark.DatahubSparkListener
 spark.datahub.rest.server                    http://localhost:8080
 ```
 
-For Scala 2.13:
+Scala 2.13의 경우:
 
 ```text
 #Configuring DataHub spark agent jar for Scala 2.13
@@ -43,22 +37,21 @@ spark.extraListeners                         datahub.spark.DatahubSparkListener
 spark.datahub.rest.server                    http://localhost:8080
 ```
 
-## spark-submit command line
+## spark-submit 커맨드라인
 
 ```sh
 spark-submit --packages io.acryl:acryl-spark-lineage_2.12:0.2.18 --conf "spark.extraListeners=datahub.spark.DatahubSparkListener" my_spark_job_to_run.py
 ```
 
-For Scala 2.13:
+Scala 2.13의 경우:
 
 ```sh
 spark-submit --packages io.acryl:acryl-spark-lineage_2.13:0.2.18 --conf "spark.extraListeners=datahub.spark.DatahubSparkListener" my_spark_job_to_run.py
 ```
 
-### Configuration Instructions: Amazon EMR
+### 구성 지침: Amazon EMR
 
-Set the following spark-defaults configuration properties as it
-stated [here](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-configure.html)
+[여기](https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-configure.html)에 명시된 대로 다음 spark-defaults 설정 속성을 구성하세요.
 
 ```text
 spark.jars.packages                          io.acryl:acryl-spark-lineage_2.12:0.2.18
@@ -68,9 +61,9 @@ spark.datahub.rest.server                    https://your_datahub_host/gms
 spark.datahub.rest.token                     yourtoken
 ```
 
-### Configuration Instructions: Notebooks
+### 구성 지침: 노트북
 
-When running interactive jobs from a notebook, the listener can be configured while building the Spark Session.
+노트북에서 인터랙티브 job을 실행할 때 Spark Session을 빌드하면서 리스너를 구성할 수 있습니다.
 
 ```python
 spark = SparkSession.builder
@@ -83,9 +76,9 @@ spark = SparkSession.builder
 .getOrCreate()
 ```
 
-### Configuration Instructions: Standalone Java Applications
+### 구성 지침: 독립형 Java 애플리케이션
 
-The configuration for standalone Java apps is very similar.
+독립형 Java 앱의 구성도 매우 유사합니다.
 
 ```java
 spark =SparkSession.
@@ -114,26 +107,22 @@ enableHiveSupport()
 getOrCreate();
 ```
 
-### Configuration Instructions: Databricks
+### 구성 지침: Databricks
 
-The Spark agent can be configured using Databricks
-Cluster [Spark configuration](https://docs.databricks.com/clusters/configure.html#spark-configuration)
-and [Init script](https://docs.databricks.com/clusters/configure.html#init-scripts).
+Spark 에이전트는 Databricks 클러스터 [Spark 설정](https://docs.databricks.com/clusters/configure.html#spark-configuration) 및 [Init 스크립트](https://docs.databricks.com/clusters/configure.html#init-scripts)를 사용하여 구성할 수 있습니다.
 
-[Databricks Secrets](https://docs.databricks.com/security/secrets/secrets.html) can be leveraged to store sensitive
-information like tokens.
+토큰과 같은 민감한 정보를 저장하기 위해 [Databricks Secrets](https://docs.databricks.com/security/secrets/secrets.html)를 활용할 수 있습니다.
 
-- Download `datahub-spark-lineage` jar
-  from [the Maven central repository](https://s01.oss.sonatype.org/content/groups/public/io/acryl/acryl-spark-lineage/).
-- Create `init.sh` with below content
+- [Maven 중앙 저장소](https://s01.oss.sonatype.org/content/groups/public/io/acryl/acryl-spark-lineage/)에서 `datahub-spark-lineage` jar를 다운로드합니다.
+- 아래 내용으로 `init.sh`를 생성합니다
 
   ```sh
   #!/bin/bash
   cp /dbfs/datahub/datahub-spark-lineage*.jar /databricks/jars
   ```
 
-- Install and configure [Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html).
-- Copy jar and init script to Databricks File System(DBFS) using Databricks CLI.
+- [Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html)를 설치하고 구성합니다.
+- Databricks CLI를 사용하여 jar와 init 스크립트를 Databricks 파일 시스템(DBFS)에 복사합니다.
 
   ```sh
   databricks fs mkdirs dbfs:/datahub
@@ -141,8 +130,7 @@ information like tokens.
   databricks fs cp --overwrite init.sh dbfs:/datahub
   ```
 
-- Open Databricks Cluster configuration page. Click the **Advanced Options** toggle. Click the **Spark** tab. Add below
-  configurations under `Spark Config`.
+- Databricks 클러스터 구성 페이지를 엽니다. **Advanced Options** 토글을 클릭합니다. **Spark** 탭을 클릭합니다. `Spark Config` 아래에 다음 구성을 추가합니다.
 
   ```text
   spark.extraListeners                    datahub.spark.DatahubSparkListener
@@ -151,19 +139,19 @@ information like tokens.
   spark.datahub.databricks.cluster        cluster-name<any preferred cluster identifier>
   ```
 
-- Click the **Init Scripts** tab. Set cluster init script as `dbfs:/datahub/init.sh`.
+- **Init Scripts** 탭을 클릭합니다. 클러스터 init 스크립트를 `dbfs:/datahub/init.sh`로 설정합니다.
 
-- Configuring DataHub authentication token
+- DataHub 인증 토큰 구성
 
-  - Add below config in cluster spark config.
+  - 클러스터 spark 설정에 아래 구성을 추가합니다.
 
     ```text
     spark.datahub.rest.token <token>
     ```
 
-  - Alternatively, Databricks secrets can be used to secure token.
+  - 또는 Databricks secrets를 사용하여 토큰을 보안하게 관리할 수 있습니다.
 
-    - Create secret using Databricks CLI.
+    - Databricks CLI를 사용하여 secret을 생성합니다.
 
       ```sh
       databricks secrets create-scope --scope datahub --initial-manage-principal users
@@ -171,156 +159,145 @@ information like tokens.
       databricks secrets list --scope datahub &lt;&lt;Edit prompted file with token value&gt;&gt;
       ```
 
-    - Add in spark config
+    - spark 설정에 추가합니다
 
       ```text
       spark.datahub.rest.token {{secrets/datahub/rest-token}}
       ```
 
-## Configuration Options
+## 구성 옵션
 
-| Field                                                            | Required | Default                 | Description                                                                                                                                                                                                  |
-| ---------------------------------------------------------------- | -------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| spark.jars.packages                                              | ✅       |                         | Set with latest/required version io.acryl:acryl-spark-lineage_2.12:0.2.18 (or io.acryl:acryl-spark-lineage_2.13:0.2.18 for Scala 2.13)                                                                       |
-| spark.extraListeners                                             | ✅       |                         | datahub.spark.DatahubSparkListener                                                                                                                                                                           |
-| spark.datahub.emitter                                            |          | rest                    | Specify the ways to emit metadata. By default it sends to DataHub using REST emitter. Valid options are rest, kafka or file                                                                                  |
-| spark.datahub.rest.server                                        |          | <http://localhost:8080> | Datahub server url eg: <http://localhost:8080>                                                                                                                                                               |
-| spark.datahub.rest.token                                         |          |                         | Authentication token.                                                                                                                                                                                        |
-| spark.datahub.rest.disable_ssl_verification                      |          | false                   | Disable SSL certificate validation. Caution: Only use this if you know what you are doing!                                                                                                                   |
-| spark.datahub.rest.disable_chunked_encoding                      |          | false                   | Disable Chunked Transfer Encoding. In some environment chunked encoding causes issues. With this config option it can be disabled.                                                                           |
-| spark.datahub.rest.max_retries                                   |          | 0                       | Number of times a request retried if failed                                                                                                                                                                  |
-| spark.datahub.rest.retry_interval                                |          | 10                      | Number of seconds to wait between retries                                                                                                                                                                    |
-| spark.datahub.file.filename                                      |          |                         | The file where metadata will be written if file emitter is set                                                                                                                                               |
-| spark.datahub.kafka.bootstrap                                    |          |                         | The Kafka bootstrap server url to use if the Kafka emitter is set                                                                                                                                            |
-| spark.datahub.kafka.schema_registry_url                          |          |                         | The Schema registry url to use if the Kafka emitter is set                                                                                                                                                   |
-| spark.datahub.kafka.schema_registry_config.                      |          |                         | Additional config to pass in to the Schema Registry Client                                                                                                                                                   |
-| spark.datahub.kafka.producer_config.                             |          |                         | Additional config to pass in to the Kafka producer. For example: `--conf "spark.datahub.kafka.producer_config.client.id=my_client_id"`                                                                       |
-| spark.datahub.metadata.pipeline.platformInstance                 |          |                         | Pipeline level platform instance                                                                                                                                                                             |
-| spark.datahub.metadata.dataset.platformInstance                  |          |                         | Dataset level platform instance (useful when you need to match dataset URNs with those created by other ingestion sources)                                                                                   |
-| spark.datahub.metadata.dataset.env                               |          | PROD                    | [Supported values](https://docs.datahub.com/docs/graphql/enums#fabrictype). In all other cases, will fall back to PROD                                                                                       |
-| spark.datahub.metadata.dataset.hivePlatformAlias                 |          | hive                    | By default, DataHub assigns Hive-like tables to the Hive platform. If you are using Glue as your Hive metastore, set this config flag to `glue`                                                              |
-| spark.datahub.metadata.include_scheme                            |          | true                    | Include scheme from the path URI (e.g. hdfs://, s3://) in the dataset URN. We recommend setting this value to false, but it is set to true for backwards compatibility with previous versions                |
-| spark.datahub.metadata.remove_partition_pattern                  |          |                         | Remove partition pattern (e.g. /partition=\d+). It changes database/table/partition=123 to database/table                                                                                                    |
-| spark.datahub.coalesce_jobs                                      |          | true                    | Only one DataJob (task) will be emitted containing all input and output datasets for the Spark application                                                                                                   |
-| spark.datahub.parent.datajob_urn                                 |          |                         | Specified dataset will be set as upstream dataset for DataJob created. Effective only when spark.datahub.coalesce_jobs is set to true                                                                        |
-| spark.datahub.metadata.dataset.materialize                       |          | false                   | Materialize Datasets in DataHub                                                                                                                                                                              |
-| spark.datahub.platform.s3.path_spec_list                         |          |                         | List of path specs per platform                                                                                                                                                                              |
-| spark.datahub.metadata.dataset.include_schema_metadata           |          | false                   | Emit dataset schema metadata based on the Spark execution. It is recommended to get schema information from platform-specific DataHub sources as this is less reliable                                       |
-| spark.datahub.flow_name                                          |          |                         | If set, it will be used as the DataFlow name; otherwise, it uses the Spark app name as flow_name                                                                                                             |
-| spark.datahub.file_partition_regexp                              |          |                         | Strip partition part from the path if the path end matches the specified regexp. Example: `year=.*/month=.*/day=.*`                                                                                          |
-| spark.datahub.tags                                               |          |                         | Comma-separated list of tags to attach to the DataFlow                                                                                                                                                       |
-| spark.datahub.domains                                            |          |                         | Comma-separated list of domain URNs to attach to the DataFlow                                                                                                                                                |
-| spark.datahub.stage_metadata_coalescing                          |          | false                   | Normally metadata is coalesced and sent at the onApplicationEnd event, which is never called on Databricks or on Glue. Enable this on Databricks if you want coalesced runs.                                 |
-| spark.datahub.patch.enabled                                      |          | false                   | Set this to true to send lineage as a patch, which appends rather than overwrites existing Dataset lineage edges. By default, it is disabled.                                                                |
-| spark.datahub.metadata.dataset.lowerCaseUrns                     |          | false                   | Set this to true to lowercase dataset URNs. By default, it is disabled.                                                                                                                                      |
-| spark.datahub.disableSymlinkResolution                           |          | false                   | Set this to true if you prefer using the S3 location instead of the Hive table. By default, it is disabled.                                                                                                  |
-| spark.datahub.s3.bucket                                          |          |                         | The name of the bucket where metadata will be written if s3 emitter is set                                                                                                                                   |
-| spark.datahub.s3.prefix                                          |          |                         | The prefix for the file where metadata will be written on s3 if s3 emitter is set                                                                                                                            |
-| spark.datahub.s3.filename                                        |          |                         | The name of the file where metadata will be written if it is not set random filename will be used on s3 if s3 emitter is set                                                                                 |
-| spark.datahub.log.mcps                                           |          | true                    | Set this to true to log MCPS to the log. By default, it is enabled.                                                                                                                                          |
-| spark.datahub.legacyLineageCleanup.enabled                       |          | false                   | Set this to true to remove legacy lineages from older Spark Plugin runs. This will remove those lineages from the Datasets which it adds to DataJob. By default, it is disabled.                             |
-| spark.datahub.captureColumnLevelLineage                          |          | true                    | Set this to false to disable column-level lineage capture for improved performance on large datasets.                                                                                                        |
-| spark.datahub.capture_spark_plan                                 |          | false                   | Set this to true to capture the Spark plan. By default, it is disabled.                                                                                                                                      |
-| spark.datahub.metadata.dataset.enableEnhancedMergeIntoExtraction |          | false                   | Set this to true to enable enhanced table name extraction for Delta Lake MERGE INTO commands. This improves lineage tracking by including the target table name in the job name. By default, it is disabled. |
+| 필드                                                             | 필수 여부 | 기본값                  | 설명                                                                                                                                                                                                                      |
+| ---------------------------------------------------------------- | --------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| spark.jars.packages                                              | ✅        |                         | 최신/필요 버전으로 설정: io.acryl:acryl-spark-lineage_2.12:0.2.18 (또는 Scala 2.13의 경우 io.acryl:acryl-spark-lineage_2.13:0.2.18)                                                                                       |
+| spark.extraListeners                                             | ✅        |                         | datahub.spark.DatahubSparkListener                                                                                                                                                                                        |
+| spark.datahub.emitter                                            |           | rest                    | 메타데이터를 emit하는 방법을 지정합니다. 기본적으로 REST emitter를 사용하여 DataHub로 전송합니다. 유효한 옵션: rest, kafka 또는 file                                                                                       |
+| spark.datahub.rest.server                                        |           | <http://localhost:8080> | Datahub 서버 URL. 예: <http://localhost:8080>                                                                                                                                                                             |
+| spark.datahub.rest.token                                         |           |                         | 인증 토큰.                                                                                                                                                                                                                |
+| spark.datahub.rest.disable_ssl_verification                      |           | false                   | SSL 인증서 검증 비활성화. 주의: 무엇을 하는지 알고 있는 경우에만 사용하세요!                                                                                                                                              |
+| spark.datahub.rest.disable_chunked_encoding                      |           | false                   | 청크 전송 인코딩 비활성화. 일부 환경에서 청크 인코딩이 문제를 일으키는 경우 이 옵션으로 비활성화할 수 있습니다.                                                                                                           |
+| spark.datahub.rest.max_retries                                   |           | 0                       | 실패 시 요청을 재시도하는 횟수                                                                                                                                                                                            |
+| spark.datahub.rest.retry_interval                                |           | 10                      | 재시도 간 대기 시간(초)                                                                                                                                                                                                   |
+| spark.datahub.file.filename                                      |           |                         | file emitter가 설정된 경우 메타데이터가 기록될 파일                                                                                                                                                                       |
+| spark.datahub.kafka.bootstrap                                    |           |                         | Kafka emitter가 설정된 경우 사용할 Kafka 부트스트랩 서버 URL                                                                                                                                                              |
+| spark.datahub.kafka.schema_registry_url                          |           |                         | Kafka emitter가 설정된 경우 사용할 Schema Registry URL                                                                                                                                                                    |
+| spark.datahub.kafka.schema_registry_config.                      |           |                         | Schema Registry Client에 전달할 추가 설정                                                                                                                                                                                 |
+| spark.datahub.kafka.producer_config.                             |           |                         | Kafka producer에 전달할 추가 설정. 예: `--conf "spark.datahub.kafka.producer_config.client.id=my_client_id"`                                                                                                              |
+| spark.datahub.metadata.pipeline.platformInstance                 |           |                         | 파이프라인 수준 platform instance                                                                                                                                                                                         |
+| spark.datahub.metadata.dataset.platformInstance                  |           |                         | dataset 수준 platform instance (다른 ingestion 소스로 생성된 dataset URN과 일치시킬 때 유용)                                                                                                                              |
+| spark.datahub.metadata.dataset.env                               |           | PROD                    | [지원되는 값](https://docs.datahub.com/docs/graphql/enums#fabrictype). 그 외의 경우 PROD로 대체됩니다                                                                                                                     |
+| spark.datahub.metadata.dataset.hivePlatformAlias                 |           | hive                    | 기본적으로 DataHub는 Hive 유사 테이블을 Hive 플랫폼에 할당합니다. Glue를 Hive 메타스토어로 사용하는 경우 이 설정 플래그를 `glue`로 설정하세요                                                                            |
+| spark.datahub.metadata.include_scheme                            |           | true                    | 경로 URI의 스킴(예: hdfs://, s3://)을 dataset URN에 포함합니다. false로 설정하는 것을 권장하지만, 이전 버전과의 호환성을 위해 true로 설정되어 있습니다                                                                    |
+| spark.datahub.metadata.remove_partition_pattern                  |           |                         | 파티션 패턴 제거 (예: /partition=\d+). database/table/partition=123을 database/table로 변경합니다                                                                                                                         |
+| spark.datahub.coalesce_jobs                                      |           | true                    | Spark 애플리케이션의 모든 입력 및 출력 dataset을 포함하는 하나의 DataJob(태스크)만 emit됩니다                                                                                                                             |
+| spark.datahub.parent.datajob_urn                                 |           |                         | 지정된 dataset이 생성된 DataJob의 upstream dataset으로 설정됩니다. spark.datahub.coalesce_jobs가 true로 설정된 경우에만 적용됩니다                                                                                        |
+| spark.datahub.metadata.dataset.materialize                       |           | false                   | DataHub에서 dataset을 구체화합니다                                                                                                                                                                                        |
+| spark.datahub.platform.s3.path_spec_list                         |           |                         | 플랫폼별 path spec 목록                                                                                                                                                                                                   |
+| spark.datahub.metadata.dataset.include_schema_metadata           |           | false                   | Spark 실행을 기반으로 dataset schema 메타데이터를 emit합니다. 이 방법은 신뢰성이 떨어지므로 플랫폼 특화 DataHub 소스에서 schema 정보를 가져오는 것을 권장합니다                                                          |
+| spark.datahub.flow_name                                          |           |                         | 설정된 경우 DataFlow 이름으로 사용됩니다. 설정되지 않은 경우 Spark 앱 이름을 flow_name으로 사용합니다                                                                                                                    |
+| spark.datahub.file_partition_regexp                              |           |                         | 경로 끝이 지정된 정규식과 일치하는 경우 경로에서 파티션 부분을 제거합니다. 예: `year=.*/month=.*/day=.*`                                                                                                                  |
+| spark.datahub.tags                                               |           |                         | DataFlow에 연결할 태그의 쉼표로 구분된 목록                                                                                                                                                                               |
+| spark.datahub.domains                                            |           |                         | DataFlow에 연결할 도메인 URN의 쉼표로 구분된 목록                                                                                                                                                                        |
+| spark.datahub.stage_metadata_coalescing                          |           | false                   | 일반적으로 메타데이터는 onApplicationEnd 이벤트에서 병합되어 전송되지만, 이 이벤트는 Databricks나 Glue에서 호출되지 않습니다. Databricks에서 병합된 실행을 원하는 경우 이를 활성화하세요.                                |
+| spark.datahub.patch.enabled                                      |           | false                   | lineage를 패치로 전송하도록 true로 설정합니다. 이를 통해 기존 dataset lineage 엣지를 덮어쓰지 않고 추가합니다. 기본적으로 비활성화되어 있습니다.                                                                          |
+| spark.datahub.metadata.dataset.lowerCaseUrns                     |           | false                   | dataset URN을 소문자로 변환하도록 true로 설정합니다. 기본적으로 비활성화되어 있습니다.                                                                                                                                    |
+| spark.datahub.disableSymlinkResolution                           |           | false                   | Hive 테이블 대신 S3 위치를 사용하려는 경우 true로 설정합니다. 기본적으로 비활성화되어 있습니다.                                                                                                                          |
+| spark.datahub.s3.bucket                                          |           |                         | s3 emitter가 설정된 경우 메타데이터가 기록될 버킷 이름                                                                                                                                                                    |
+| spark.datahub.s3.prefix                                          |           |                         | s3 emitter가 설정된 경우 S3에서 메타데이터가 기록될 파일의 접두사                                                                                                                                                        |
+| spark.datahub.s3.filename                                        |           |                         | s3 emitter가 설정된 경우 메타데이터가 기록될 파일 이름 (설정되지 않은 경우 랜덤 파일 이름 사용)                                                                                                                           |
+| spark.datahub.log.mcps                                           |           | true                    | MCPS를 로그에 기록하려면 true로 설정합니다. 기본적으로 활성화되어 있습니다.                                                                                                                                               |
+| spark.datahub.legacyLineageCleanup.enabled                       |           | false                   | 이전 Spark 플러그인 실행에서 남은 레거시 lineage를 제거하려면 true로 설정합니다. DataJob에 추가하는 dataset에서 해당 lineage를 제거합니다. 기본적으로 비활성화되어 있습니다.                                              |
+| spark.datahub.captureColumnLevelLineage                          |           | true                    | 대규모 dataset에서 성능 향상을 위해 컬럼 수준 lineage 캡처를 비활성화하려면 false로 설정합니다.                                                                                                                           |
+| spark.datahub.capture_spark_plan                                 |           | false                   | Spark 플랜을 캡처하려면 true로 설정합니다. 기본적으로 비활성화되어 있습니다.                                                                                                                                              |
+| spark.datahub.metadata.dataset.enableEnhancedMergeIntoExtraction |           | false                   | Delta Lake MERGE INTO 명령에 대한 향상된 테이블 이름 추출을 활성화하려면 true로 설정합니다. job 이름에 대상 테이블 이름을 포함하여 lineage 추적을 개선합니다. 기본적으로 비활성화되어 있습니다.                           |
 
-## What to Expect: The Metadata Model
+## 메타데이터 모델 예상 결과
 
-As of current writing, the Spark agent produces metadata related to the Spark job, tasks and lineage edges to datasets.
+현재 시점에서 Spark 에이전트는 Spark job, 태스크 및 dataset에 대한 lineage 엣지와 관련된 메타데이터를 생성합니다.
 
-- A pipeline is created per Spark <master, appName>.
-- A task is created per unique Spark query execution within an app.
+- Spark <master, appName>당 하나의 파이프라인이 생성됩니다.
+- 앱 내의 각 고유한 Spark 쿼리 실행당 하나의 태스크가 생성됩니다.
 
-For Spark on Databricks,
+Databricks의 Spark의 경우:
 
-- A pipeline is created per
-  - cluster_identifier: specified with spark.datahub.databricks.cluster
-  - applicationID: on every restart of the cluster new spark applicationID will be created.
-- A task is created per unique Spark query execution.
+- 다음 항목당 하나의 파이프라인이 생성됩니다:
+  - cluster_identifier: spark.datahub.databricks.cluster로 지정
+  - applicationID: 클러스터 재시작 시마다 새로운 Spark applicationID가 생성됩니다.
+- 각 고유한 Spark 쿼리 실행당 하나의 태스크가 생성됩니다.
 
-### Custom properties & relating to Spark UI
+### 사용자 정의 속성 및 Spark UI와의 연관성
 
-The following custom properties in pipelines and tasks relate to the Spark UI:
+파이프라인과 태스크의 다음 사용자 정의 속성은 Spark UI와 연관됩니다:
 
-- appName and appId in a pipeline can be used to determine the Spark application
-- Other custom properties of pipelines and tasks capture the start and end times of execution etc.
+- 파이프라인의 appName과 appId를 사용하여 Spark 애플리케이션을 확인할 수 있습니다
+- 파이프라인과 태스크의 기타 사용자 정의 속성은 실행 시작 및 종료 시간 등을 캡처합니다.
 
-For Spark on Databricks, pipeline start time is the cluster start time.
+Databricks의 Spark의 경우, 파이프라인 시작 시간은 클러스터 시작 시간입니다.
 
-### Column-level Lineage and Transformation Types
+### 컬럼 수준 Lineage 및 변환 타입
 
-The Spark agent captures fine-grained lineage information, including column-level lineage with transformation types. When available, OpenLineage's [transformation types](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/#transformation-type) are captured and mapped to DataHub's FinegrainedLineage `TransformOption`, providing detailed insights into how data transformations occur at the column level.
+Spark 에이전트는 변환 타입을 포함한 컬럼 수준 lineage 등 세밀한 lineage 정보를 캡처합니다. 사용 가능한 경우 OpenLineage의 [변환 타입](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/#transformation-type)을 캡처하여 DataHub의 FinegrainedLineage `TransformOption`에 매핑하며, 컬럼 수준에서 데이터 변환이 어떻게 발생하는지에 대한 상세한 인사이트를 제공합니다.
 
-### Spark versions supported
+### 지원되는 Spark 버전
 
-Supports Spark 3.x series.
+Spark 3.x 시리즈를 지원합니다.
 
-### Environments tested with
+### 테스트된 환경
 
-This initial release has been tested with the following environments:
+이 초기 릴리스는 다음 환경에서 테스트되었습니다:
 
-- spark-submit of Python/Java applications to local and remote servers
-- Standalone Java applications
-- Databricks Standalone Cluster
+- 로컬 및 원격 서버에 Python/Java 애플리케이션 spark-submit
+- 독립형 Java 애플리케이션
+- Databricks 독립형 클러스터
 - EMR
 
-Testing with Databricks Standard and High-concurrency Cluster is not done yet.
+Databricks 표준 및 고동시성 클러스터에서의 테스트는 아직 완료되지 않았습니다.
 
-### Configuring Hdfs based dataset URNs
+### HDFS 기반 dataset URN 구성
 
-Spark emits lineage between datasets. It has its own logic for generating urns. Python sources emit metadata of
-datasets. To link these 2 things, urns generated by both have to match.
-This section will help you to match urns to that of other ingestion sources.
-By default, URNs are created using
-template `urn:li:dataset:(urn:li:dataPlatform:<$platform>,<platformInstance>.<name>,<env>)`. We can configure these 4
-things to generate the desired urn.
+Spark는 dataset 간의 lineage를 emit합니다. URN 생성에 자체 로직을 사용합니다. Python 소스는 dataset의 메타데이터를 emit합니다. 이 두 가지를 연결하려면 양쪽에서 생성된 URN이 일치해야 합니다.
+이 섹션은 다른 ingestion 소스의 URN과 일치시키는 데 도움을 드립니다.
+기본적으로 URN은
+`urn:li:dataset:(urn:li:dataPlatform:<$platform>,<platformInstance>.<name>,<env>)` 템플릿을 사용하여 생성됩니다. 원하는 URN을 생성하기 위해 이 4가지 항목을 구성할 수 있습니다.
 
 **Platform**:
-Hdfs-based platforms supported explicitly:
+명시적으로 지원되는 HDFS 기반 플랫폼:
 
 - AWS S3 (s3)
 - Google Cloud Storage (gcs)
 - Azure Storage:
-  - Azure Blob Storage (abs) - supports wasb/wasbs protocols
-  - Azure Data Lake Storage Gen2 (abs) - supports abfs/abfss protocols
-- Local file system (file)
-  All other platforms will have "hdfs" as a platform.
+  - Azure Blob Storage (abs) - wasb/wasbs 프로토콜 지원
+  - Azure Data Lake Storage Gen2 (abs) - abfs/abfss 프로토콜 지원
+- 로컬 파일 시스템 (file)
+  기타 모든 플랫폼은 "hdfs"를 플랫폼으로 사용합니다.
 
 **Name**:
-By default, the name is the complete path. For Hdfs base datasets, tables can be at different levels in the path than
-that of the actual file read due to various reasons like partitioning, and sharding. 'path_spec' is used to alter the
-name.
-{table} marker is used to specify the table level. Below are a few examples. One can specify multiple path_specs for
-different paths specified in the `path_spec_list`. Each actual path is matched against all path_spes present in the
-list. First, one to match will be used to generate urn.
+기본적으로 이름은 전체 경로입니다. HDFS 기반 dataset의 경우 파티셔닝 및 샤딩 등 다양한 이유로 실제 파일 읽기 위치와 다른 경로 레벨에 테이블이 있을 수 있습니다. 'path_spec'은 이름을 변경하는 데 사용됩니다.
+{table} 마커는 테이블 레벨을 지정하는 데 사용됩니다. 아래는 몇 가지 예시입니다. `path_spec_list`에 지정된 여러 경로에 대해 여러 path_spec을 지정할 수 있습니다. 각 실제 경로는 목록의 모든 path_spec에 대해 매칭됩니다. 처음 매칭되는 것이 URN 생성에 사용됩니다.
 
-**path_spec Examples**
+**path_spec 예시**
 
 ```
 spark.datahub.platform.s3.path_spec_list=s3://my-bucket/foo/{table}/year=*/month=*/day=*/*,s3://my-other-bucket/foo/{table}/year=*/month=*/day=*/*"
 ```
 
-| Absolute path                        | path_spec                        | Urn                                                                          |
+| 절대 경로                            | path_spec                        | URN                                                                          |
 | ------------------------------------ | -------------------------------- | ---------------------------------------------------------------------------- |
-| s3://my-bucket/foo/tests/bar.avro    | Not provided                     | urn:li:dataset:(urn:li:dataPlatform:s3,my-bucket/foo/tests/bar.avro,PROD)    |
+| s3://my-bucket/foo/tests/bar.avro    | 제공되지 않음                    | urn:li:dataset:(urn:li:dataPlatform:s3,my-bucket/foo/tests/bar.avro,PROD)    |
 | s3://my-bucket/foo/tests/bar.avro    | s3://my-bucket/foo/{table}/\*    | urn:li:dataset:(urn:li:dataPlatform:s3,my-bucket/foo/tests,PROD)             |
 | s3://my-bucket/foo/tests/bar.avro    | s3://my-bucket/foo/tests/{table} | urn:li:dataset:(urn:li:dataPlatform:s3,my-bucket/foo/tests/bar.avro,PROD)    |
 | gs://my-bucket/foo/tests/bar.avro    | gs://my-bucket/{table}/_/_       | urn:li:dataset:(urn:li:dataPlatform:gcs,my-bucket/foo,PROD)                  |
 | gs://my-bucket/foo/tests/bar.avro    | gs://my-bucket/{table}           | urn:li:dataset:(urn:li:dataPlatform:gcs,my-bucket/foo,PROD)                  |
 | file:///my-bucket/foo/tests/bar.avro | file:///my-bucket/_/_/{table}    | urn:li:dataset:(urn:li:dataPlatform:local,my-bucket/foo/tests/bar.avro,PROD) |
 
-**platform instance and env:**
+**platform instance 및 env:**
 
-The default value for env is 'PROD' and the platform instance is None. env and platform instances can be set for all
-datasets using configurations 'spark.datahub.metadata.dataset.env' and 'spark.datahub.metadata.dataset.platformInstace'.
-If spark is processing data that belongs to a different env or platform instance, then 'path_alias' can be used to
-specify `path_spec` specific values of these. 'path_alias' groups the 'path_spec_list', its env, and platform instance
-together.
+env의 기본값은 'PROD'이고 platform instance는 None입니다. env와 platform instance는 'spark.datahub.metadata.dataset.env' 및 'spark.datahub.metadata.dataset.platformInstace' 설정을 사용하여 모든 dataset에 대해 설정할 수 있습니다.
+Spark가 다른 env 또는 platform instance에 속하는 데이터를 처리하는 경우 `path_spec`별 값을 지정하기 위해 'path_alias'를 사용할 수 있습니다. 'path_alias'는 'path_spec_list', env, platform instance를 함께 그룹화합니다.
 
-path_alias_list Example:
+path_alias_list 예시:
 
-The below example explains the configuration of the case, where files from 2 buckets are being processed in a single
-spark application and files from my-bucket are supposed to have "instance1" as platform instance and "PROD" as env, and
-files from bucket2 should have env "DEV" in their dataset URNs.
+아래 예시는 단일 Spark 애플리케이션에서 2개의 버킷 파일을 처리하는 경우 구성을 설명합니다. my-bucket의 파일은 platform instance로 "instance1"을 가져야 하고 env는 "PROD"이며, bucket2의 파일은 dataset URN에 env "DEV"를 가져야 합니다.
 
 ```
 spark.datahub.platform.s3.path_alias_list :  path1,path2
@@ -331,47 +308,44 @@ spark.datahub.platform.s3.path2.env: DEV
 spark.datahub.platform.s3.path2.path_spec_list: s3://bucket2/*/{table}
 ```
 
-### Important notes on usage
+### 사용 시 중요 참고사항
 
-- It is advisable to ensure appName is used appropriately to ensure you can trace lineage from a pipeline back to your
-  source code.
-- If multiple apps with the same appName run concurrently, dataset-lineage will be captured correctly but the
-  custom-properties e.g. app-id, SQLQueryId would be unreliable. We expect this to be quite rare.
-- If spark execution fails, then an empty pipeline would still get created, but it may not have any tasks.
-- For HDFS sources, the folder (name) is regarded as the dataset (name) to align with typical storage of parquet/csv
-  formats.
+- appName을 적절히 사용하여 파이프라인에서 소스 코드로 lineage를 추적할 수 있도록 하는 것이 좋습니다.
+- 동일한 appName을 가진 여러 앱이 동시에 실행되는 경우 dataset-lineage는 올바르게 캡처되지만
+  app-id, SQLQueryId 등의 사용자 정의 속성은 신뢰할 수 없습니다. 이런 경우는 매우 드물 것으로 예상됩니다.
+- Spark 실행이 실패하면 빈 파이프라인이 생성될 수 있으며 태스크가 없을 수도 있습니다.
+- HDFS 소스의 경우 parquet/csv 형식의 일반적인 스토리지 방식에 맞추어 폴더(이름)를 dataset(이름)으로 간주합니다.
 
-### Delta Lake MERGE INTO Commands
+### Delta Lake MERGE INTO 명령
 
-When working with Delta Lake MERGE INTO commands, the default behavior creates generic job names based on the internal Spark task names.
-To improve lineage tracking, you can enable the enhanced table name extraction feature:
+Delta Lake MERGE INTO 명령으로 작업할 때 기본 동작은 내부 Spark 태스크 이름을 기반으로 일반적인 job 이름을 생성합니다.
+lineage 추적을 개선하려면 향상된 테이블 이름 추출 기능을 활성화할 수 있습니다:
 
 ```
 spark.datahub.metadata.dataset.enableEnhancedMergeIntoExtraction=true
 ```
 
-When enabled, the agent will:
+활성화하면 에이전트가 다음을 수행합니다:
 
-1. Detect Delta Lake MERGE INTO commands
-2. Extract the target table name from the SQL query, dataset names, or symlinks
-3. Include the table name in the job name, making it easier to trace operations against specific tables
-4. Generate more meaningful lineage in DataHub
+1. Delta Lake MERGE INTO 명령을 감지합니다
+2. SQL 쿼리, dataset 이름 또는 심링크에서 대상 테이블 이름을 추출합니다
+3. job 이름에 테이블 이름을 포함하여 특정 테이블에 대한 작업을 쉽게 추적할 수 있게 합니다
+4. DataHub에서 더 의미 있는 lineage를 생성합니다
 
-For example, a job named `execute_merge_into_command_edge` will be enhanced to `execute_merge_into_command_edge.database_table_name`,
-making it clear which table was being modified.
+예를 들어 `execute_merge_into_command_edge`라는 job 이름은 `execute_merge_into_command_edge.database_table_name`으로 향상되어 어떤 테이블이 수정되었는지 명확하게 표시됩니다.
 
-### Debugging
+### 디버깅
 
-- Following info logs are generated
+- 다음 정보 로그가 생성됩니다
 
-On Spark context startup
+Spark 컨텍스트 시작 시
 
 ```text
 YY/MM/DD HH:mm:ss INFO DatahubSparkListener: DatahubSparkListener initialised.
 YY/MM/DD HH:mm:ss INFO SparkContext: Registered listener datahub.spark.DatahubSparkListener
 ```
 
-On application start
+애플리케이션 시작 시
 
 ```text
 YY/MM/DD HH:mm:ss INFO DatahubSparkListener: Application started: SparkListenerApplicationStart(AppName,Some(local-1644489736794),1644489735772,user,None,None)
@@ -379,100 +353,100 @@ YY/MM/DD HH:mm:ss INFO McpEmitter: REST Emitter Configuration: GMS url <rest.ser
 YY/MM/DD HH:mm:ss INFO McpEmitter: REST Emitter Configuration: Token XXXXX
 ```
 
-On pushing data to server
+서버에 데이터 push 시
 
 ```text
 YY/MM/DD HH:mm:ss INFO McpEmitter: MetadataWriteResponse(success=true, responseContent={"value":"<URN>"}, underlyingResponse=HTTP/1.1 200 OK [Date: day, DD month year HH:mm:ss GMT, Content-Type: application/json, X-RestLi-Protocol-Version: 2.0.0, Content-Length: 97, Server: Jetty(9.4.46.v20220331)] [Content-Length: 97,Chunked: false])
 ```
 
-On application end
+애플리케이션 종료 시
 
 ```text
 YY/MM/DD HH:mm:ss INFO DatahubSparkListener: Application ended : AppName AppID
 ```
 
-- To enable debugging logs, add below configuration in log4j.properties file
+- 디버그 로그를 활성화하려면 log4j.properties 파일에 아래 설정을 추가하세요
 
 ```properties
 log4j.logger.datahub.spark=DEBUG
 log4j.logger.datahub.client.rest=DEBUG
 ```
 
-## How to build
+## 빌드 방법
 
-Use Java 8 to build the project. The project uses Gradle as the build tool. To build the project, run the following command:
+Java 8을 사용하여 프로젝트를 빌드합니다. 프로젝트는 Gradle을 빌드 도구로 사용합니다. 프로젝트를 빌드하려면 다음 명령을 실행하세요:
 
 ```shell
 ./gradlew -PjavaClassVersionDefault=8 :metadata-integration:java:acryl-spark-lineage:shadowJar
 ```
 
-## Known limitations
+## 알려진 제한 사항
 
 -
 
-## Changelog
+## 변경 이력
 
-### Version 0.2.18
+### 버전 0.2.18
 
-- _Changes_:
-  - OpenLineage 1.33.0 upgrade
-  - Add `spark.datahub.capture_spark_plan` option to capture the Spark plan. By default, it is disabled.
-  - Add proper support for Spark Streaming
-  - Fix issue when Delta table was not within Warehouse location and plugin only captured the path and not the table.
-  - Option for Enhanced Merge Into Extraction
-  - Fix rdd map detection to correctly handle map transformations in the lineage.
-  - **JAR Naming**: Starting from this version, separate jars are built for different Scala versions:
+- _변경 사항_:
+  - OpenLineage 1.33.0 업그레이드
+  - Spark 플랜 캡처를 위한 `spark.datahub.capture_spark_plan` 옵션 추가. 기본적으로 비활성화됩니다.
+  - Spark Streaming 지원 추가
+  - Delta 테이블이 Warehouse 위치 밖에 있을 때 플러그인이 경로만 캡처하고 테이블을 캡처하지 않는 문제 수정
+  - Enhanced Merge Into Extraction 옵션 추가
+  - lineage에서 map 변환을 올바르게 처리하도록 rdd map 감지 수정
+  - **JAR 이름 변경**: 이 버전부터 서로 다른 Scala 버전에 대해 별도의 jar가 빌드됩니다:
     - Scala 2.12: `io.acryl:acryl-spark-lineage_2.12:0.2.18`
     - Scala 2.13: `io.acryl:acryl-spark-lineage_2.13:0.2.18`
-  - **Column-level Lineage Enhancement**: OpenLineage's transformation types are now captured and mapped to DataHub's FinegrainedLineage `TransformOption` as per the [OpenLineage column lineage specification](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/#transformation-type)
-  - **Dependency Cleanup**: Removed logback dependency to reduce potential conflicts with user applications
-  - FileStreamMicroBatchStream and foreachBatch for Spark streaming
-  - MERGE INTO operations now capture both dataset-level AND column-level lineage
+  - **컬럼 수준 Lineage 향상**: [OpenLineage 컬럼 lineage 명세](https://openlineage.io/docs/spec/facets/dataset-facets/column_lineage_facet/#transformation-type)에 따라 OpenLineage의 변환 타입이 이제 캡처되어 DataHub의 FinegrainedLineage `TransformOption`에 매핑됩니다
+  - **의존성 정리**: 사용자 애플리케이션과의 잠재적 충돌을 줄이기 위해 logback 의존성 제거
+  - Spark 스트리밍용 FileStreamMicroBatchStream 및 foreachBatch 지원
+  - MERGE INTO 작업이 이제 dataset 수준과 컬럼 수준 lineage 모두를 캡처합니다
 
-### Version 0.2.17
+### 버전 0.2.17
 
-- _Major changes_:
+- _주요 변경 사항_:
 
-  - Finegrained lineage is emitted on the DataJob and not on the emitted Datasets. This is the correct behaviour which was not correct earlier. This causes earlier emitted finegrained lineages won't be overwritten by the new ones.
-    You can remove the old lineages by setting `spark.datahub.legacyLineageCleanup.enabled=true`. Make sure you have the latest server if you enable with patch support. (this was introduced since 0.2.17-rc5)
+  - 세밀한 lineage가 emit된 dataset이 아닌 DataJob에서 emit됩니다. 이전에 올바르지 않았던 올바른 동작입니다. 이로 인해 이전에 emit된 세밀한 lineage가 새로운 것으로 덮어쓰이지 않습니다.
+    `spark.datahub.legacyLineageCleanup.enabled=true`를 설정하여 이전 lineage를 제거할 수 있습니다. 패치 지원이 활성화된 경우 최신 서버가 있는지 확인하세요. (0.2.17-rc5 이후에 도입됨)
 
-- _Changes_:
-  - OpenLineage 1.25.0 upgrade
-  - Add option to disable chunked encoding in the datahub rest sink -> `spark.datahub.rest.disable_chunked_encoding`
-  - Add option to specify the mcp kafka topic for the datahub kafka sink -> `spark.datahub.kafka.mcp_topic`
-  - Add option to remove legacy lineages from older Spark Plugin runs. This will remove those lineages from the Datasets which it adds to DataJob -> `spark.datahub.legacyLineageCleanup.enabled`
-- _Fixes_:
-  - Fix handling map transformation in the lineage. Earlier it generated wrong lineage for map transformation.
+- _변경 사항_:
+  - OpenLineage 1.25.0 업그레이드
+  - datahub rest 싱크에서 청크 인코딩 비활성화 옵션 추가 -> `spark.datahub.rest.disable_chunked_encoding`
+  - datahub kafka 싱크의 mcp kafka 토픽 지정 옵션 추가 -> `spark.datahub.kafka.mcp_topic`
+  - 이전 Spark 플러그인 실행에서 레거시 lineage 제거 옵션 추가. DataJob에 추가하는 dataset에서 해당 lineage를 제거합니다 -> `spark.datahub.legacyLineageCleanup.enabled`
+- _수정 사항_:
+  - lineage에서 map 변환 처리 수정. 이전에는 map 변환에 대해 잘못된 lineage를 생성했습니다.
 
-### Version 0.2.16
+### 버전 0.2.16
 
-- Remove logging DataHub config into logs
+- DataHub 설정을 로그에 기록하지 않도록 변경
 
-### Version 0.2.15
+### 버전 0.2.15
 
-- Add Kafka emitter to emit lineage to kafka
-- Add File emitter to emit lineage to file
-- Add S3 emitter to save mcps to s3
-- Upgrading OpenLineage to 1.19.0
-- Renaming project to acryl-datahub-spark-lineage
-- Supporting OpenLineage 1.17+ glue identifier changes
-- Fix handling OpenLineage input/output where wasn't any facet attached
+- lineage를 kafka로 emit하는 Kafka emitter 추가
+- lineage를 파일로 emit하는 File emitter 추가
+- MCP를 S3에 저장하는 S3 emitter 추가
+- OpenLineage를 1.19.0으로 업그레이드
+- 프로젝트 이름을 acryl-datahub-spark-lineage로 변경
+- OpenLineage 1.17+ glue 식별자 변경 지원
+- facet이 없는 OpenLineage 입력/출력 처리 수정
 
-### Version 0.2.14
+### 버전 0.2.14
 
-- Fix warning about MeterFilter warning from Micrometer
+- Micrometer의 MeterFilter 경고 수정
 
-### Version 0.2.13
+### 버전 0.2.13
 
-- Add kafka emitter to emit lineage to kafka
+- lineage를 kafka로 emit하는 kafka emitter 추가
 
-### Version 0.2.12
+### 버전 0.2.12
 
-- Silencing some chatty warnings in RddPathUtils
+- RddPathUtils의 불필요한 경고 메시지 제거
 
-### Version 0.2.11
+### 버전 0.2.11
 
-- Add option to lowercase dataset URNs
-- Add option to set platform instance and/or env per platform with `spark.datahub.platform.<platform_name>.env` and `spark.datahub.platform.<platform_name>.platform_instance` config parameter
-- Fixing platform instance setting for datasets when `spark.datahub.metadata.dataset.platformInstance` is set
-- Fixing column level lineage support when patch is enabled
+- dataset URN을 소문자로 변환하는 옵션 추가
+- `spark.datahub.platform.<platform_name>.env` 및 `spark.datahub.platform.<platform_name>.platform_instance` 설정 매개변수로 플랫폼별 platform instance 및/또는 env 설정 옵션 추가
+- `spark.datahub.metadata.dataset.platformInstance` 설정 시 dataset의 platform instance 설정 수정
+- 패치가 활성화된 경우 컬럼 수준 lineage 지원 수정

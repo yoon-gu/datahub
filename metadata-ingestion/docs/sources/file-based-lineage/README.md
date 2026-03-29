@@ -1,17 +1,17 @@
-## Overview
+## 개요
 
-File Based Lineage is a storage and lakehouse platform. Learn more in the [official File Based Lineage documentation](https://datahub.com/docs/).
+파일 기반 Lineage는 스토리지 및 레이크하우스 플랫폼입니다. 자세한 내용은 [공식 파일 기반 Lineage 문서](https://datahub.com/docs/)를 참조하세요.
 
-The DataHub integration for File Based Lineage covers file/lakehouse metadata entities such as datasets, paths, and containers. Depending on module capabilities, it can also capture features such as lineage, usage, profiling, ownership, tags, and stateful deletion detection.
+파일 기반 Lineage용 DataHub 통합은 dataset, 경로, 컨테이너와 같은 파일/레이크하우스 메타데이터 entity를 다룹니다. 모듈 기능에 따라 lineage, 사용 현황, 프로파일링, 소유권, 태그 및 상태 기반 삭제 감지도 캡처할 수 있습니다.
 
-## Concept Mapping
+## 개념 매핑
 
-While the specific concept mapping is still pending, this shows the generic concept mapping in DataHub.
+구체적인 개념 매핑은 아직 확정 중이지만, 아래는 DataHub에서의 일반적인 개념 매핑을 보여줍니다.
 
-| Source Concept                                           | DataHub Concept              | Notes                                                            |
-| -------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------- |
-| Platform/account/project scope                           | Platform Instance, Container | Organizes assets within the platform context.                    |
-| Core technical asset (for example table/view/topic/file) | Dataset                      | Primary ingested technical asset.                                |
-| Schema fields / columns                                  | SchemaField                  | Included when schema extraction is supported.                    |
-| Ownership and collaboration principals                   | CorpUser, CorpGroup          | Emitted by modules that support ownership and identity metadata. |
-| Dependencies and processing relationships                | Lineage edges                | Available when lineage extraction is supported and enabled.      |
+| 소스 개념                                            | DataHub 개념                 | 비고                                                               |
+| ---------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| 플랫폼/계정/프로젝트 범위                            | Platform Instance, Container | 플랫폼 컨텍스트 내에서 자산을 구성합니다.                         |
+| 핵심 기술 자산 (예: 테이블/뷰/토픽/파일)            | Dataset                      | 기본으로 수집되는 기술 자산입니다.                                 |
+| Schema 필드 / 컬럼                                   | SchemaField                  | schema 추출이 지원되는 경우 포함됩니다.                            |
+| 소유권 및 협업 주체                                  | CorpUser, CorpGroup          | 소유권 및 식별 메타데이터를 지원하는 모듈에서 emit됩니다.         |
+| 의존성 및 처리 관계                                  | Lineage 엣지                 | lineage 추출이 지원되고 활성화된 경우에 사용 가능합니다.          |

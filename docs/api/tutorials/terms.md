@@ -3,37 +3,37 @@ import TabItem from '@theme/TabItem';
 
 # Terms
 
-## Why Would You Use Terms on Datasets?
+## Dataset에 Terms를 사용하는 이유
 
-The Business Glossary(Term) feature in DataHub helps you use a shared vocabulary within the orgarnization, by providing a framework for defining a standardized set of data concepts and then associating them with the physical assets that exist within your data ecosystem.
+DataHub의 비즈니스 Glossary(Term) 기능은 표준화된 데이터 개념 집합을 정의하는 프레임워크를 제공하고, 이를 데이터 생태계 내에 존재하는 물리적 자산과 연결함으로써 조직 내에서 공유된 어휘를 사용할 수 있도록 도와줍니다.
 
-For more information about terms, refer to [About DataHub Business Glossary](/docs/glossary/business-glossary.md).
+Terms에 대한 자세한 내용은 [DataHub 비즈니스 Glossary 소개](/docs/glossary/business-glossary.md)를 참조하세요.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to
+이 가이드에서는 다음을 수행하는 방법을 보여드립니다
 
-- Create: create a term.
-- Read : read terms attached to a dataset.
-- Add: add a term to a column of a dataset or a dataset itself.
-- Remove: remove a term from a dataset.
+- 생성: term을 생성합니다.
+- 조회: dataset에 연결된 term을 조회합니다.
+- 추가: dataset의 컬럼 또는 dataset 자체에 term을 추가합니다.
+- 제거: dataset에서 term을 제거합니다.
 
-## Prerequisites
+## 사전 조건
 
-For this tutorial, you need to deploy DataHub Quickstart and ingest sample data.
-For detailed information, please refer to [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 위해 DataHub Quickstart를 배포하고 샘플 데이터를 ingest해야 합니다.
+자세한 내용은 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참조하세요.
 
 :::note
-Before modifying terms, you need to ensure the target dataset is already present in your DataHub instance.
-If you attempt to manipulate entities that do not exist, your operation will fail.
-In this guide, we will be using data from sample ingestion.
+Term을 수정하기 전에 대상 dataset이 DataHub 인스턴스에 이미 존재하는지 확인해야 합니다.
+존재하지 않는 entity를 조작하려고 하면 작업이 실패합니다.
+이 가이드에서는 샘플 ingestion의 데이터를 사용합니다.
 :::
 
-For more information on how to set up for GraphQL, please refer to [How To Set Up GraphQL](/docs/api/graphql/how-to-set-up-graphql.md).
+GraphQL 설정 방법에 대한 자세한 내용은 [GraphQL 설정 방법](/docs/api/graphql/how-to-set-up-graphql.md)을 참조하세요.
 
-## Create Terms
+## Terms 생성
 
-The following code creates a term `Rate of Return`.
+다음 코드는 `Rate of Return` term을 생성합니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -49,7 +49,7 @@ mutation createGlossaryTerm {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -71,7 +71,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation createGlossaryTerm { createGlossaryTerm(input: { name: \"Rate of Return\", id:\"rateofreturn\", description: \"A rate of return (RoR) is the net gain or loss of an investment over a specified time period.\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -91,15 +91,15 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Creating Terms
+### Terms 생성의 예상 결과
 
-You can now see the new term `Rate of Return` has been created.
+이제 새 term `Rate of Return`이 생성된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/term-created.png"/>
 </p>
 
-We can also verify this operation by programmatically searching `Rate of Return` term after running this code using the `datahub` cli.
+이 코드를 실행한 후 `datahub` CLI를 사용하여 프로그래밍 방식으로 `Rate of Return` term을 검색하여 이 작업을 확인할 수도 있습니다.
 
 ```shell
 datahub get --urn "urn:li:glossaryTerm:rateofreturn" --aspect glossaryTermInfo
@@ -113,7 +113,7 @@ datahub get --urn "urn:li:glossaryTerm:rateofreturn" --aspect glossaryTermInfo
 }
 ```
 
-## Read Terms
+## Terms 조회
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -136,7 +136,7 @@ query {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -171,7 +171,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "{dataset(urn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)\") {glossaryTerms {terms {term {urn glossaryTermInfo { name description } } } } } }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ````json
 {"data":{"dataset":{"glossaryTerms":{"terms":[{"term":{"urn":"urn:li:glossaryTerm:CustomerAccount","glossaryTermInfo":{"name":"CustomerAccount","description":"account that represents an identified, named collection of balances and cumulative totals used to summarize customer transaction-related activity over a designated period of time"}}}]}}},"extensions":{}}```
@@ -187,12 +187,12 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-## Add Terms
+## Terms 추가
 
-### Add Terms to a dataset
+### Dataset에 Terms 추가
 
-The following code shows you how can add terms to a dataset.
-In the following code, we add a term `Rate of Return` to a dataset named `fct_users_created`.
+다음 코드는 dataset에 term을 추가하는 방법을 보여줍니다.
+아래 코드에서는 `fct_users_created`라는 dataset에 `Rate of Return` term을 추가합니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -208,7 +208,7 @@ mutation addTerms {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -229,7 +229,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation addTerm { addTerms(input: { termUrns: [\"urn:li:glossaryTerm:rateofreturn\"], resourceUrn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "addTerms": true }, "extensions": {} }
@@ -245,7 +245,7 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Add Terms to a Column of a Dataset
+### Dataset 컬럼에 Terms 추가
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL">
@@ -271,7 +271,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation addTerms { addTerms(input: { termUrns: [\"urn:li:glossaryTerm:rateofreturn\"], resourceUrn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)\", subResourceType: DATASET_FIELD, subResource: \"user_name\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "addTerms": true }, "extensions": {} }
@@ -287,18 +287,18 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Adding Terms
+### Terms 추가의 예상 결과
 
-You can now see `Rate of Return` term has been added to `user_name` column.
+이제 `user_name` 컬럼에 `Rate of Return` term이 추가된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/term-added.png"/>
 </p>
 
-## Remove Terms
+## Terms 제거
 
-The following code remove a term from a dataset.
-After running this code, `Rate of Return` term will be removed from a `user_name` column.
+다음 코드는 dataset에서 term을 제거합니다.
+이 코드를 실행하면 `user_name` 컬럼에서 `Rate of Return` term이 제거됩니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -314,7 +314,7 @@ mutation removeTerm {
 }
 ```
 
-Note that you can also remove a term from a dataset if you don't specify `subResourceType` and `subResource`.
+`subResourceType`과 `subResource`를 지정하지 않으면 dataset에서 term을 제거할 수도 있습니다.
 
 ```json
 mutation removeTerm {
@@ -326,7 +326,7 @@ mutation removeTerm {
 }
 ```
 
-Also note that you can remove terms from multiple entities or subresource using `batchRemoveTerms`.
+`batchRemoveTerms`를 사용하여 여러 entity 또는 하위 리소스에서 term을 제거할 수도 있습니다.
 
 ```json
 mutation batchRemoveTerms {
@@ -361,9 +361,9 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Removing Terms
+### Terms 제거의 예상 결과
 
-You can now see `Rate of Return` term has been removed to `user_name` column.
+이제 `user_name` 컬럼에서 `Rate of Return` term이 제거된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/term-removed.png"/>

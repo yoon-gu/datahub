@@ -3,56 +3,56 @@ import TabItem from '@theme/TabItem';
 
 # MLModel & MLModelGroup
 
-## Why Would You Use MLModel and MLModelGroup?
+## MLModel과 MLModelGroup을 사용하는 이유
 
-MLModel and MLModelGroup entities are used to represent machine learning models and their associated groups within a metadata ecosystem. They allow users to define, manage, and monitor machine learning models, including their versions, configurations, and performance metrics.
+MLModel과 MLModelGroup entity는 메타데이터 생태계에서 머신러닝 모델과 관련 그룹을 표현하는 데 사용됩니다. 이를 통해 사용자는 머신러닝 모델의 버전, 설정, 성능 지표 등을 정의하고 관리하며 모니터링할 수 있습니다.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to
+이 가이드에서는 다음 작업을 수행하는 방법을 안내합니다.
 
-- Create an MLModel or MLModelGroup.
-- Associate an MLModel with an MLModelGroup.
-- Read MLModel and MLModelGroup entities.
+- MLModel 또는 MLModelGroup 생성하기.
+- MLModel을 MLModelGroup과 연결하기.
+- MLModel 및 MLModelGroup entity 읽기.
 
-## Prerequisites
+## 사전 요구 사항
 
-For this tutorial, you need to deploy DataHub Quickstart and ingest sample data.
-For detailed steps, please refer to [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 진행하려면 DataHub Quickstart를 배포하고 샘플 데이터를 수집해야 합니다.
+자세한 단계는 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참조하세요.
 
-## Create MLModelGroup
+## MLModelGroup 생성
 
-You can create an MLModelGroup by providing the necessary attributes such as name, platform, and other metadata.
+이름, 플랫폼 등 필요한 속성을 제공하여 MLModelGroup을 생성할 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/mlmodel_group_create.py show_path_as_comment }}
 ```
 
-## Create MLModel
+## MLModel 생성
 
-You can create an MLModel by providing the necessary attributes such as name, platform, and other metadata.
+이름, 플랫폼 등 필요한 속성을 제공하여 MLModel을 생성할 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/mlmodel_create_full.py show_path_as_comment }}
 ```
 
-Note that you can associate an MLModel with an MLModelGroup by providing the group URN when creating the MLModel.
+MLModel을 생성할 때 그룹 URN을 제공하면 MLModel을 MLModelGroup과 연결할 수 있습니다.
 
-You can also set MLModelGroup later by updating the MLModel entity as shown below.
+아래와 같이 MLModel entity를 업데이트하여 나중에 MLModelGroup을 설정할 수도 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/mlgroup_add_to_mlmodel.py show_path_as_comment }}
 ```
 
-## Read MLModelGroup
+## MLModelGroup 읽기
 
-You can read an MLModelGroup by providing the group URN.
+그룹 URN을 제공하여 MLModelGroup을 읽을 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/mlmodel_group_read.py show_path_as_comment }}
 ```
 
-#### Expected Output
+#### 예상 출력
 
 ```python
 >> Model Group Name:  My Recommendations Model Group
@@ -60,15 +60,15 @@ You can read an MLModelGroup by providing the group URN.
 >> Model Group Custom Properties:  {'owner': 'John Doe', 'team': 'recommendations', 'domain': 'marketing'}
 ```
 
-## Read MLModel
+## MLModel 읽기
 
-You can read an MLModel by providing the model URN.
+모델 URN을 제공하여 MLModel을 읽을 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/mlmodel_read.py show_path_as_comment }}
 ```
 
-#### Expected Output
+#### 예상 출력
 
 ```python
 >> Model Name:  My Recommendations Model

@@ -1,17 +1,17 @@
 # Lineage
 
-DataHub’s Python SDK allows you to programmatically define and retrieve lineage between metadata entities. With the DataHub Lineage SDK, you can:
+DataHub의 Python SDK를 사용하면 메타데이터 entity 간의 lineage를 프로그래밍 방식으로 정의하고 조회할 수 있습니다. DataHub Lineage SDK를 통해 다음이 가능합니다:
 
-- Add **table-level and column-level lineage** across datasets, data jobs, dashboards, and charts
-- Automatically **infer lineage from SQL queries**
-- **Read lineage** (upstream or downstream) for a given entity or column
-- **Filter lineage results** using structured filters
+- dataset, data job, dashboard, chart 전반에 걸친 **테이블 수준 및 컬럼 수준 lineage** 추가
+- SQL 쿼리에서 **lineage 자동 추론**
+- 특정 entity 또는 컬럼에 대한 lineage(upstream 또는 downstream) **조회**
+- 구조화된 필터를 사용한 **lineage 결과 필터링**
 
-## Getting Started
+## 시작하기
 
-To use DataHub SDK, you'll need to install [`acryl-datahub`](https://pypi.org/project/acryl-datahub/) and set up a connection to your DataHub instance. Follow the [installation guide](https://docs.datahub.com/docs/metadata-ingestion/cli-ingestion#installing-datahub-cli) to get started.
+DataHub SDK를 사용하려면 [`acryl-datahub`](https://pypi.org/project/acryl-datahub/)를 설치하고 DataHub 인스턴스에 대한 연결을 설정해야 합니다. [설치 가이드](https://docs.datahub.com/docs/metadata-ingestion/cli-ingestion#installing-datahub-cli)를 참조하여 시작하세요.
 
-Connect to your DataHub instance:
+DataHub 인스턴스에 연결:
 
 ```python
 from datahub.sdk import DataHubClient
@@ -19,130 +19,130 @@ from datahub.sdk import DataHubClient
 client = DataHubClient(server="<your_server>", token="<your_token>")
 ```
 
-- **server**: The URL of your DataHub GMS server
-  - local: `http://localhost:8080`
-  - hosted: `https://<your_datahub_url>/gms`
-- **token**: You'll need to [generate a Personal Access Token](https://docs.datahub.com/docs/authentication/personal-access-tokens) from your DataHub instance.
+- **server**: DataHub GMS 서버의 URL
+  - 로컬: `http://localhost:8080`
+  - 호스팅: `https://<your_datahub_url>/gms`
+- **token**: DataHub 인스턴스에서 [Personal Access Token을 생성](https://docs.datahub.com/docs/authentication/personal-access-tokens)해야 합니다.
 
-## Add Lineage
+## Lineage 추가
 
-The `add_lineage()` method allows you to define lineage between two entities.
+`add_lineage()` 메서드를 사용하면 두 entity 간의 lineage를 정의할 수 있습니다.
 
-### Add Entity Lineage
+### Entity Lineage 추가
 
-You can create lineage between two datasets, data jobs, dashboards, or charts. The `upstream` and `downstream` parameters should be the URNs of the entities you want to link.
+두 dataset, data job, dashboard 또는 chart 간의 lineage를 생성할 수 있습니다. `upstream`과 `downstream` 매개변수는 연결하려는 entity의 URN이어야 합니다.
 
-#### Add Entity Lineage Between Datasets
+#### Dataset 간 Entity Lineage 추가
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_add.py show_path_as_comment }}
 ```
 
-#### Add Entity Lineage Between Datajobs
+#### Datajob 간 Entity Lineage 추가
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_datajob_to_datajob.py show_path_as_comment }}
 ```
 
-:::note Lineage Combinations
-For supported lineage combinations, see [Supported Lineage Combinations](#supported-lineage-combinations).
+:::note Lineage 조합
+지원되는 lineage 조합은 [지원되는 Lineage 조합](#supported-lineage-combinations)을 참조하세요.
 :::
 
-### Add Column Lineage
+### 컬럼 Lineage 추가
 
-You can add column-level lineage by using `column_lineage` parameter when linking datasets.
+dataset을 연결할 때 `column_lineage` 매개변수를 사용하여 컬럼 수준 lineage를 추가할 수 있습니다.
 
-#### Add Column Lineage with Fuzzy Matching
+#### 퍼지 매칭을 사용한 컬럼 Lineage 추가
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_column.py show_path_as_comment }}
 ```
 
-When `column_lineage` is set to **True**, DataHub will automatically map columns based on their names, allowing for fuzzy matching. This is useful when upstream and downstream datasets have similar but not identical column names. (e.g. `customer_id` in upstream and `CustomerId` in downstream). See [Column Lineage Options](#column-lineage-options) for more details.
+`column_lineage`를 **True**로 설정하면 DataHub는 이름을 기반으로 컬럼을 자동으로 매핑하며, 퍼지 매칭을 허용합니다. 이는 upstream과 downstream dataset의 컬럼 이름이 유사하지만 완전히 동일하지 않을 때 유용합니다. (예: upstream의 `customer_id`와 downstream의 `CustomerId`). 자세한 내용은 [컬럼 Lineage 옵션](#column-lineage-options)을 참조하세요.
 
-#### Add Column Lineage with Strict Matching
+#### 엄격한 매칭을 사용한 컬럼 Lineage 추가
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_column_auto_strict.py show_path_as_comment }}
 ```
 
-This will create column-level lineage with strict matching, meaning the column names must match exactly between upstream and downstream datasets.
+이 방식은 엄격한 매칭으로 컬럼 수준 lineage를 생성하며, upstream과 downstream dataset 간에 컬럼 이름이 정확히 일치해야 합니다.
 
-#### Add Column Lineage with Custom Mapping
+#### 사용자 정의 매핑을 사용한 컬럼 Lineage 추가
 
-For custom mapping, you can use a dictionary where keys are downstream column names and values represent lists of upstream column names. This allows you to specify complex relationships.
+사용자 정의 매핑의 경우, 키가 downstream 컬럼 이름이고 값이 upstream 컬럼 이름 목록인 딕셔너리를 사용할 수 있습니다. 이를 통해 복잡한 관계를 지정할 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_column_custom_mapping.py show_path_as_comment }}
 ```
 
-### Infer Lineage from SQL
+### SQL에서 Lineage 추론
 
-You can infer lineage directly from a SQL query using `infer_lineage_from_sql()`. This will parse the query, determine upstream and downstream datasets, and automatically add lineage (including column-level lineage when possible) and a query node showing the SQL transformation logic.
+`infer_lineage_from_sql()`을 사용하면 SQL 쿼리에서 직접 lineage를 추론할 수 있습니다. 쿼리를 파싱하여 upstream 및 downstream dataset을 결정하고, lineage(가능한 경우 컬럼 수준 lineage 포함)와 SQL 변환 로직을 보여주는 쿼리 노드를 자동으로 추가합니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_from_sql.py show_path_as_comment }}
 ```
 
-:::note DataHub SQL Parser
+:::note DataHub SQL 파서
 
-Check out more information on how we handle SQL parsing below.
+SQL 파싱 처리 방법에 대한 자세한 내용은 아래를 참조하세요.
 
-- [The DataHub SQL Parser Documentation](../../lineage/sql_parsing.md)
-- [Blog Post: Extracting Column-Level Lineage from SQL](https://medium.com/datahub-project/extracting-column-level-lineage-from-sql-779b8ce17567)
+- [DataHub SQL 파서 문서](../../lineage/sql_parsing.md)
+- [블로그 포스트: SQL에서 컬럼 수준 Lineage 추출하기](https://medium.com/datahub-project/extracting-column-level-lineage-from-sql-779b8ce17567)
 
 :::
 
-### Add Query Node with Lineage
+### Lineage와 함께 쿼리 노드 추가
 
-If you provide a `transformation_text` to `add_lineage`, DataHub will create a query node that represents the transformation logic. This is useful for tracking how data is transformed between datasets.
+`add_lineage`에 `transformation_text`를 제공하면 DataHub는 변환 로직을 나타내는 쿼리 노드를 생성합니다. 이는 dataset 간에 데이터가 어떻게 변환되는지 추적하는 데 유용합니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_dataset_add_with_query_node.py show_path_as_comment }}
 ```
 
-Transformation text can be any transformation logic, Python scripts, Airflow DAG code, or any other code that describes how the upstream dataset is transformed into the downstream dataset.
+변환 텍스트는 Python 스크립트, Airflow DAG 코드, 또는 upstream dataset이 downstream dataset으로 변환되는 방식을 설명하는 기타 코드 등 어떤 변환 로직도 사용할 수 있습니다.
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/lineage/query-node.png"/>
 </p>
 
 :::note
-Providing `transformation_text` will NOT create column lineage. You need to specify `column_lineage` parameter to enable column-level lineage.
+`transformation_text`를 제공해도 컬럼 lineage는 생성되지 않습니다. 컬럼 수준 lineage를 활성화하려면 `column_lineage` 매개변수를 지정해야 합니다.
 
-If you have a SQL query that describes the transformation, you can use [infer_lineage_from_sql](#infer-lineage-from-sql) to automatically parse the query and add column level lineage.
+변환을 설명하는 SQL 쿼리가 있는 경우 [infer_lineage_from_sql](#infer-lineage-from-sql)을 사용하여 쿼리를 자동으로 파싱하고 컬럼 수준 lineage를 추가할 수 있습니다.
 :::
 
-## Get Lineage
+## Lineage 조회
 
-The `get_lineage()` method allows you to retrieve lineage for a given entity.
+`get_lineage()` 메서드를 사용하면 특정 entity의 lineage를 조회할 수 있습니다.
 
-### Get Entity Lineage
+### Entity Lineage 조회
 
-#### Get Upstream Lineage for a Dataset
+#### Dataset의 Upstream Lineage 조회
 
-This will return the direct upstream entity that the dataset depends on. By default, it retrieves only the immediate upstream entities (1 hop).
+dataset이 의존하는 직접적인 upstream entity를 반환합니다. 기본적으로 바로 위의 upstream entity만 조회합니다 (1홉).
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_get_basic.py show_path_as_comment }}
 ```
 
-#### Get Downstream Lineage for a Dataset Across Multiple Hops
+#### 여러 홉에 걸친 Dataset의 Downstream Lineage 조회
 
-To get upstream/downstream entities that are more than one hop away, you can use the `max_hops` parameter. This allows you to traverse the lineage graph up to a specified number of hops.
+1홉 이상 떨어진 upstream/downstream entity를 조회하려면 `max_hops` 매개변수를 사용할 수 있습니다. 이를 통해 지정된 홉 수만큼 lineage 그래프를 탐색할 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_get_with_hops.py show_path_as_comment }}
 
 ```
 
-:::note USING MAX_HOPS
-if you provide `max_hops` greater than 2, it will traverse the full lineage graph and limit the results by `count`.
+:::note MAX_HOPS 사용 시 주의사항
+`max_hops`가 2보다 크면 전체 lineage 그래프를 탐색하고 `count`로 결과를 제한합니다.
 :::
 
-#### Return Type
+#### 반환 타입
 
-`get_lineage()` returns a list of `LineageResult` objects.
+`get_lineage()`는 `LineageResult` 객체의 목록을 반환합니다.
 
 ```python
 results = [
@@ -152,32 +152,32 @@ results = [
     hops=1,
     direction="downstream",
     platform="snowflake",
-    name="table_2", # name of the entity
-    paths=[] # Only populated for column-level lineage
+    name="table_2", # entity 이름
+    paths=[] # 컬럼 수준 lineage에만 값이 채워짐
   )
 ]
 ```
 
-### Get Column-Level Lineage
+### 컬럼 수준 Lineage 조회
 
-#### Get Downstream Lineage for a Dataset Column
+#### Dataset 컬럼의 Downstream Lineage 조회
 
-You can retrieve column-level lineage by specifying the `source_column` parameter. This will return lineage paths that include the specified column.
+`source_column` 매개변수를 지정하여 컬럼 수준 lineage를 조회할 수 있습니다. 지정된 컬럼을 포함하는 lineage 경로를 반환합니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_column_get.py show_path_as_comment }}
 ```
 
-You can also pass `SchemaFieldUrn` as the `source_urn` to get column-level lineage.
+`SchemaFieldUrn`을 `source_urn`으로 전달하여 컬럼 수준 lineage를 조회할 수도 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_column_get_from_schemafield.py show_path_as_comment }}
 
 ```
 
-#### Return type
+#### 반환 타입
 
-The return type is the same as for entity lineage, but with additional `paths` field that contains column lineage paths.
+반환 타입은 entity lineage와 동일하지만, 컬럼 lineage 경로를 포함하는 추가적인 `paths` 필드가 있습니다.
 
 ```python
 results = [
@@ -187,42 +187,42 @@ results = [
     hops=1,
     direction="downstream",
     platform="snowflake",
-    name="table_2", # name of the entity
+    name="table_2", # entity 이름
     paths=[
       LineagePath(
         urn="urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,table_1,PROD),col1)",
-        column_name="col1", # name of the column
-        entity_name="table_1", # name of the entity that contains the column
+        column_name="col1", # 컬럼 이름
+        entity_name="table_1", # 컬럼을 포함하는 entity 이름
       ),
       LineagePath(
         urn="urn:li:schemaField:(urn:li:dataset:(urn:li:dataPlatform:snowflake,table_2,PROD),col4)",
-        column_name="col4", # name of the column
-        entity_name="table_2", # name of the entity that contains the column
+        column_name="col4", # 컬럼 이름
+        entity_name="table_2", # 컬럼을 포함하는 entity 이름
       )
-    ] # Only populated for column-level lineage
+    ] # 컬럼 수준 lineage에만 값이 채워짐
   )
 ]
 ```
 
-For more details on how to interpret the results, see [Interpreting Lineage Results](#interpreting-lineage-results).
+결과 해석 방법에 대한 자세한 내용은 [Lineage 결과 해석](#interpreting-lineage-results)을 참조하세요.
 
-### Filter Lineage Results
+### Lineage 결과 필터링
 
-You can filter by platform, type, domain, environment, and more.
+플랫폼, 타입, 도메인, 환경 등으로 필터링할 수 있습니다.
 
 ```python
 {{ inline /metadata-ingestion/examples/library/lineage_get_with_filter.py show_path_as_comment }}
 ```
 
-You can check more details about the available filters in the [Search SDK documentation](./sdk/search_client.md#filter-based-search).
+사용 가능한 필터에 대한 자세한 내용은 [Search SDK 문서](./sdk/search_client.md#filter-based-search)에서 확인할 수 있습니다.
 
-## Lineage SDK Reference
+## Lineage SDK 참조
 
-For a full reference, see the [lineage SDK reference](../../../python-sdk/sdk-v2/lineage-client.mdx).
+전체 참조는 [lineage SDK 참조](../../../python-sdk/sdk-v2/lineage-client.mdx)를 참조하세요.
 
-### Supported Lineage Combinations
+### 지원되는 Lineage 조합
 
-The Lineage APIs support the following entity combinations:
+Lineage API는 다음 entity 조합을 지원합니다:
 
 | Upstream Entity | Downstream Entity |
 | --------------- | ----------------- |
@@ -235,40 +235,40 @@ The Lineage APIs support the following entity combinations:
 | Dashboard       | Dashboard         |
 | Dataset         | Chart             |
 
-> ℹ️ Column-level lineage and creating query node with transformation text are **only supported** for `Dataset → Dataset` lineage.
+> ℹ️ 컬럼 수준 lineage와 변환 텍스트를 사용한 쿼리 노드 생성은 `Dataset → Dataset` lineage에서만 **지원됩니다**.
 
-### Column Lineage Options
+### 컬럼 Lineage 옵션
 
-For dataset-to-dataset lineage, you can specify `column_lineage` parameter in `add_lineage()` in several ways:
+dataset 간 lineage의 경우 `add_lineage()`의 `column_lineage` 매개변수를 여러 방식으로 지정할 수 있습니다:
 
-| Value           | Description                                                                       |
-| --------------- | --------------------------------------------------------------------------------- |
-| `False`         | Disable column-level lineage (default)                                            |
-| `True`          | Enable column-level lineage with automatic mapping (same as "auto_fuzzy")         |
-| `"auto_fuzzy"`  | Enable column-level lineage with fuzzy matching (useful for similar column names) |
-| `"auto_strict"` | Enable column-level lineage with strict matching (exact column names required)    |
-| Column Mapping  | A dictionary mapping downstream column names to lists of upstream column names    |
+| 값              | 설명                                                                         |
+| --------------- | ---------------------------------------------------------------------------- |
+| `False`         | 컬럼 수준 lineage 비활성화 (기본값)                                          |
+| `True`          | 자동 매핑으로 컬럼 수준 lineage 활성화 ("auto_fuzzy"와 동일)                 |
+| `"auto_fuzzy"`  | 퍼지 매칭으로 컬럼 수준 lineage 활성화 (유사한 컬럼 이름에 유용)            |
+| `"auto_strict"` | 엄격한 매칭으로 컬럼 수준 lineage 활성화 (정확한 컬럼 이름 일치 필요)       |
+| 컬럼 매핑       | downstream 컬럼 이름을 upstream 컬럼 이름 목록에 매핑하는 딕셔너리           |
 
 :::note `auto_fuzzy` vs `auto_strict`
 
-- **`auto_fuzzy`**: Automatically matches columns based on similar names, allowing for some flexibility in naming conventions. For example, these two columns would be considered a match:
+- **`auto_fuzzy`**: 유사한 이름을 기반으로 컬럼을 자동으로 매칭하여 명명 규칙에 유연성을 허용합니다. 예를 들어 다음 두 컬럼은 매칭으로 간주됩니다:
   - user_id → userId
   - customer_id → CustomerId
-- **`auto_strict`**: Requires exact column name matches between upstream and downstream datasets. For example, `customer_id` in the upstream dataset must match `customer_id` in the downstream dataset exactly.
+- **`auto_strict`**: upstream과 downstream dataset 간에 정확한 컬럼 이름 일치가 필요합니다. 예를 들어 upstream dataset의 `customer_id`는 downstream dataset의 `customer_id`와 정확히 일치해야 합니다.
 
 :::
 
-### Interpreting Column Lineage Results
+### 컬럼 Lineage 결과 해석
 
-When retrieving column-level lineage, the results include `paths` that show how columns are related across datasets. Each path is a list of column URNs that represent the lineage from the source column to the target column.
+컬럼 수준 lineage를 조회하면 dataset 간에 컬럼이 어떻게 관련되는지를 보여주는 `paths`가 결과에 포함됩니다. 각 경로는 소스 컬럼에서 대상 컬럼까지의 lineage를 나타내는 컬럼 URN 목록입니다.
 
-For example, let's say we have the following lineage across three tables:
+예를 들어, 세 테이블에 걸친 다음과 같은 lineage가 있다고 가정해 보겠습니다:
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/lineage/column-lineage.png"/>
 </p>
 
-#### Example with `max_hops=1`
+#### `max_hops=1` 예시
 
 ```python
 >>> client.lineage.get_lineage(
@@ -279,7 +279,7 @@ For example, let's say we have the following lineage across three tables:
     )
 ```
 
-**Returns:**
+**반환값:**
 
 ```python
 [
@@ -294,7 +294,7 @@ For example, let's say we have the following lineage across three tables:
 ]
 ```
 
-#### Example with `max_hops=2`
+#### `max_hops=2` 예시
 
 ```python
 >>> client.lineage.get_lineage(
@@ -305,7 +305,7 @@ For example, let's say we have the following lineage across three tables:
     )
 ```
 
-**Returns:**
+**반환값:**
 
 ```python
 [
@@ -327,11 +327,11 @@ For example, let's say we have the following lineage across three tables:
 ]
 ```
 
-## Alternative: Lineage GraphQL API
+## 대안: Lineage GraphQL API
 
-While we generally recommend using the Python SDK for lineage, you can also use the GraphQL API to add and retrieve lineage.
+일반적으로 lineage에는 Python SDK 사용을 권장하지만, GraphQL API를 사용하여 lineage를 추가하고 조회할 수도 있습니다.
 
-#### Add Lineage Between Datasets with GraphQL
+#### GraphQL로 Dataset 간 Lineage 추가
 
 ```graphql
 mutation updateLineage {
@@ -349,7 +349,7 @@ mutation updateLineage {
 }
 ```
 
-#### Get Downstream Lineage with GraphQL
+#### GraphQL로 Downstream Lineage 조회
 
 ```graphql
 query scrollAcrossLineage {
@@ -384,9 +384,9 @@ query scrollAcrossLineage {
 }
 ```
 
-#### Get Time-Filtered Lineage with GraphQL
+#### GraphQL로 시간 필터링된 Lineage 조회
 
-Filter lineage edges by their last update time using `lineageFlags`:
+`lineageFlags`를 사용하여 마지막 업데이트 시간으로 lineage 엣지를 필터링합니다:
 
 ```graphql
 query searchAcrossLineage {
@@ -414,15 +414,15 @@ query searchAcrossLineage {
 }
 ```
 
-This returns only upstream lineage edges that were last updated between July 1 and August 1, 2021.
+이 쿼리는 2021년 7월 1일과 8월 1일 사이에 마지막으로 업데이트된 upstream lineage 엣지만 반환합니다.
 
 ## FAQ
 
-**Can I get lineage at the column level?**
-Yes — for dataset-to-dataset lineage, both `add_lineage()` and `get_lineage()` support column-level lineage.
+**컬럼 수준에서 lineage를 조회할 수 있나요?**
+네 — dataset 간 lineage의 경우 `add_lineage()`와 `get_lineage()` 모두 컬럼 수준 lineage를 지원합니다.
 
-**Can I pass a SQL query and get lineage automatically?**
-Yes — use `infer_lineage_from_sql()` to parse a query and extract table and column lineage.
+**SQL 쿼리를 전달하면 lineage를 자동으로 얻을 수 있나요?**
+네 — `infer_lineage_from_sql()`을 사용하면 쿼리를 파싱하고 테이블 및 컬럼 lineage를 추출할 수 있습니다.
 
-**Can I use filters when retrieving lineage?**
-Yes — `get_lineage()` accepts structured filters via `FilterDsl`, just like in the Search SDK.
+**lineage 조회 시 필터를 사용할 수 있나요?**
+네 — `get_lineage()`는 Search SDK와 동일하게 `FilterDsl`을 통한 구조화된 필터를 허용합니다.

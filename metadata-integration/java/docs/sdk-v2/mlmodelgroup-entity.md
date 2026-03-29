@@ -1,24 +1,24 @@
 # MLModelGroup Entity
 
-## Overview
+## 개요
 
-The `MLModelGroup` entity represents a collection of versioned ML models in DataHub. ML Model Groups provide a way to organize and track related models that belong to the same model family, enabling version management, A/B testing scenarios, and comprehensive lineage tracking across model training and deployment pipelines.
+`MLModelGroup` entity는 DataHub에서 버전화된 ML 모델들의 모음을 나타냅니다. ML Model Group은 동일한 모델 패밀리에 속하는 관련 모델들을 정리하고 추적하는 방법을 제공하며, 버전 관리, A/B 테스트 시나리오, 모델 학습 및 배포 pipeline 전반에 걸친 종합적인 lineage 추적을 지원합니다.
 
-## URN Structure
+## URN 구조
 
-MLModelGroup URNs follow this pattern:
+MLModelGroup URN은 다음 패턴을 따릅니다:
 
 ```
 urn:li:mlModelGroup:(urn:li:dataPlatform:{platform},{group_name},{environment})
 ```
 
-**Components:**
+**구성 요소:**
 
-- `platform`: The ML platform (e.g., mlflow, sagemaker, vertexai, tensorflow)
-- `group_name`: Unique identifier for the model group
-- `environment`: Fabric type (PROD, DEV, STAGING, TEST, etc.)
+- `platform`: ML 플랫폼 (예: mlflow, sagemaker, vertexai, tensorflow)
+- `group_name`: model group의 고유 식별자
+- `environment`: 환경 유형 (PROD, DEV, STAGING, TEST 등)
 
-**Examples:**
+**예시:**
 
 ```
 urn:li:mlModelGroup:(urn:li:dataPlatform:mlflow,recommendation_models,PROD)
@@ -26,35 +26,35 @@ urn:li:mlModelGroup:(urn:li:dataPlatform:sagemaker,fraud_detection_family,PROD)
 urn:li:mlModelGroup:(urn:li:dataPlatform:vertexai,churn_prediction_models,STAGING)
 ```
 
-## ML Model Group Concepts
+## ML Model Group 개념
 
-### Model Families
+### 모델 패밀리
 
-A model group represents a family of related models, typically different versions of the same model:
+model group은 관련 모델들의 패밀리를 나타내며, 일반적으로 동일한 모델의 다양한 버전을 포함합니다:
 
-- **Version Evolution**: Track how a model evolves over time (v1.0, v1.1, v2.0)
-- **A/B Testing**: Group champion and challenger models for comparison
-- **Multi-Environment**: Same model family across DEV, STAGING, PROD environments
-- **Framework Variations**: Different implementations of the same business logic
+- **버전 발전**: 시간에 따라 모델이 어떻게 발전하는지 추적 (v1.0, v1.1, v2.0)
+- **A/B 테스트**: champion과 challenger 모델을 그룹화하여 비교
+- **다중 환경**: DEV, STAGING, PROD 환경 전반에 걸친 동일한 모델 패밀리
+- **프레임워크 변형**: 동일한 비즈니스 로직의 다양한 구현
 
-### Relationship with MLModel
+### MLModel과의 관계
 
-- **One-to-Many**: One model group contains many models
-- **Versioning**: Individual models represent specific versions within the group
-- **Shared Metadata**: Common properties like purpose, business context, and team ownership
-- **Lineage Aggregation**: Training and downstream jobs can be tracked at the group level
+- **일대다**: 하나의 model group에 많은 모델 포함
+- **버전 관리**: 개별 모델은 그룹 내의 특정 버전을 나타냄
+- **공유 메타데이터**: 목적, 비즈니스 컨텍스트, 팀 소유권 등 공통 속성
+- **Lineage 집계**: 학습 및 downstream job을 그룹 수준에서 추적 가능
 
 ### Training Jobs
 
-Data processing jobs or pipelines that train models in this group. Training jobs create lineage from training data to model groups, showing the data sources used to build all versions of the model.
+이 그룹의 모델을 학습시키는 데이터 처리 job 또는 pipeline. Training job은 학습 데이터에서 model group까지의 lineage를 생성하여 모델의 모든 버전을 구축하는 데 사용된 데이터 소스를 보여줍니다.
 
 ### Downstream Jobs
 
-Jobs that consume or use models from this group for inference, scoring, or predictions. Downstream jobs create lineage from model groups to applications, showing where these models are being used.
+추론, 스코어링 또는 예측을 위해 이 그룹의 모델을 사용하거나 소비하는 job. Downstream job은 model group에서 애플리케이션까지의 lineage를 생성하여 이 모델들이 어디에서 사용되는지 보여줍니다.
 
-## Creating an ML Model Group
+## ML Model Group 생성
 
-### Basic Example
+### 기본 예시
 
 ```java
 MLModelGroup modelGroup = MLModelGroup.builder()
@@ -78,7 +78,7 @@ modelGroup.addTrainingJob("urn:li:dataProcessInstance:training_pipeline_2025_01"
 client.entities().upsert(modelGroup);
 ```
 
-### Builder Options
+### Builder 옵션
 
 ```java
 MLModelGroup modelGroup = MLModelGroup.builder()
@@ -91,9 +91,9 @@ MLModelGroup modelGroup = MLModelGroup.builder()
     .build();
 ```
 
-## ML Model Group Operations
+## ML Model Group 작업
 
-### Display Name and Description
+### 표시 이름과 설명
 
 ```java
 // Name is typically set in builder and read-only after creation
@@ -140,7 +140,7 @@ MLModelGroup modelGroup = MLModelGroup.builder()
 Map<String, String> props = modelGroup.getCustomProperties();
 ```
 
-### Timestamps
+### 타임스탬프
 
 ```java
 import com.linkedin.common.TimeStamp;
@@ -205,7 +205,7 @@ modelGroup.removeDownstreamJob("urn:li:dataProcessInstance:prediction_service");
 List<String> jobs = modelGroup.getDownstreamJobs();
 ```
 
-## Standard Metadata Operations
+## 표준 메타데이터 작업
 
 ### Tags
 
@@ -252,9 +252,9 @@ modelGroup.setDomain("urn:li:domain:MachineLearning");
 modelGroup.removeDomain();
 ```
 
-## Common Patterns
+## 공통 패턴
 
-### Complete Model Group Workflow
+### 완전한 Model Group 워크플로
 
 ```java
 // 1. Create model group with comprehensive metadata
@@ -303,7 +303,7 @@ modelGroup.addDownstreamJob("urn:li:dataProcessInstance:prediction_service_deplo
 client.entities().upsert(modelGroup);
 ```
 
-### Versioned Model Family Pattern
+### 버전화된 모델 패밀리 패턴
 
 ```java
 // Step 1: Create the model group
@@ -352,7 +352,7 @@ modelV2.setModelGroup("urn:li:mlModelGroup:(urn:li:dataPlatform:tensorflow,fraud
 client.entities().upsert(modelV2);
 ```
 
-### Multi-Environment Model Group Pattern
+### 다중 환경 Model Group 패턴
 
 ```java
 // Create model groups for each environment
@@ -399,7 +399,7 @@ prodGroup.addTag("production")
 client.entities().upsert(prodGroup);
 ```
 
-### A/B Testing Model Group Pattern
+### A/B 테스트 Model Group 패턴
 
 ```java
 // Create a model group for A/B testing
@@ -462,7 +462,7 @@ challengerModel.setModelGroup("urn:li:mlModelGroup:(urn:li:dataPlatform:sagemake
 client.entities().upsert(challengerModel);
 ```
 
-### Complete Lineage Pattern
+### 완전한 Lineage 패턴
 
 ```java
 // Create a model group with full lineage tracking
@@ -494,46 +494,46 @@ modelGroup.addTag("ltv-prediction")
 client.entities().upsert(modelGroup);
 ```
 
-## Best Practices
+## 모범 사례
 
-1. **Use descriptive group IDs**: Group IDs should clearly indicate the model family purpose (e.g., `customer_churn_models`, `fraud_detection_family`)
+1. **서술적인 그룹 ID 사용**: 그룹 ID는 모델 패밀리의 목적을 명확히 나타내야 합니다 (예: `customer_churn_models`, `fraud_detection_family`)
 
-2. **Maintain consistent naming**: Use a consistent naming scheme across environments (e.g., `recommendation_models` in DEV, STAGING, PROD)
+2. **일관된 명명 체계 유지**: 환경 전반에 걸쳐 일관된 명명 체계를 사용하세요 (예: DEV, STAGING, PROD에서 `recommendation_models`)
 
-3. **Track lineage at group level**: Add training and downstream jobs to show the complete data flow for the model family
+3. **그룹 수준에서 lineage 추적**: 모델 패밀리의 완전한 데이터 흐름을 보여주기 위해 학습 및 downstream job을 추가하세요.
 
-4. **Group related versions**: All versions of the same business model should belong to the same group
+4. **관련 버전 그룹화**: 동일한 비즈니스 모델의 모든 버전은 동일한 그룹에 속해야 합니다.
 
-5. **Use environments appropriately**: Separate model groups by environment (DEV, STAGING, PROD) to track promotion workflow
+5. **환경 적절히 사용**: 승격 워크플로를 추적하기 위해 환경별로 model group을 분리하세요 (DEV, STAGING, PROD).
 
-6. **Document model evolution**: Use custom properties to track important milestones, improvements, and architectural changes
+6. **모델 발전 문서화**: custom properties를 사용하여 중요한 이정표, 개선 사항, 아키텍처 변경 사항을 추적하세요.
 
-7. **Tag for organization**: Use tags like `production`, `experimental`, `deprecated`, `ab-test` to categorize model groups
+7. **체계적인 태그 사용**: `production`, `experimental`, `deprecated`, `ab-test` 같은 태그로 model group을 분류하세요.
 
-8. **Set ownership clearly**: Assign technical owners (ML engineers) and business owners (product managers)
+8. **소유권 명확히 설정**: 기술 담당자(ML 엔지니어)와 비즈니스 담당자(제품 관리자)를 지정하세요.
 
-9. **Link to external systems**: Use `externalUrl` to link to MLflow, SageMaker, or other ML platform dashboards
+9. **외부 시스템 연결**: `externalUrl`을 사용하여 MLflow, SageMaker 또는 다른 ML 플랫폼 대시보드에 연결하세요.
 
-10. **Leverage custom properties**: Store metadata like `framework`, `model_family`, `use_case`, `deployment_status`
+10. **Custom properties 활용**: `framework`, `model_family`, `use_case`, `deployment_status` 같은 메타데이터를 저장하세요.
 
-## Model Group vs Individual Model
+## Model Group vs 개별 Model
 
-### When to use Model Groups
+### Model Group을 사용해야 하는 경우
 
-- **Version management**: Track multiple versions of the same model
-- **A/B testing**: Group champion and challenger models together
-- **Environment promotion**: Track the same model family across DEV, STAGING, PROD
-- **Aggregate lineage**: Show training and downstream jobs at the family level
-- **Team organization**: Group all models maintained by a specific team
+- **버전 관리**: 동일한 모델의 여러 버전 추적
+- **A/B 테스트**: champion과 challenger 모델을 함께 그룹화
+- **환경 승격**: DEV, STAGING, PROD 전반에 걸쳐 동일한 모델 패밀리 추적
+- **집계 lineage**: 패밀리 수준에서 학습 및 downstream job 표시
+- **팀 조직**: 특정 팀이 유지 관리하는 모든 모델 그룹화
 
-### When to use Individual Models
+### 개별 Model을 사용해야 하는 경우
 
-- **Specific model versions**: Represent a particular trained model with specific metrics and hyperparameters
-- **Deployment tracking**: Track where a specific model version is deployed
-- **Performance metrics**: Store training and validation metrics for a particular model
-- **Detailed metadata**: Capture hyperparameters, training configuration, and model artifacts
+- **특정 모델 버전**: 특정 지표와 하이퍼파라미터를 가진 특정 학습된 모델 표현
+- **배포 추적**: 특정 모델 버전이 배포된 위치 추적
+- **성능 지표**: 특정 모델에 대한 학습 및 검증 지표 저장
+- **상세 메타데이터**: 하이퍼파라미터, 학습 설정, 모델 아티팩트 캡처
 
-### Relationship Best Practices
+### 관계 모범 사례
 
 ```java
 // 1. Create the model group first
@@ -567,9 +567,9 @@ modelV2.setModelGroup("urn:li:mlModelGroup:(urn:li:dataPlatform:tensorflow,churn
 client.entities().upsert(modelV2);
 ```
 
-## See Also
+## 참고 항목
 
-- [MLModel Entity](mlmodel-entity.md) - For individual model metadata and metrics
-- [Dataset Entity](dataset-entity.md) - For training data lineage
-- [DataJob Entity](datajob-entity.md) - For training and inference job metadata
-- [SDK V2 Overview](README.md) - General SDK concepts
+- [MLModel Entity](mlmodel-entity.md) - 개별 모델 메타데이터 및 지표
+- [Dataset Entity](dataset-entity.md) - 학습 데이터 lineage
+- [DataJob Entity](datajob-entity.md) - 학습 및 추론 job 메타데이터
+- [SDK V2 개요](README.md) - 일반 SDK 개념

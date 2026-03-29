@@ -1,69 +1,69 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# AI/ML Framework Integration with DataHub
+# DataHub와 AI/ML 프레임워크 통합
 
-## Why Integrate Your AI/ML System with DataHub?
+## AI/ML 시스템을 DataHub와 통합하는 이유
 
-As a data practitioner, keeping track of your AI experiments, models, and their relationships can be challenging.
-DataHub makes this easier by providing a central place to organize and track your AI assets.
+데이터 실무자로서 AI 실험, 모델, 그리고 이들 간의 관계를 추적하는 것은 어려운 일입니다.
+DataHub는 AI 자산을 체계적으로 정리하고 추적할 수 있는 중앙 집중식 공간을 제공하여 이 과정을 더 쉽게 만들어 줍니다.
 
-This guide will show you how to integrate your AI workflows with DataHub.
-With integrations for popular ML platforms like MLflow and Amazon SageMaker, DataHub enables you to easily find and share AI models across your organization, track how models evolve over time, and understand how training data connects to each model.
-Most importantly, it enables seamless collaboration on AI projects by making everything discoverable and connected.
+이 가이드에서는 AI 워크플로를 DataHub와 통합하는 방법을 안내합니다.
+MLflow 및 Amazon SageMaker 같은 인기 있는 ML 플랫폼과의 통합을 통해, DataHub는 조직 전체에서 AI 모델을 쉽게 찾고 공유하고, 모델이 시간에 따라 어떻게 발전하는지 추적하며, 각 모델과 학습 데이터 간의 연결을 이해할 수 있도록 합니다.
+무엇보다 중요한 것은, 모든 것을 검색 가능하고 연결된 상태로 만들어 AI 프로젝트에서의 원활한 협업을 가능하게 한다는 점입니다.
 
-## Goals Of This Guide
+## 이 가이드의 목표
 
-In this guide, you'll learn how to:
+이 가이드에서는 다음 내용을 배웁니다:
 
-- Create your basic AI components (models, experiments, runs)
-- Connect these components to build a complete AI system
-- Track relationships between models, data, and experiments
+- 기본 AI 구성 요소(모델, 실험, 실행) 생성하기
+- 이 구성 요소들을 연결하여 완전한 AI 시스템 구축하기
+- 모델, 데이터, 실험 간의 관계 추적하기
 
-## Core AI Concepts
+## 핵심 AI 개념
 
-Here's what you need to know about the key components in DataHub:
+DataHub의 핵심 구성 요소에 대해 알아야 할 내용은 다음과 같습니다:
 
-- **Experiments** are collections of training runs for the same project, like all attempts to build a churn predictor
-- **Training Runs** are attempts to train a model within an experiment, capturing parameters and results
-- **Model Groups** organize related models together, like all versions of your churn predictor
-- **Models** are successful training runs registered for production use
+- **Experiments**는 동일한 프로젝트에 대한 학습 실행의 모음으로, 예를 들어 이탈 예측기를 구축하기 위한 모든 시도를 포함합니다.
+- **Training Runs**는 experiment 내에서 모델을 학습시키는 시도로, 파라미터와 결과를 기록합니다.
+- **Model Groups**는 관련 모델들을 함께 구성하며, 예를 들어 이탈 예측기의 모든 버전을 포함합니다.
+- **Models**는 프로덕션 사용을 위해 등록된 성공적인 학습 실행입니다.
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/concept-diagram-dh-term.png"/>
 </p>
 
-The hierarchy works like this:
+계층 구조는 다음과 같습니다:
 
-1. Every run belongs to an experiment
-2. Successful runs can be registered as models
-3. Models belong to a model group
-4. Not every run becomes a model
+1. 모든 실행은 experiment에 속합니다.
+2. 성공적인 실행은 모델로 등록될 수 있습니다.
+3. 모델은 model group에 속합니다.
+4. 모든 실행이 모델이 되는 것은 아닙니다.
 
-:::note Terminology Mapping
-Different AI platforms (MLflow, Amazon SageMaker) have their own terminology.
-To keep things consistent, we'll use DataHub's terms throughout this guide.
-Here's how DataHub's terminology maps to these platforms:
+:::note 용어 매핑
+각 AI 플랫폼(MLflow, Amazon SageMaker)은 고유한 용어를 사용합니다.
+일관성을 유지하기 위해 이 가이드 전체에서 DataHub의 용어를 사용합니다.
+DataHub 용어가 각 플랫폼의 용어에 어떻게 대응되는지는 아래 표를 참고하세요:
 
-| DataHub         | Description                         | MLflow        | SageMaker     |
+| DataHub         | 설명                                | MLflow        | SageMaker     |
 | --------------- | ----------------------------------- | ------------- | ------------- |
-| ML Model Group  | Collection of related models        | Model         | Model Group   |
-| ML Model        | Versioned artifact in a model group | Model Version | Model Version |
-| ML Training Run | Single training attempt             | Run           | Training Job  |
-| ML Experiment   | Collection of training runs         | Experiment    | Experiment    |
+| ML Model Group  | 관련 모델의 모음                    | Model         | Model Group   |
+| ML Model        | model group 내의 버전화된 아티팩트  | Model Version | Model Version |
+| ML Training Run | 단일 학습 시도                      | Run           | Training Job  |
+| ML Experiment   | 학습 실행의 모음                    | Experiment    | Experiment    |
 
 :::
 
-For platform-specific details, see our integration guides for [MLflow](/docs/generated/ingestion/sources/mlflow.md) and [Amazon SageMaker](/docs/generated/ingestion/sources/sagemaker.md).
+플랫폼별 자세한 내용은 [MLflow](/docs/generated/ingestion/sources/mlflow.md) 및 [Amazon SageMaker](/docs/generated/ingestion/sources/sagemaker.md) 통합 가이드를 참조하세요.
 
-## Basic Setup
+## 기본 설정
 
-To follow this tutorial, you'll need DataHub Quickstart deployed locally.
-For detailed steps, see the [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 진행하려면 DataHub Quickstart가 로컬에 배포되어 있어야 합니다.
+자세한 단계는 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참조하세요.
 
-Next, set up the Python client for DataHub using `DatahubAIClient`defined in [here](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/ai/dh_ai_client.py).
+다음으로, [여기](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/ai/dh_ai_client.py)에 정의된 `DatahubAIClient`를 사용하여 DataHub용 Python 클라이언트를 설정합니다.
 
-Create a token in DataHub UI and replace `<your_token>` with your token:
+DataHub UI에서 토큰을 생성하고 `<your_token>`을 해당 토큰으로 교체하세요:
 
 ```python
 from dh_ai_client import DatahubAIClient
@@ -71,22 +71,22 @@ from dh_ai_client import DatahubAIClient
 client = DatahubAIClient(token="<your_token>", server_url="http://localhost:9002")
 ```
 
-:::note Verifying via GraphQL
-Throughout this guide, we'll show how to verify changes using GraphQL queries.
-You can run these queries in the DataHub UI at `https://localhost:9002/api/graphiql`.
+:::note GraphQL로 확인하기
+이 가이드 전반에 걸쳐 GraphQL 쿼리를 사용하여 변경 사항을 확인하는 방법을 안내합니다.
+이 쿼리는 DataHub UI의 `https://localhost:9002/api/graphiql`에서 실행할 수 있습니다.
 :::
 
-## Create AI Assets
+## AI 자산 생성
 
-Let's create the basic building blocks of your ML system. These components will help you organize your AI work and make it discoverable by your team.
+ML 시스템의 기본 구성 요소를 만들어 보겠습니다. 이 구성 요소들은 AI 작업을 체계적으로 정리하고 팀이 쉽게 검색할 수 있도록 도와줍니다.
 
-### Create a Model Group
+### Model Group 생성
 
-A model group contains different versions of a similar model. For example, all versions of your "Customer Churn Predictor" would go in one group.
+model group은 유사한 모델의 다양한 버전을 포함합니다. 예를 들어, "Customer Churn Predictor"의 모든 버전은 하나의 그룹에 속합니다.
 
 <Tabs>
 <TabItem value="basic" label="Basic">
-Create a basic model group with just an identifier:
+식별자만으로 기본 model group을 생성합니다:
 
 ```python
 model_group = MLModelGroup(
@@ -99,7 +99,7 @@ client._emit_mcps(model_group.as_mcps())
 
 </TabItem>
 <TabItem value="advanced" label="Advanced">
-Add rich metadata like descriptions, creation timestamps, and team information:
+설명, 생성 타임스탬프, 팀 정보 등 풍부한 메타데이터를 추가합니다:
 
 ```python
 model_group = MLModelGroup(
@@ -122,11 +122,11 @@ client._emit_mcps(model_group.as_mcps())
 </TabItem>
 </Tabs>
 
-Let's verify that our model group was created:
+model group이 생성되었는지 확인해 보겠습니다:
 
 <Tabs>
 <TabItem value="UI" label="UI">
-See your new model group in the DataHub UI:
+DataHub UI에서 새로 생성된 model group을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/model-group-empty.png"/>
@@ -134,7 +134,7 @@ See your new model group in the DataHub UI:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query your model group to check its properties:
+model group의 속성을 확인하기 위해 쿼리합니다:
 
 ```graphql
 query {
@@ -152,7 +152,7 @@ query {
 }
 ```
 
-The response will show your model group's details:
+응답에서 model group의 상세 정보를 확인할 수 있습니다:
 
 ```json
 {
@@ -174,13 +174,13 @@ The response will show your model group's details:
 </TabItem>
 </Tabs>
 
-### Create a Model
+### Model 생성
 
-Next, let's create a specific model version that represents a trained model ready for deployment.
+다음으로, 배포 준비가 완료된 학습된 모델을 나타내는 특정 모델 버전을 생성해 보겠습니다.
 
 <Tabs>
 <TabItem value="basic" label="Basic">
-Create a model with just the required version:
+필수 버전만으로 모델을 생성합니다:
 
 ```python
 model = MLModel(
@@ -193,7 +193,7 @@ client._emit_mcps(model.as_mcps())
 
 </TabItem>
 <TabItem value="advanced" label="Advanced">
-Include metrics, parameters, and metadata for production use:
+프로덕션 사용을 위해 지표, 파라미터, 메타데이터를 포함합니다:
 
 ```python
 model = MLModel(
@@ -220,11 +220,11 @@ client._emit_mcps(model.as_mcps())
 </TabItem>
 </Tabs>
 
-Let's verify our model:
+모델을 확인해 보겠습니다:
 
 <Tabs>
 <TabItem value="UI" label="UI">
-Check your model's details in the DataHub UI:
+DataHub UI에서 모델의 상세 정보를 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/model-empty.png"/>
@@ -232,7 +232,7 @@ Check your model's details in the DataHub UI:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query your model's information:
+모델 정보를 쿼리합니다:
 
 ```graphql
 query {
@@ -250,7 +250,7 @@ query {
 }
 ```
 
-The response will show your model's details:
+응답에서 모델의 상세 정보를 확인할 수 있습니다:
 
 ```json
 {
@@ -274,13 +274,13 @@ The response will show your model's details:
 </TabItem>
 </Tabs>
 
-### Create an Experiment
+### Experiment 생성
 
-An experiment helps organize multiple training runs for a specific project.
+experiment는 특정 프로젝트에 대한 여러 학습 실행을 체계적으로 정리하는 데 도움이 됩니다.
 
 <Tabs>
 <TabItem value="basic" label="Basic">
-Create a basic experiment:
+기본 experiment를 생성합니다:
 
 ```python
 experiment = Container(
@@ -296,7 +296,7 @@ client._emit_mcps(experiment.as_mcps())
 
 </TabItem>
 <TabItem value="advanced" label="Advanced">
-Add context and metadata:
+컨텍스트와 메타데이터를 추가합니다:
 
 ```python
 experiment = Container(
@@ -318,11 +318,11 @@ client._emit_mcps(experiment.as_mcps())
 </TabItem>
 </Tabs>
 
-Verify your experiment:
+experiment를 확인합니다:
 
 <Tabs>
 <TabItem value="UI" label="UI">
-See your experiment's details in the UI:
+UI에서 experiment의 상세 정보를 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/experiment-empty.png"/>
@@ -330,7 +330,7 @@ See your experiment's details in the UI:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query your experiment's information:
+experiment 정보를 쿼리합니다:
 
 ```graphql
 query {
@@ -343,7 +343,7 @@ query {
 }
 ```
 
-Check the response:
+응답을 확인합니다:
 
 ```json
 {
@@ -362,13 +362,13 @@ Check the response:
 </TabItem>
 </Tabs>
 
-### Create a Training Run
+### Training Run 생성
 
-A training run captures all details about a specific model training attempt.
+training run은 특정 모델 학습 시도에 관한 모든 세부 정보를 기록합니다.
 
 <Tabs>
 <TabItem value="basic" label="Basic">
-Create a basic training run:
+기본 training run을 생성합니다:
 
 ```python
 client.create_training_run(
@@ -378,7 +378,7 @@ client.create_training_run(
 
 </TabItem>
 <TabItem value="advanced" label="Advanced">
-Include metrics, parameters, and other important metadata:
+지표, 파라미터 및 기타 중요한 메타데이터를 포함합니다:
 
 ```python
 client.create_training_run(
@@ -406,11 +406,11 @@ client.create_training_run(
 </TabItem>
 </Tabs>
 
-Verify your training run:
+training run을 확인합니다:
 
 <Tabs>
 <TabItem value="UI" label="UI">
-View the run details in the UI:
+UI에서 실행 상세 정보를 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/run-empty.png"/>
@@ -418,7 +418,7 @@ View the run details in the UI:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query your training run:
+training run을 쿼리합니다:
 
 ```graphql
 query {
@@ -434,7 +434,7 @@ query {
 }
 ```
 
-Check the response:
+응답을 확인합니다:
 
 ```json
 {
@@ -457,13 +457,13 @@ Check the response:
 </TabItem>
 </Tabs>
 
-### Create a Dataset
+### Dataset 생성
 
-Datasets are crucial components in your ML system, serving as inputs and outputs for your training runs. Creating a dataset in DataHub allows you to track data lineage and understand how data flows through your ML pipeline.
+dataset은 ML 시스템의 핵심 구성 요소로, training run의 입력 및 출력 역할을 합니다. DataHub에 dataset을 생성하면 데이터 lineage를 추적하고 ML pipeline을 통해 데이터가 어떻게 흐르는지 파악할 수 있습니다.
 
 <Tabs>
 <TabItem value="basic" label="Basic">
-Create a basic dataset with minimal information:
+최소한의 정보로 기본 dataset을 생성합니다:
 
 ```python
 input_dataset = Dataset(
@@ -473,10 +473,10 @@ input_dataset = Dataset(
 client._emit_mcps(input_dataset.as_mcps())
 ```
 
-</TabItem> 
+</TabItem>
 <TabItem value="advanced" label="Advanced">
 
-Create a dataset with more detailed information:
+보다 자세한 정보로 dataset을 생성합니다:
 
 ```python
 input_dataset = Dataset(
@@ -514,22 +514,22 @@ output_dataset = Dataset(
 client._emit_mcps(output_dataset.as_mcps())
 ```
 
-</TabItem> 
+</TabItem>
 </Tabs>
 
-Verify your datasets:
+dataset을 확인합니다:
 
-<Tabs> 
-<TabItem value="UI" label="UI"> View dataset details in the DataHub UI:
+<Tabs>
+<TabItem value="UI" label="UI"> DataHub UI에서 dataset 상세 정보를 확인합니다:
 
-<p align="center"> 
-  <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/dataset.png"/> 
+<p align="center">
+  <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/dataset.png"/>
 </p>
 
-</TabItem> 
+</TabItem>
 <TabItem value="graphql" label="GraphQL">
 
-Query your dataset's information:
+dataset 정보를 쿼리합니다:
 
 ```graphql
 query {
@@ -544,7 +544,7 @@ query {
 }
 ```
 
-Check the response:
+응답을 확인합니다:
 
 ```graphql
 {
@@ -563,18 +563,18 @@ Check the response:
 }
 ```
 
-</TabItem> 
+</TabItem>
 </Tabs>
 
-Datasets in DataHub can also include schema information, data quality metrics, and lineage details, which are particularly valuable for ML workflows where understanding data characteristics is crucial for model performance.
+DataHub의 dataset은 schema 정보, 데이터 품질 지표, lineage 세부 정보도 포함할 수 있으며, 이는 모델 성능에 데이터 특성을 이해하는 것이 중요한 ML 워크플로에서 특히 유용합니다.
 
-## Define Relationships
+## 관계 정의
 
-Now let's connect these components to create a comprehensive ML system. These connections enable you to track model lineage, monitor model evolution, understand dependencies, and search effectively across your ML assets.
+이제 이 구성 요소들을 연결하여 종합적인 ML 시스템을 구축해 보겠습니다. 이러한 연결을 통해 모델 lineage 추적, 모델 발전 모니터링, 의존성 파악, ML 자산 전반에 걸친 효과적인 검색이 가능해집니다.
 
-### Add Model To Model Group
+### Model을 Model Group에 추가
 
-Connect your model to its group:
+모델을 해당 그룹에 연결합니다:
 
 ```python
 model.add_group(model_group.urn)
@@ -585,13 +585,13 @@ client._emit_mcps(model.as_mcps())
 <Tabs>
 <TabItem value="UI" label="UI">
 
-View model versions in the **Model Group** under the **Models** section:
+**Models** 섹션의 **Model Group** 아래에서 모델 버전을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/model-group-with-model.png"/>
 </p>
 
-Find group information in the **Model** page under the **Group** tab:
+**Model** 페이지의 **Group** 탭에서 그룹 정보를 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/model-with-model-group.png"/>
@@ -599,7 +599,7 @@ Find group information in the **Model** page under the **Group** tab:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query the model-group relationship:
+모델-그룹 관계를 쿼리합니다:
 
 ```graphql
 query {
@@ -617,7 +617,7 @@ query {
 }
 ```
 
-Check the response:
+응답을 확인합니다:
 
 ```json
 {
@@ -642,9 +642,9 @@ Check the response:
 </TabItem>
 </Tabs>
 
-### Add Run To Experiment
+### Run을 Experiment에 추가
 
-Connect a training run to its experiment:
+training run을 해당 experiment에 연결합니다:
 
 ```python
 client.add_run_to_experiment(run_urn=run_urn, experiment_urn=experiment_urn)
@@ -653,13 +653,13 @@ client.add_run_to_experiment(run_urn=run_urn, experiment_urn=experiment_urn)
 <Tabs>
 <TabItem value="UI" label="UI">
 
-Find your runs in the **Experiment** page under the **Entities** tab:
+**Experiment** 페이지의 **Entities** 탭에서 실행을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/experiment-with-run.png"/>
 </p>
 
-See the experiment details in the **Run** page:
+**Run** 페이지에서 experiment 상세 정보를 확인합니다:
 
 <p align="center">
   <img width="40%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/run-with-experiment.png"/>
@@ -667,7 +667,7 @@ See the experiment details in the **Run** page:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query the run-experiment relationship:
+실행-experiment 관계를 쿼리합니다:
 
 ```graphql
 query {
@@ -685,7 +685,7 @@ query {
 }
 ```
 
-View the relationship details:
+관계 상세 정보를 확인합니다:
 
 ```json
 {
@@ -710,9 +710,9 @@ View the relationship details:
 </TabItem>
 </Tabs>
 
-### Add Run To Model
+### Run을 Model에 추가
 
-Connect a training run to its resulting model:
+training run을 결과 모델에 연결합니다:
 
 ```python
 model.add_training_job(DataProcessInstanceUrn(run_id))
@@ -720,23 +720,23 @@ model.add_training_job(DataProcessInstanceUrn(run_id))
 client._emit_mcps(model.as_mcps())
 ```
 
-This relationship enables you to:
+이 관계를 통해 다음이 가능합니다:
 
-- Track which runs produced each model
-- Understand model provenance
-- Debug model issues
-- Monitor model evolution
+- 각 모델을 생성한 실행 추적
+- 모델 출처 파악
+- 모델 문제 디버깅
+- 모델 발전 모니터링
 
 <Tabs>
 <TabItem value="UI" label="UI">
 
-Find the source run in the **Model** page under the **Summary** tab:
+**Model** 페이지의 **Summary** 탭에서 소스 실행을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/model-with-source-run.png"/>
 </p>
 
-See related models in the **Run** page under the **Lineage** tab:
+**Run** 페이지의 **Lineage** 탭에서 관련 모델을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/run-lineage-model.png"/>
@@ -748,7 +748,7 @@ See related models in the **Run** page under the **Lineage** tab:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query the model's training jobs:
+모델의 training job을 쿼리합니다:
 
 ```graphql
 query {
@@ -763,7 +763,7 @@ query {
 }
 ```
 
-View the relationship:
+관계를 확인합니다:
 
 ```json
 {
@@ -783,9 +783,9 @@ View the relationship:
 </TabItem>
 </Tabs>
 
-### Add Run To Model Group
+### Run을 Model Group에 추가
 
-Create a direct connection between a run and a model group:
+실행과 model group 사이에 직접 연결을 생성합니다:
 
 ```python
 model_group.add_training_job(DataProcessInstanceUrn(run_id))
@@ -793,16 +793,16 @@ model_group.add_training_job(DataProcessInstanceUrn(run_id))
 client._emit_mcps(model_group.as_mcps())
 ```
 
-This connection lets you:
+이 연결을 통해 다음이 가능합니다:
 
-- View model groups in the run's lineage
-- Query training jobs at the group level
-- Track training history for model families
+- 실행의 lineage에서 model group 확인
+- 그룹 수준에서 training job 쿼리
+- 모델 패밀리의 학습 이력 추적
 
 <Tabs>
 <TabItem value="UI" label="UI">
 
-See model groups in the **Run** page under the **Lineage** tab:
+**Run** 페이지의 **Lineage** 탭에서 model group을 확인합니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/run-lineage-model-group.png"/>
@@ -813,7 +813,7 @@ See model groups in the **Run** page under the **Lineage** tab:
 </TabItem>
 
 <TabItem value="graphql" label="GraphQL">
-Query the model group's training jobs:
+model group의 training job을 쿼리합니다:
 
 ```graphql
 query {
@@ -830,7 +830,7 @@ query {
 }
 ```
 
-Check the relationship:
+관계를 확인합니다:
 
 ```json
 {
@@ -850,9 +850,9 @@ Check the relationship:
 </TabItem>
 </Tabs>
 
-### Add Dataset To Run
+### Dataset을 Run에 추가
 
-Track input and output datasets for your training runs:
+training run의 입력 및 출력 dataset을 추적합니다:
 
 ```python
 client.add_input_datasets_to_run(
@@ -866,24 +866,24 @@ client.add_output_datasets_to_run(
 )
 ```
 
-These connections help you:
+이러한 연결은 다음에 도움이 됩니다:
 
-- Track data lineage
-- Understand data dependencies
-- Ensure reproducibility
-- Monitor data quality impacts
+- 데이터 lineage 추적
+- 데이터 의존성 파악
+- 재현성 보장
+- 데이터 품질 영향 모니터링
 
-Find dataset relationships in the **Lineage** tab of either the **Dataset** or **Run** page:
+dataset 관계는 **Dataset** 또는 **Run** 페이지의 **Lineage** 탭에서 확인할 수 있습니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/run-lineage-dataset-graph.png"/>
 </p>
 
-## Update Properties
+## 속성 업데이트
 
-### Update Model Group Properties
+### Model Group 속성 업데이트
 
-Model groups can be updated with additional information:
+model group에 추가 정보를 업데이트할 수 있습니다:
 
 ```python
 # Update description
@@ -904,15 +904,15 @@ model_group.set_custom_properties({
 client._emit_mcps(model_group.as_mcps())
 ```
 
-These updates allow you to:
+이러한 업데이트를 통해 다음이 가능합니다:
 
-- Improve documentation with detailed descriptions
-- Apply consistent business context with tags and terms
-- Track organizational ownership and status
+- 상세한 설명으로 문서화 개선
+- 태그와 용어로 일관된 비즈니스 컨텍스트 적용
+- 조직 소유권 및 상태 추적
 
-### Update Model Properties
+### Model 속성 업데이트
 
-Models can be updated with additional information as they evolve:
+모델이 발전함에 따라 추가 정보를 업데이트할 수 있습니다:
 
 ```python
 # Update model version
@@ -929,15 +929,15 @@ model.add_version_alias("challenger")
 client._emit_mcps(model.as_mcps())
 ```
 
-These updates allow you to:
+이러한 업데이트를 통해 다음이 가능합니다:
 
-- Track model iterations through versioning
-- Apply business context with tags and terms
-- Manage deployment aliases like "champion" and "challenger"
+- 버전 관리를 통한 모델 반복 추적
+- 태그와 용어로 비즈니스 컨텍스트 적용
+- "champion"과 "challenger" 같은 배포 별칭 관리
 
-### Update Experiment Properties
+### Experiment 속성 업데이트
 
-Experiments can be updated with additional metadata as your project evolves:
+프로젝트가 발전함에 따라 experiment에 추가 메타데이터를 업데이트할 수 있습니다:
 
 ```python
 # Create a container object for the existing experiment
@@ -962,29 +962,29 @@ existing_experiment.set_custom_properties({
 client._emit_mcps(existing_experiment.as_mcps())
 ```
 
-These updates help you:
+이러한 업데이트는 다음에 도움이 됩니다:
 
-- Document evolving experiment objectives
-- Categorize experiments with consistent tags
-- Track experiment status and priority
+- 변화하는 experiment 목표 문서화
+- 일관된 태그로 experiment 분류
+- experiment 상태 및 우선순위 추적
 
-## Full Overview
+## 전체 개요
 
-Here's your complete ML system with all components connected:
+모든 구성 요소가 연결된 완전한 ML 시스템입니다:
 
 <p align="center">
   <img width="70%" src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/ml/lineage-full.png"/>
 </p>
 
-You now have a complete lineage view of your ML assets, from training data through runs to production models!
+이제 학습 데이터부터 실행을 거쳐 프로덕션 모델에 이르는 ML 자산의 완전한 lineage 뷰를 갖추게 되었습니다!
 
-You can check out the full code for this tutorial [here](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/ai/dh_ai_client_sample.py).
+이 튜토리얼의 전체 코드는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-ingestion/examples/ai/dh_ai_client_sample.py)에서 확인할 수 있습니다.
 
-## What's Next?
+## 다음 단계
 
-To see these integrations in action:
+이 통합들을 실제로 확인하려면:
 
-- Watch our [Townhall demo](https://youtu.be/_WUoVqkF2Zo?feature=shared&t=1932) showcasing the MLflow integration
-- Explore our detailed documentation:
-  - [MLflow Integration Guide](/docs/generated/ingestion/sources/mlflow.md)
-  - [Amazon SageMaker Integration Guide](/docs/generated/ingestion/sources/sagemaker.md)
+- MLflow 통합을 시연하는 [타운홀 데모](https://youtu.be/_WUoVqkF2Zo?feature=shared&t=1932)를 시청하세요.
+- 상세 문서를 참조하세요:
+  - [MLflow 통합 가이드](/docs/generated/ingestion/sources/mlflow.md)
+  - [Amazon SageMaker 통합 가이드](/docs/generated/ingestion/sources/sagemaker.md)

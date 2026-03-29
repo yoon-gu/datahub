@@ -3,36 +3,36 @@ import TabItem from '@theme/TabItem';
 
 # Tags
 
-## Why Would You Use Tags on Datasets?
+## Dataset에 Tags를 사용하는 이유
 
-Tags are informal, loosely controlled labels that help in search & discovery. They can be added to datasets, dataset schemas, or containers, for an easy way to label or categorize entities – without having to associate them to a broader business glossary or vocabulary.
-For more information about tags, refer to [About DataHub Tags](/docs/tags.md).
+Tag는 검색 및 발견을 돕는 비공식적이고 느슨하게 관리되는 레이블입니다. dataset, dataset 스키마 또는 컨테이너에 추가하여 entity를 레이블링하거나 분류하는 쉬운 방법을 제공합니다 — 더 광범위한 business glossary나 어휘와 연결할 필요 없이 사용할 수 있습니다.
+Tag에 대한 자세한 내용은 [DataHub Tags 소개](/docs/tags.md)를 참조하세요.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to
+이 가이드에서는 다음을 수행하는 방법을 보여드립니다
 
-- Create: create a tag.
-- Read : read tags attached to a dataset.
-- Add: add a tag to a column of a dataset or a dataset itself.
-- Remove: remove a tag from a dataset.
+- 생성: tag를 생성합니다.
+- 조회: dataset에 연결된 tag를 조회합니다.
+- 추가: dataset의 컬럼 또는 dataset 자체에 tag를 추가합니다.
+- 제거: dataset에서 tag를 제거합니다.
 
-## Prerequisites
+## 사전 조건
 
-For this tutorial, you need to deploy DataHub Quickstart and ingest sample data.
-For detailed information, please refer to [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 위해 DataHub Quickstart를 배포하고 샘플 데이터를 ingest해야 합니다.
+자세한 내용은 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참조하세요.
 
 :::note
-Before modifying tags, you need to ensure the target dataset is already present in your DataHub instance.
-If you attempt to manipulate entities that do not exist, your operation will fail.
-In this guide, we will be using data from sample ingestion.
+Tag를 수정하기 전에 대상 dataset이 DataHub 인스턴스에 이미 존재하는지 확인해야 합니다.
+존재하지 않는 entity를 조작하려고 하면 작업이 실패합니다.
+이 가이드에서는 샘플 ingestion의 데이터를 사용합니다.
 :::
 
-For more information on how to set up for GraphQL, please refer to [How To Set Up GraphQL](/docs/api/graphql/how-to-set-up-graphql.md).
+GraphQL 설정 방법에 대한 자세한 내용은 [GraphQL 설정 방법](/docs/api/graphql/how-to-set-up-graphql.md)을 참조하세요.
 
-## Create Tags
+## Tags 생성
 
-The following code creates a tag `Deprecated`.
+다음 코드는 `Deprecated` tag를 생성합니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -48,7 +48,7 @@ mutation createTag {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -70,7 +70,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation createTag { createTag(input: { name: \"Deprecated\", id: \"deprecated\",description: \"Having this tag means this column or table is deprecated.\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "createTag": "urn:li:tag:deprecated" }, "extensions": {} }
@@ -95,15 +95,15 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Creating Tags
+### Tags 생성의 예상 결과
 
-You can now see the new tag `Deprecated` has been created.
+이제 새 tag `Deprecated`가 생성된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/tag-created.png"/>
 </p>
 
-We can also verify this operation by programmatically searching `Deprecated` tag after running this code using the `datahub` cli.
+이 코드를 실행한 후 `datahub` CLI를 사용하여 프로그래밍 방식으로 `Deprecated` tag를 검색하여 이 작업을 확인할 수도 있습니다.
 
 ```shell
 datahub get --urn "urn:li:tag:deprecated" --aspect tagProperties
@@ -116,7 +116,7 @@ datahub get --urn "urn:li:tag:deprecated" --aspect tagProperties
 }
 ```
 
-## Read Tags
+## Tags 조회
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -140,7 +140,7 @@ query {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -177,7 +177,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "{dataset(urn: \"urn:li:dataset:(urn:li:dataPlatform:hive,SampleHiveDataset,PROD)\") {tags {tags {tag {name urn properties { description colorHex } } } } } }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -213,12 +213,12 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-## Add Tags
+## Tags 추가
 
-### Add Tags to a dataset
+### Dataset에 Tags 추가
 
-The following code shows you how can add tags to a dataset.
-In the following code, we add a tag `Deprecated` to a dataset named `fct_users_created`.
+다음 코드는 dataset에 tag를 추가하는 방법을 보여줍니다.
+아래 코드에서는 `fct_users_created`라는 dataset에 `Deprecated` tag를 추가합니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -234,7 +234,7 @@ mutation addTags {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```python
 {
@@ -255,7 +255,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation addTags { addTags(input: { tagUrns: [\"urn:li:tag:deprecated\"], resourceUrn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "addTags": true }, "extensions": {} }
@@ -271,9 +271,9 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Add Tags to a Column of a dataset
+### Dataset 컬럼에 Tags 추가
 
-In the example below `subResource` is `fieldPath` in the schema.
+아래 예시에서 `subResource`는 스키마의 `fieldPath`입니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL">
@@ -299,7 +299,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation addTags { addTags(input: { tagUrns: [\"urn:li:tag:deprecated\"], resourceUrn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)\", subResourceType: DATASET_FIELD, subResource: \"user_name\" }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "addTags": true }, "extensions": {} }
@@ -315,24 +315,24 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Adding Tags
+### Tags 추가의 예상 결과
 
-You can now see `Deprecated` tag has been added to `user_name` column.
+이제 `user_name` 컬럼에 `Deprecated` tag가 추가된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/tag-added.png"/>
 </p>
 
-We can also verify this operation programmatically by checking the `globalTags` aspect using the `datahub` cli.
+`datahub` CLI를 사용하여 `globalTags` aspect를 확인하는 방식으로 이 작업을 프로그래밍 방식으로 검증할 수도 있습니다.
 
 ```shell
 datahub get --urn "urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)" --aspect globalTags
 ```
 
-## Remove Tags
+## Tags 제거
 
-The following code remove a tag from a dataset.
-After running this code, `Deprecated` tag will be removed from a `user_name` column.
+다음 코드는 dataset에서 tag를 제거합니다.
+이 코드를 실행하면 `user_name` 컬럼에서 `Deprecated` tag가 제거됩니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -368,15 +368,15 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 </TabItem>
 </Tabs>
 
-### Expected Outcome of Removing Tags
+### Tags 제거의 예상 결과
 
-You can now see `Deprecated` tag has been removed to `user_name` column.
+이제 `user_name` 컬럼에서 `Deprecated` tag가 제거된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/tag-removed.png"/>
 </p>
 
-We can also verify this operation programmatically by checking the `gloablTags` aspect using the `datahub` cli.
+`datahub` CLI를 사용하여 `gloablTags` aspect를 확인하는 방식으로 이 작업을 프로그래밍 방식으로 검증할 수도 있습니다.
 
 ```shell
 datahub get --urn "urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_created,PROD)" --aspect globalTags

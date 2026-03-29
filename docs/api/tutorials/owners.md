@@ -3,36 +3,34 @@ import TabItem from '@theme/TabItem';
 
 # Ownership
 
-## Why Would You Use Users and Groups?
+## 사용자와 그룹을 사용하는 이유
 
-Users and groups are essential for managing ownership of data.
-By creating or updating user accounts and assigning them to appropriate groups, administrators can ensure that the right people can access the data they need to do their jobs.
-This helps to avoid confusion or conflicts over who is responsible for specific datasets and can improve the overall effectiveness.
+사용자와 그룹은 데이터 ownership을 관리하는 데 필수적입니다. 사용자 계정을 생성하거나 업데이트하고 적절한 그룹에 배정함으로써, 관리자는 올바른 사람들이 업무 수행에 필요한 데이터에 접근할 수 있도록 보장할 수 있습니다. 이를 통해 특정 dataset에 대한 책임자에 대한 혼란이나 충돌을 방지하고 전반적인 효율성을 향상시킬 수 있습니다.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to
+이 가이드에서는 다음을 수행하는 방법을 보여드립니다
 
-- Create: create or update users and groups.
-- Read: read owners attached to a dataset.
-- Add: add user group as an owner to a dataset.
-- Remove: remove the owner from a dataset.
+- 생성: 사용자 및 그룹을 생성하거나 업데이트합니다.
+- 조회: dataset에 연결된 owner를 조회합니다.
+- 추가: 사용자 그룹을 dataset의 owner로 추가합니다.
+- 제거: dataset에서 owner를 제거합니다.
 
-## Pre-requisites
+## 사전 조건
 
-For this tutorial, you need to deploy DataHub Quickstart and ingest sample data.
-For detailed information, please refer to [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 위해 DataHub Quickstart를 배포하고 샘플 데이터를 ingest해야 합니다.
+자세한 내용은 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참조하세요.
 
 :::note
-In this guide, ingesting sample data is optional.
+이 가이드에서 샘플 데이터 ingestion은 선택 사항입니다.
 :::
 
-## Upsert Users
+## 사용자 Upsert
 
 <Tabs>
 <TabItem value="cli" label="CLI">
 
-Save this `user.yaml` as a local file.
+이 `user.yaml`을 로컬 파일로 저장합니다.
 
 ```yaml
 - id: bar@acryl.io
@@ -52,14 +50,14 @@ Save this `user.yaml` as a local file.
   picture_link: "https://raw.githubusercontent.com/datahub-project/datahub/master/datahub-web-react/src/images/datahub-logo-color-stable.svg"
 ```
 
-Execute the following CLI command to ingest user data.
-Since the user datahub already exists in the sample data, any updates made to the user information will overwrite the existing data.
+사용자 데이터를 ingest하기 위해 다음 CLI 명령어를 실행합니다.
+datahub 사용자가 이미 샘플 데이터에 존재하므로, 사용자 정보에 대한 업데이트는 기존 데이터를 덮어씁니다.
 
 ```
 datahub user upsert -f user.yaml
 ```
 
-If you see the following logs, the operation was successful:
+다음 로그가 표시되면 작업이 성공한 것입니다:
 
 ```shell
 Update succeeded for urn urn:li:corpuser:bar@acryl.io.
@@ -76,21 +74,20 @@ Update succeeded for urn urn:li:corpuser:datahub.
 </TabItem>
 </Tabs>
 
-### Expected Outcomes of Upserting User
+### 사용자 Upsert의 예상 결과
 
-You can see the user `The bar` has been created and the user `Datahub` has been updated under `Settings > Access > Users & Groups`
+`Settings > Access > Users & Groups`에서 사용자 `The bar`가 생성되고 사용자 `Datahub`가 업데이트된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/user-upserted.png"/>
 </p>
 
-## Upsert Group
+## 그룹 Upsert
 
 <Tabs>
 <TabItem value="cli" label="CLI">
 
-Save this `group.yaml` as a local file. Note that the group includes a list of users who are owners and members.
-Within these lists, you can refer to the users by their ids or their urns, and can additionally specify their metadata inline within the group description itself. See the example below to understand how this works and feel free to make modifications to this file locally to see the effects of your changes in your local DataHub instance.
+이 `group.yaml`을 로컬 파일로 저장합니다. 그룹에는 owner이자 멤버인 사용자 목록이 포함되어 있습니다. 이 목록에서 사용자를 ID 또는 URN으로 참조할 수 있으며, 그룹 설명 내에 인라인으로 메타데이터를 지정할 수도 있습니다. 아래 예시를 참고하여 로컬에서 이 파일을 수정해 보고 로컬 DataHub 인스턴스에서 변경 사항의 효과를 확인해 보세요.
 
 ```yaml
 id: foogroup@acryl.io
@@ -104,13 +101,13 @@ members:
     display_name: "Joe's Hub"
 ```
 
-Execute the following CLI command to ingest this group's information.
+이 그룹의 정보를 ingest하기 위해 다음 CLI 명령어를 실행합니다.
 
 ```
 datahub group upsert -f group.yaml
 ```
 
-If you see the following logs, the operation was successful:
+다음 로그가 표시되면 작업이 성공한 것입니다:
 
 ```shell
 Update succeeded for group urn:li:corpGroup:foogroup@acryl.io.
@@ -127,15 +124,15 @@ Update succeeded for group urn:li:corpGroup:foogroup@acryl.io.
 </TabItem>
 </Tabs>
 
-### Expected Outcomes of Upserting Group
+### 그룹 Upsert의 예상 결과
 
-You can see the group `Foo Group` has been created under `Settings > Access > Users & Groups`
+`Settings > Access > Users & Groups`에서 그룹 `Foo Group`이 생성된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/group-upserted.png"/>
 </p>
 
-## Read Owners
+## Owner 조회
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -161,7 +158,7 @@ query {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음 응답이 표시되면 작업이 성공한 것입니다:
 
 ```json
 {
@@ -199,7 +196,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "{ dataset(urn: \"urn:li:dataset:(urn:li:dataPlatform:hive,SampleHiveDataset,PROD)\") { ownership { owners { owner { ... on CorpUser { urn type } ... on CorpGroup { urn type } } } } } }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -227,7 +224,7 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-## Add Owners
+## Owner 추가
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -245,7 +242,7 @@ mutation addOwners {
 }
 ```
 
-Expected Response:
+예상 응답:
 
 ```python
 {
@@ -276,15 +273,15 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 </TabItem>
 </Tabs>
 
-## Expected Outcomes of Adding Owner
+## Owner 추가의 예상 결과
 
-You can now see `bfoo` has been added as an owner to the `fct_users_created` dataset.
+이제 `bfoo`가 `fct_users_created` dataset의 owner로 추가된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/owner-added.png"/>
 </p>
 
-## Remove Owners
+## Owner 제거
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -300,7 +297,7 @@ mutation removeOwners {
 }
 ```
 
-Note that you can also remove owners from multiple entities or subresource using `batchRemoveOwners`.
+`batchRemoveOwners`를 사용하여 여러 entity 또는 하위 리소스에서 owner를 제거할 수도 있습니다.
 
 ```json
 mutation batchRemoveOwners {
@@ -315,7 +312,7 @@ mutation batchRemoveOwners {
 }
 ```
 
-Expected Response:
+예상 응답:
 
 ```python
 {
@@ -346,9 +343,9 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 </TabItem>
 </Tabs>
 
-### Expected Outcomes of Removing Owners
+### Owner 제거의 예상 결과
 
-You can now see `John Doe` has been removed as an owner from the `fct_users_created` dataset.
+이제 `John Doe`가 `fct_users_created` dataset의 owner에서 제거된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/owner-removed.png"/>
