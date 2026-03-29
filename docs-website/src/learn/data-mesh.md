@@ -1,6 +1,6 @@
 ---
-title: "What is a Data Mesh and How to Implement It in Your Organization"
-description: Learn how a data mesh aligns data management with domain expertise, enhancing overall organizational agility.
+title: "데이터 메시란 무엇이며 조직에서 어떻게 구현할까"
+description: 데이터 메시가 데이터 관리를 도메인 전문성과 어떻게 연계하여 전반적인 조직의 민첩성을 향상시키는지 알아봅니다.
 tags: ["Data Mesh", "Use Case", "For Data Architects", "For Data Platform Leads"]
 image: /img/learn/use-case-data-mesh.png
 hide_table_of_contents: false
@@ -8,124 +8,124 @@ audience: ["Data Architects", "Data Platform Leads"]
 date: 2024-06-03T02:00
 ---
 
-# What is Data Mesh and How to Implement It in Your Organization
+# 데이터 메시란 무엇이며 조직에서 어떻게 구현할까
 
-Learn how a data mesh aligns data management with domain expertise, enhancing overall organizational agility.
+데이터 메시가 데이터 관리를 도메인 전문성과 어떻게 연계하여 전반적인 조직의 민첩성을 향상시키는지 알아봅니다.
 
 <!--truncate-->
 
-## Introduction
+## 소개
 
-Have you faced challenges in managing decentralized data across various business units or domains? Implementing a [Data Mesh](https://martinfowler.com/articles/data-mesh-principles.html) can address these issues, aligning data management with domain expertise and enhancing your organization’s overall agility. In this post, we'll explore what a Data Mesh is, why it's beneficial, and how to implement it effectively within your organization.
+다양한 비즈니스 단위 또는 도메인에 걸쳐 분산된 데이터를 관리하는 데 어려움을 겪은 경험이 있으신가요? [데이터 메시](https://martinfowler.com/articles/data-mesh-principles.html)를 구현하면 이러한 문제를 해결하여 데이터 관리를 도메인 전문성과 연계하고 조직의 전반적인 민첩성을 향상시킬 수 있습니다. 이 글에서는 데이터 메시가 무엇인지, 왜 유익한지, 그리고 조직 내에서 효과적으로 구현하는 방법을 탐색합니다.
 
-## What is Data Mesh?
+## 데이터 메시란 무엇인가요?
 
-Data Mesh is a decentralized data architecture that shifts the responsibility of data management from a central team to individual business units, or "domains." Each domain in turn produces “data products”, or consumable data artifacts, ensuring that data management is closely aligned with domain-specific expertise. This approach promotes agility, scalability, and the ability to generate insights more effectively. 
+데이터 메시는 데이터 관리의 책임을 중앙 팀에서 개별 비즈니스 단위 또는 "도메인"으로 이전하는 분산 데이터 아키텍처입니다. 각 도메인은 차례로 소비 가능한 데이터 아티팩트인 "데이터 제품"을 생산하여 데이터 관리가 도메인별 전문성과 긴밀하게 연계되도록 합니다. 이 접근 방식은 민첩성, 확장성 및 통찰력을 더 효과적으로 생성하는 능력을 향상시킵니다.
 
-If you’re familiar with [Service-Oriented Architectures](https://en.wikipedia.org/wiki/Service-oriented_architecture), i.e. micro-services, this might sound familiar. Data Mesh is a somewhat analogous concept, but applied to data!
+[서비스 지향 아키텍처](https://en.wikipedia.org/wiki/Service-oriented_architecture), 즉 마이크로서비스에 익숙하다면 이것이 친숙하게 들릴 것입니다. 데이터 메시는 다소 유사한 개념이지만 데이터에 적용된 것입니다!
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/data-mesh-principles.png"/>
  <br />
-  <i style={{color:"grey"}}>4 Principles of Data Mesh</i>
+  <i style={{color:"grey"}}>데이터 메시의 4가지 원칙</i>
 </p>
 
 
-| Principle | Explanation | 
+| 원칙 | 설명 |
 | --- | --- |
-| Domain Data Ownership | Organizing data into explicit domains based on the structure of your organization, and then assigning clear accountability to each. This enables you to more easily increase the number of sources of data, variety of use cases, and diversity of access models to the data increases.  |
-| Data as a product | Domain data should be highly accessible and highly reliable by default. It should be easy to discover, easy to understand, easy to access securely, and high quality.  |
-| Self-Service | Domain teams should be able to independently create, consume, and manage data products on top of a general-purpose platform that can hide the complexity of building, executing and maintaining secure and interoperable data products. |
-| Federated Governance | Consistent standards that are enforced by process and technology around interoperability, compliance, and quality. This makes it easy for data consumers to interact with data products across domains in familiar way and ensures quality is maintained uniformly.  |
+| 도메인 데이터 소유권 | 조직의 구조를 기반으로 명시적인 도메인으로 데이터를 구성하고 각 도메인에 명확한 책임을 할당합니다. 이를 통해 데이터 소스 수, 사용 사례의 다양성 및 데이터에 대한 액세스 모델의 다양성을 더 쉽게 늘릴 수 있습니다. |
+| 제품으로서의 데이터 | 도메인 데이터는 기본적으로 고접근성과 고신뢰성을 가져야 합니다. 발견하기 쉽고, 이해하기 쉽고, 안전하게 접근하기 쉽고, 고품질이어야 합니다. |
+| 셀프 서비스 | 도메인 팀은 안전하고 상호 운용 가능한 데이터 제품을 구축, 실행 및 유지하는 복잡성을 숨길 수 있는 범용 플랫폼 위에서 독립적으로 데이터 제품을 생성, 소비 및 관리할 수 있어야 합니다. |
+| 연합 거버넌스 | 상호 운용성, 규정 준수 및 품질에 관한 프로세스와 기술에 의해 시행되는 일관된 표준. 이를 통해 데이터 소비자가 친숙한 방식으로 도메인 전반에 걸쳐 데이터 제품과 상호 작용하고 품질이 균일하게 유지되도록 합니다. |
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/data-mesh-arc.png"/>
  <br />
-  <i style={{color:"grey"}}>Logical architecture of data mesh approach, Image Credit: <a href="https://dddeurope.academy/data-mesh-zhamak-dheghani/">Zhamak Dehghani</a></i>
+  <i style={{color:"grey"}}>데이터 메시 접근 방식의 논리적 아키텍처, 이미지 출처: <a href="https://dddeurope.academy/data-mesh-zhamak-dheghani/">Zhamak Dehghani</a></i>
 </p>
 
 
 
-## Why Implement Data Mesh?
+## 왜 데이터 메시를 구현해야 하나요?
 
-For data architects and data platform leads, implementing a Data Mesh can resolve various challenges associated with managing decentralized data, particularly as you try to scale up. 
+데이터 아키텍트와 데이터 플랫폼 책임자에게 데이터 메시를 구현하면 특히 규모를 확장하려고 할 때 분산 데이터 관리와 관련된 다양한 과제를 해결할 수 있습니다.
 
-Traditional data lakes or warehouses can become central bottlenecks, impairing access, understanding, accountability, and quality of data - ultimately, its usability. These architectures can struggle to meet the diverse needs of different business units, leading to inefficiencies. 
+기존의 데이터 레이크나 웨어하우스는 데이터에 대한 접근, 이해, 책임 및 품질을 저하시키는 중앙 병목 현상이 될 수 있으며, 궁극적으로 사용성에 영향을 미칩니다. 이러한 아키텍처는 서로 다른 비즈니스 단위의 다양한 요구를 충족하는 데 어려움을 겪어 비효율성으로 이어질 수 있습니다.
 
-Data Mesh addresses these issues by formally dividing data into decentralized domains, which are owned by the individual teams who are experts in those domains. This approach allows each business unit or domain to manage its own data, enabling independent creation and consumption of data and increasing the agility, reliability, scalability of an organization’s data practice.  
+데이터 메시는 해당 도메인의 전문가인 개별 팀이 소유하는 분산 도메인으로 데이터를 공식적으로 분할하여 이러한 문제를 해결합니다. 이 접근 방식을 통해 각 비즈니스 단위 또는 도메인이 자체 데이터를 관리하여 데이터를 독립적으로 생성하고 소비할 수 있으며 조직의 데이터 실践의 민첩성, 신뢰성 및 확장성이 향상됩니다.
 
-### Key Considerations for Your Organization
+### 조직을 위한 주요 고려 사항
 
-**Decentralized Data Management:** Have you experienced difficulties or bottlenecks in managing data across various business units? Implementing a Data Mesh can alleviate these issues by allowing each domain to build and share its own data products, enhancing agility and scalability.
+**분산 데이터 관리:** 다양한 비즈니스 단위에 걸쳐 데이터를 관리하는 데 어려움이나 병목 현상을 경험한 적이 있나요? 데이터 메시를 구현하면 각 도메인이 자체 데이터 제품을 구축하고 공유할 수 있도록 하여 민첩성과 확장성을 향상시킴으로써 이러한 문제를 완화할 수 있습니다.
 
-**Overcoming Centralized Bottlenecks:** If your organization relies on a centralized data lake or warehouse, or data platform team, have you encountered limitations in scalability or delays in data access and analysis? Data Mesh can help overcome these bottlenecks by “pushing down” data ownership and management to domain experts.
+**중앙화된 병목 현상 극복:** 조직이 중앙화된 데이터 레이크, 웨어하우스 또는 데이터 플랫폼 팀에 의존하는 경우 확장성의 한계나 데이터 접근 및 분석의 지연을 경험한 적이 있나요? 데이터 메시는 데이터 소유권과 관리를 도메인 전문가에게 "위임"함으로써 이러한 병목 현상을 극복하는 데 도움이 됩니다.
 
-**Enhancing Agility and Reliability:** How important is it for your organization to respond quickly to market changes and generate insights reliably? By formally defining the responsibilities around data “products”, a data mesh architecture can provide the flexibility and speed needed to stay competitive.
+**민첩성 및 신뢰성 향상:** 조직이 시장 변화에 신속하게 대응하고 통찰력을 안정적으로 생성하는 것이 얼마나 중요한가요? 데이터 "제품"에 대한 책임을 공식적으로 정의함으로써 데이터 메시 아키텍처는 경쟁력을 유지하는 데 필요한 유연성과 속도를 제공할 수 있습니다.
 
-## How to Implement Data Mesh
+## 데이터 메시를 구현하는 방법
 
-Implementing Data Mesh doesn’t need to be a headache. Here’s how your organization can move towards a better future:
+데이터 메시를 구현하는 것이 골치 아플 필요는 없습니다. 다음은 조직이 더 나은 미래로 나아가는 방법입니다:
 
-### Best Practices and Strategies
+### 모범 사례 및 전략
 
-**Define Domains and Data Products**
+**도메인 및 데이터 제품 정의**
 
-Formally define the different business units or domains within your organization and define the data products each domain will own and manage, and then begin to organize the data on your existing warehouse or lake around these domains. This ensures clarity and responsibility for data management.
+조직 내 서로 다른 비즈니스 단위 또는 도메인을 공식적으로 정의하고 각 도메인이 소유하고 관리할 데이터 제품을 정의한 다음, 기존 웨어하우스나 레이크의 데이터를 이러한 도메인 중심으로 구성하기 시작하세요. 이는 데이터 관리에 대한 명확성과 책임을 보장합니다.
 
-**Establish Clear Contracts**
+**명확한 계약 수립**
 
-Create a clear set of expectations around what it means to be a domain or data product owner within your organization. Then, build processes and systems to both reinforce and monitor these expectations. This helps maintain consistency and reliability across the organization.
+조직 내에서 도메인 또는 데이터 제품 소유자가 된다는 것이 무엇을 의미하는지에 대한 명확한 기대 집합을 만드세요. 그런 다음 이러한 기대를 강화하고 모니터링하기 위한 프로세스와 시스템을 구축하세요. 이는 조직 전반에 걸쳐 일관성과 신뢰성을 유지하는 데 도움이 됩니다.
 
-**Monitor Data Quality**
+**데이터 품질 모니터링**
 
-Use metadata validation and data quality assertions to ensure that your expectations are being met. This includes setting standards for both data quality - freshness, volume, column validity - as well compliance with your less technical requirements - ownership, data documentation, and data classification.
+메타데이터 유효성 검사와 데이터 품질 assertions를 사용하여 기대가 충족되고 있는지 확인하세요. 여기에는 데이터 품질 - 최신성, 볼륨, 컬럼 유효성 - 뿐만 아니라 덜 기술적인 요구 사항 - 소유권, 데이터 문서화 및 데이터 분류 - 의 규정 준수에 대한 표준 설정이 포함됩니다.
 
-**Move Towards Federated Governance**
+**연합 거버넌스로 이동**
 
-Adopt a federated governance model to balance autonomy and control. While domains manage their data products, a central team can oversee governance standards and ensure compliance with organizational policies via a well-defined review process.
+자율성과 통제의 균형을 맞추기 위해 연합 거버넌스 모델을 채택하세요. 도메인이 데이터 제품을 관리하는 동안 중앙 팀은 거버넌스 표준을 감독하고 잘 정의된 검토 프로세스를 통해 조직 정책 준수를 보장할 수 있습니다.
 
-### Alternatives
+### 대안
 
-While a centralized data lake or warehouse can simplify data governance by virtue of keeping everything in one place, it can become a bottleneck as your data organization grows. Decentralized Data Mesh can provide a more scalable and agile approach, by distributing day-to-day responsibility for accessing, producing, and validating data while enforcing a centralized set of standards and processes. 
+중앙화된 데이터 레이크나 웨어하우스는 모든 것을 한 곳에 유지함으로써 데이터 거버넌스를 단순화할 수 있지만, 데이터 조직이 성장함에 따라 병목 현상이 될 수 있습니다. 분산 데이터 메시는 중앙화된 표준과 프로세스를 시행하는 동시에 데이터 접근, 생산 및 검증에 대한 일상적인 책임을 분산시켜 더 확장 가능하고 민첩한 접근 방식을 제공할 수 있습니다.
 
-### Our Solution
+### 솔루션
 
-DataHub Cloud offers a comprehensive set of features designed to support the implementation of a Data Mesh at your organization:
+DataHub Cloud는 조직에서 데이터 메시를 구현하는 것을 지원하도록 설계된 포괄적인 기능 집합을 제공합니다:
 
-- **[Data Domains](https://docs.datahub.com/docs/domains)**: Clearly define and manage data products within each business unit.
-- **[Data Products](https://docs.datahub.com/docs/dataproducts):** Ensure each domain owns and manages its data products, promoting autonomy and agility.
-- **[Data Contracts](https://docs.datahub.com/docs/managed-datahub/observe/data-contract)**: Establish clear agreements between domains to ensure consistency and reliability.
-    
+- **[데이터 도메인](https://docs.datahub.com/docs/domains)**: 각 비즈니스 단위 내에서 데이터 제품을 명확하게 정의하고 관리합니다.
+- **[데이터 제품](https://docs.datahub.com/docs/dataproducts):** 각 도메인이 자체 데이터 제품을 소유하고 관리하여 자율성과 민첩성을 촉진합니다.
+- **[데이터 계약](https://docs.datahub.com/docs/managed-datahub/observe/data-contract)**: 일관성과 신뢰성을 보장하기 위해 도메인 간 명확한 계약을 수립합니다.
+
 
 <p align="center">
-  <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/data-contract.png"/> 
+  <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/data-contract.png"/>
   <br />
-  <i style={{color:"grey"}}>Data Contracts in DataHub Cloud UI</i>
+  <i style={{color:"grey"}}>DataHub Cloud UI에서의 데이터 계약</i>
 </p>
 
 
 
-- **[Assertions](https://docs.datahub.com/docs/managed-datahub/observe/assertions)** Monitor data quality using freshness, volume, column validity, schema, and custom SQL checks to get notified first when things go wrong
+- **[Assertions](https://docs.datahub.com/docs/managed-datahub/observe/assertions)** 최신성, 볼륨, 컬럼 유효성, 스키마 및 커스텀 SQL 확인을 사용하여 데이터 품질을 모니터링하고 문제가 발생했을 때 가장 먼저 알림을 받습니다.
 
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/assertion-results.png"/>
  <br />
-  <i style={{color:"grey"}}>Assertion Results</i>
+  <i style={{color:"grey"}}>Assertion 결과</i>
 </p>
 
 
 
-- **[Metadata Tests](https://docs.datahub.com/docs/tests/metadata-tests)**: Monitor and enforce a central set of standards or policies across all of your data assets, e.g. to ensure data documentation, data ownership, and data classification.
+- **[메타데이터 테스트](https://docs.datahub.com/docs/tests/metadata-tests)**: 모든 데이터 에셋에 걸쳐 중앙화된 표준 또는 정책 집합을 모니터링하고 시행합니다. 예를 들어 데이터 문서화, 데이터 소유권 및 데이터 분류를 보장합니다.
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-mesh/test-results.png"/>
  <br />
-  <i style={{color:"grey"}}>Metadata Test Results</i>
+  <i style={{color:"grey"}}>메타데이터 테스트 결과</i>
 </p>
 
-By implementing these solutions, you can effectively manage decentralized data, enhance agility, and generate insights more efficiently.
+이러한 솔루션을 구현하면 분산 데이터를 효과적으로 관리하고, 민첩성을 향상시키며, 통찰력을 더 효율적으로 생성할 수 있습니다.
 
-## Conclusion
+## 결론
 
-Implementing a Data Mesh can significantly improve your organization's ability to manage and leverage decentralized data. By understanding the benefits of data mesh and following best practices for implementation, you can overcome the limitations of centralized data systems and enhance your agility, scalability, and ability to generate insights. DataHub Cloud was built from the ground up to help you achieve this, providing the tools and features necessary to implement a large-scale Data Mesh successfully.
+데이터 메시를 구현하면 분산 데이터를 관리하고 활용하는 조직의 능력이 크게 향상될 수 있습니다. 데이터 메시의 이점을 이해하고 구현을 위한 모범 사례를 따름으로써 중앙화된 데이터 시스템의 한계를 극복하고 민첩성, 확장성 및 통찰력 생성 능력을 향상시킬 수 있습니다. DataHub Cloud는 처음부터 대규모 데이터 메시를 성공적으로 구현하는 데 필요한 도구와 기능을 제공하여 이를 달성하는 데 도움을 주기 위해 구축되었습니다.

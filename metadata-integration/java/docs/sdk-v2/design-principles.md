@@ -1,22 +1,22 @@
-# Design Principles of Java SDK V2
+# Java SDK V2 설계 원칙
 
-This document provides an architectural overview of DataHub Java SDK V2, exploring the engineering principles and design patterns that enable its type-safe, efficient metadata management capabilities.
+이 문서는 DataHub Java SDK V2의 아키텍처 개요를 제공하며, 타입 안전하고 효율적인 메타데이터 관리 기능을 가능하게 하는 엔지니어링 원칙과 설계 패턴을 탐구합니다.
 
-## Architectural Philosophy
+## 아키텍처 철학
 
-SDK V2 is built on a foundation of **pragmatic reuse, intelligent caching, and layered abstractions**. Rather than reinventing infrastructure, it composes proven components into a coherent, intuitive API while introducing new patterns for efficient metadata operations.
+SDK V2는 **실용적인 재사용, 지능적인 캐싱, 계층화된 추상화**를 기반으로 구축되었습니다. 인프라를 재발명하는 대신, 검증된 컴포넌트를 일관되고 직관적인 API로 구성하면서 효율적인 메타데이터 작업을 위한 새로운 패턴을 도입합니다.
 
-### Core Tenets
+### 핵심 원칙
 
-1. **Leverage Existing Infrastructure** - Build atop battle-tested components
-2. **Type Safety as a First-Class Concern** - Exploit Java's type system for compile-time correctness
-3. **Separation of Concerns** - Clear boundaries between entity, operations, and transport layers
-4. **Efficiency Through Patches** - Surgical updates over full replacements
-5. **Intelligent Resource Management** - Lazy loading, caching, and batching
+1. **기존 인프라 활용** - 검증된 컴포넌트 위에 구축
+2. **타입 안전성을 최우선 관심사로** - 컴파일 타임 정확성을 위해 Java의 타입 시스템 활용
+3. **관심사 분리** - entity, 작업, 전송 계층 사이의 명확한 경계
+4. **Patches를 통한 효율성** - 전체 교체 대신 수술적 업데이트
+5. **지능적인 리소스 관리** - 지연 로딩, 캐싱, 배칭
 
-## Layer Architecture
+## 레이어 아키텍처
 
-SDK V2 employs a three-layer architecture with clear separation of responsibilities:
+SDK V2는 책임의 명확한 분리를 가진 3계층 아키텍처를 채택합니다:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -44,11 +44,11 @@ SDK V2 employs a three-layer architecture with clear separation of responsibilit
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Design Patterns
+## 설계 패턴
 
-### 1. Fluent Builder Pattern
+### 1. 플루언트 빌더 패턴
 
-Entity construction follows a **fluent builder pattern** that guides developers through required fields and provides IDE autocomplete support:
+Entity 구성은 개발자가 필수 필드를 안내받고 IDE 자동완성 지원을 받을 수 있는 **플루언트 빌더 패턴**을 따릅니다:
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -59,16 +59,16 @@ Dataset dataset = Dataset.builder()
     .build();
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Compile-time validation** - Missing required fields (platform, name) fail at compilation
-- **Immutable construction** - Builder accumulates state; `build()` creates immutable entity
-- **Discoverability** - IDE autocomplete reveals available methods
-- **Extensibility** - New optional parameters added without breaking existing code
+- **컴파일 타임 검증** - 누락된 필수 필드 (platform, name)는 컴파일 시 실패
+- **불변 구성** - 빌더가 상태를 축적; `build()`는 불변 entity 생성
+- **발견 가능성** - IDE 자동완성이 사용 가능한 메서드 표시
+- **확장성** - 기존 코드를 깨뜨리지 않고 새로운 선택적 파라미터 추가
 
-### 2. Patch Accumulation Pattern
+### 2. Patch 축적 패턴
 
-Rather than modifying aspects directly, mutations create **patch MCPs** that accumulate in a pending list:
+aspect를 직접 수정하는 대신, 변경이 대기 목록에 축적되는 **patch MCP**를 생성합니다:
 
 ```java
 dataset.addTag("pii")                          // Creates patch MCP
@@ -78,15 +78,15 @@ dataset.addTag("pii")                          // Creates patch MCP
 client.entities().upsert(dataset);  // Emits all patches atomically
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Deferred execution** - Batches multiple changes into a single network round-trip
-- **Atomic updates** - All patches applied together or none
-- **Efficient transmission** - Only changed fields sent over wire
-- **Reuse of proven infrastructure** - Leverages existing `datahub.client.patch` builders
+- **지연된 실행** - 여러 변경 사항을 단일 네트워크 왕복으로 배칭
+- **원자적 업데이트** - 모든 patches가 함께 적용되거나 하나도 적용되지 않음
+- **효율적인 전송** - 변경된 필드만 네트워크로 전송
+- **검증된 인프라 재사용** - 기존 `datahub.client.patch` 빌더 활용
 
-**Implementation Detail:**
-Entity base class maintains multiple change tracking mechanisms:
+**구현 세부 사항:**
+Entity 베이스 클래스는 여러 변경 추적 메커니즘을 유지합니다:
 
 ```java
 // From Entity.java
@@ -95,7 +95,7 @@ protected final List<MetadataChangeProposalWrapper> pendingMCPs; // Full aspect 
 protected final List<MetadataChangeProposal> pendingPatches;     // Incremental patches
 ```
 
-Each mutation (addTag, addOwner) creates a patch using existing builders:
+각 변경 (addTag, addOwner)은 기존 빌더를 사용하여 patch를 생성합니다:
 
 ```java
 // From Dataset.java
@@ -108,7 +108,7 @@ public Dataset addTag(@Nonnull String tagUrn) {
 }
 ```
 
-When `EntityClient.upsert()` is called, it emits **everything** accumulated on the entity in order:
+`EntityClient.upsert()`가 호출되면 entity에 축적된 **모든 것**을 순서대로 emit합니다:
 
 ```java
 // From EntityClient.upsert()
@@ -137,11 +137,11 @@ if (entity.hasPendingPatches()) {
 }
 ```
 
-**Key insight:** `upsert()` is not an either/or operation - it emits **all** accumulated changes. What gets sent depends on what you've accumulated on the entity, not which method you call.
+**핵심 인사이트:** `upsert()`는 양자택일 작업이 아닙니다 - entity에 축적된 **모든** 변경 사항을 emit합니다. 전송되는 내용은 어떤 메서드를 호출하느냐가 아니라 entity에 무엇을 축적했는지에 따라 달라집니다.
 
-### 3. Lazy Loading with TTL-Based Caching
+### 3. TTL 기반 캐싱을 통한 지연 로딩
 
-Entities support **lazy aspect loading** to minimize network calls while ensuring data freshness:
+Entity는 데이터 신선도를 보장하면서 네트워크 호출을 최소화하는 **지연 aspect 로딩**을 지원합니다:
 
 ```java
 // Entity maintains aspect cache with timestamps
@@ -150,13 +150,13 @@ protected final Map<String, Long> aspectTimestamps;
 protected long cacheTtlMs = 60000;  // 60-second default TTL
 ```
 
-**Loading Strategy:**
+**로딩 전략:**
 
-1. **Cache-only access** (`getAspectCached`) - Returns cached aspect or null
-2. **Lazy loading** (`getAspectLazy`) - Checks cache freshness, fetches from server if stale
-3. **Get-or-create** (`getOrCreateAspect`) - Returns cached or creates new empty aspect locally
+1. **캐시 전용 접근** (`getAspectCached`) - 캐시된 aspect 반환 또는 null
+2. **지연 로딩** (`getAspectLazy`) - 캐시 신선도 확인, 오래된 경우 서버에서 가져옴
+3. **가져오거나 생성** (`getOrCreateAspect`) - 캐시된 것을 반환하거나 로컬에서 새로운 빈 aspect 생성
 
-**Implementation:**
+**구현:**
 
 ```java
 protected <T extends RecordTemplate> T getAspectLazy(@Nonnull Class<T> aspectClass) {
@@ -184,16 +184,16 @@ protected <T extends RecordTemplate> T getAspectLazy(@Nonnull Class<T> aspectCla
 }
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Network efficiency** - Reduces redundant server calls
-- **Freshness guarantee** - Configurable TTL ensures data isn't stale
-- **Transparent to caller** - Complexity hidden behind simple getter
-- **Client binding** - Entities bound to EntityClient enable lazy loading
+- **네트워크 효율성** - 중복 서버 호출 감소
+- **신선도 보장** - 구성 가능한 TTL로 데이터가 오래되지 않도록 보장
+- **호출자에게 투명** - 복잡성이 단순한 getter 뒤에 숨겨짐
+- **클라이언트 바인딩** - EntityClient에 바인딩된 entity가 지연 로딩 활성화
 
-### 4. Mode-Aware Aspect Selection
+### 4. 모드 인식 Aspect 선택
 
-SDK V2 distinguishes between **user-initiated edits** (SDK mode) and **system/pipeline writes** (INGESTION mode):
+SDK V2는 **사용자 주도 편집** (SDK 모드)과 **시스템/파이프라인 쓰기** (INGESTION 모드)를 구분합니다:
 
 ```java
 public enum OperationMode {
@@ -202,12 +202,12 @@ public enum OperationMode {
 }
 ```
 
-**Aspect Routing:**
+**Aspect 라우팅:**
 
-- **SDK Mode** → `editableDatasetProperties`, `editableSchemaMetadata`
-- **INGESTION Mode** → `datasetProperties`, `schemaMetadata`
+- **SDK 모드** → `editableDatasetProperties`, `editableSchemaMetadata`
+- **INGESTION 모드** → `datasetProperties`, `schemaMetadata`
 
-**Implementation:**
+**구현:**
 
 ```java
 public Dataset setDescription(@Nonnull String description) {
@@ -219,18 +219,18 @@ public Dataset setDescription(@Nonnull String description) {
 }
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Clear provenance** - Distinguishes human vs machine edits
-- **UI consistency** - DataHub UI shows editable aspects as user overrides
-- **Non-destructive** - System data preserved even when users add documentation
-- **Lineage preservation** - Ingestion pipelines can refresh system data without clobbering user edits
+- **명확한 출처** - 사람과 기계의 편집을 구분
+- **UI 일관성** - DataHub UI가 편집 가능한 aspect를 사용자 재정의로 표시
+- **비파괴적** - 사용자가 문서를 추가해도 시스템 데이터 보존
+- **lineage 보존** - ingestion 파이프라인이 사용자 편집을 덮어쓰지 않고 시스템 데이터 새로 고침 가능
 
-### 5. Two Entity Lifecycle Patterns
+### 5. 두 가지 Entity 수명 주기 패턴
 
-Entities can be instantiated in two ways, each with distinct semantics:
+Entity는 두 가지 방식으로 인스턴스화될 수 있으며 각각 고유한 의미를 가집니다:
 
-#### **Pattern 1: Builder Construction (New Entities)**
+#### **패턴 1: 빌더 구성 (새 Entity)**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -241,9 +241,9 @@ Dataset dataset = Dataset.builder()
 // aspectTimestamps empty - indicates new entity
 ```
 
-**Use case:** Creating new entities from scratch
+**사용 사례:** 처음부터 새 entity 생성
 
-#### **Pattern 2: Server Loading (Existing Entities)**
+#### **패턴 2: 서버 로딩 (기존 Entity)**
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -252,11 +252,11 @@ Dataset dataset = client.entities().get(urn);
 // Entity automatically bound to client for lazy loading
 ```
 
-**Use case:** Modifying existing entities with current server state. When you access aspects not already cached, the entity will automatically fetch them from the server (lazy loading).
+**사용 사례:** 현재 서버 상태로 기존 entity 수정. 이미 캐시되지 않은 aspect에 접근할 때 entity는 자동으로 서버에서 가져옵니다 (지연 로딩).
 
-### 6. Client Binding for Lazy Loading
+### 6. 지연 로딩을 위한 클라이언트 바인딩
 
-Entities are **automatically bound to an EntityClient** when loaded from the server or during `upsert()` to enable lazy aspect fetching:
+Entity는 서버에서 로드되거나 `upsert()` 중에 지연 aspect 가져오기를 활성화하기 위해 **자동으로 EntityClient에 바인딩**됩니다:
 
 ```java
 public void bindToClient(@Nonnull EntityClient client,
@@ -270,24 +270,24 @@ public void bindToClient(@Nonnull EntityClient client,
 }
 ```
 
-**Binding occurs automatically** during `upsert()`:
+**바인딩은 `upsert()` 중에 자동으로 발생합니다:**
 
 ```java
 // From EntityClient.upsert()
 entity.bindToClient(this, config.getMode());
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Transparent lazy loading** - Aspects fetched on first access if not cached
-- **Automatic binding** - Entities bound to client during `get()` or `upsert()` operations
-- **Mode propagation** - Client mode automatically applied to entity
+- **투명한 지연 로딩** - 캐시되지 않은 경우 첫 번째 접근 시 aspect 가져옴
+- **자동 바인딩** - `get()` 또는 `upsert()` 작업 중 entity가 클라이언트에 바인딩
+- **모드 전파** - 클라이언트 모드가 자동으로 entity에 적용
 
-## Type Safety & Generic Design
+## 타입 안전성 및 제네릭 설계
 
-### Strongly-Typed Aspect Handling
+### 강력한 타입의 Aspect 처리
 
-SDK V2 leverages Java generics to provide compile-time type safety for aspects:
+SDK V2는 Java 제네릭을 활용하여 aspect에 대한 컴파일 타임 타입 안전성을 제공합니다:
 
 ```java
 // Type-safe aspect retrieval
@@ -301,16 +301,16 @@ protected <T extends RecordTemplate> T getAspectLazy(@Nonnull Class<T> aspectCla
 DatasetProperties props = dataset.getAspectLazy(DatasetProperties.class);
 ```
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Compile-time checking** - Type mismatches caught before runtime
-- **Refactoring safety** - IDE can trace aspect usages across codebase
-- **Autocomplete support** - IDE suggests available aspects
-- **Runtime safety** - `ClassCastException` impossible with correct usage
+- **컴파일 타임 검사** - 타입 불일치가 런타임 전에 발견
+- **리팩토링 안전성** - IDE가 코드베이스 전체에서 aspect 사용을 추적 가능
+- **자동완성 지원** - IDE가 사용 가능한 aspect 제안
+- **런타임 안전성** - 올바른 사용으로 `ClassCastException` 불가능
 
-### URN Type Safety
+### URN 타입 안전성
 
-Entity-specific URN types prevent incorrect URN usage:
+Entity별 URN 타입이 잘못된 URN 사용을 방지합니다:
 
 ```java
 public class Dataset extends Entity {
@@ -324,27 +324,27 @@ DatasetUrn urn = dataset.getDatasetUrn();  // Type-safe
 Urn genericUrn = dataset.getUrn();         // Also available
 ```
 
-## Integration with Existing Infrastructure
+## 기존 인프라와의 통합
 
-### Reuse of Patch Builders
+### Patch 빌더 재사용
 
-SDK V2 **reuses existing patch builders** from `datahub.client.patch` rather than creating new implementations:
+SDK V2는 새로운 구현을 만들지 않고 `datahub.client.patch`의 **기존 patch 빌더를 재사용**합니다:
 
-- `OwnershipPatchBuilder` - Owner additions/removals
-- `GlobalTagsPatchBuilder` - Tag management
-- `GlossaryTermsPatchBuilder` - Term associations
-- `DomainsPatchBuilder` - Domain assignment
-- `DatasetPropertiesPatchBuilder` - Property updates
-- `EditableDatasetPropertiesPatchBuilder` - Editable property updates
+- `OwnershipPatchBuilder` - 소유자 추가/제거
+- `GlobalTagsPatchBuilder` - 태그 관리
+- `GlossaryTermsPatchBuilder` - 용어 연관
+- `DomainsPatchBuilder` - 도메인 할당
+- `DatasetPropertiesPatchBuilder` - 속성 업데이트
+- `EditableDatasetPropertiesPatchBuilder` - 편집 가능한 속성 업데이트
 
-**Engineering Benefits:**
+**엔지니어링 이점:**
 
-- **Battle-tested logic** - Patch builders used in production by Python SDK
-- **Consistency** - Same patch semantics across language SDKs
-- **Maintainability** - Single implementation to maintain
-- **Correctness** - Complex JSON Patch logic already validated
+- **검증된 로직** - Patch 빌더는 Python SDK에서 프로덕션으로 사용
+- **일관성** - 언어별 SDK 전체에서 동일한 patch 의미론
+- **유지보수성** - 유지관리할 단일 구현
+- **정확성** - 복잡한 JSON Patch 로직 이미 검증됨
 
-**Example Integration:**
+**통합 예제:**
 
 ```java
 public Dataset addOwner(@Nonnull String ownerUrn, @Nonnull OwnershipType type) {
@@ -357,35 +357,35 @@ public Dataset addOwner(@Nonnull String ownerUrn, @Nonnull OwnershipType type) {
 }
 ```
 
-### Leverage RestEmitter
+### RestEmitter 활용
 
-Transport layer reuses `RestEmitter` for HTTP communication:
+전송 계층은 HTTP 통신을 위해 `RestEmitter`를 재사용합니다:
 
-- Non-blocking emission with futures
-- Configurable retries and timeouts
-- Token-based authentication
-- Async HTTP client pooling
+- 미래를 이용한 비블로킹 emission
+- 구성 가능한 재시도 및 타임아웃
+- 토큰 기반 인증
+- 비동기 HTTP 클라이언트 풀링
 
-**No changes to RestEmitter** - SDK V2 is purely additive.
+**RestEmitter에 변경 없음** - SDK V2는 순수하게 추가적입니다.
 
-## Resource Management & Efficiency
+## 리소스 관리 및 효율성
 
-### Batched Emission
+### 배치 Emission
 
-Multiple patches accumulated and emitted atomically:
+여러 patches가 축적되어 원자적으로 emit됩니다:
 
 ```java
 dataset.addTag("tag1").addTag("tag2").addOwner("user1", OWNER);
 client.entities().upsert(dataset);  // Single network call, 3 patches
 ```
 
-### Connection Pooling
+### 연결 풀링
 
-RestEmitter uses `CloseableHttpAsyncClient` with connection pooling for efficient HTTP reuse.
+RestEmitter는 효율적인 HTTP 재사용을 위해 연결 풀링을 사용하는 `CloseableHttpAsyncClient`를 사용합니다.
 
-### Graceful Degradation
+### 우아한 성능 저하
 
-Lazy loading failures logged but don't crash:
+지연 로딩 실패는 기록되지만 충돌하지 않습니다:
 
 ```java
 catch (Exception e) {
@@ -394,60 +394,60 @@ catch (Exception e) {
 }
 ```
 
-## Comparison: V1 vs V2 Architecture
+## 비교: V1 vs V2 아키텍처
 
 | Aspect                | V1 (RestEmitter)               | V2 (DataHubClientV2)        |
 | --------------------- | ------------------------------ | --------------------------- |
-| **Abstraction Level** | Low - MCPs                     | High - Entities             |
-| **URN Construction**  | Manual strings                 | Automatic from builder      |
-| **Aspect Wiring**     | Manual MCP building            | Hidden in entity methods    |
-| **Updates**           | Full aspect replacement        | Patch-based incremental     |
-| **Type Safety**       | Minimal - generic MCPs         | Strong - typed entities     |
-| **Lazy Loading**      | Not supported                  | TTL-based caching           |
-| **Mode Awareness**    | Not supported                  | SDK vs INGESTION modes      |
-| **Learning Curve**    | Steep - requires MCP knowledge | Gentle - intuitive builders |
+| **추상화 수준** | 낮음 - MCP                     | 높음 - Entities             |
+| **URN 구성**  | 수동 문자열                 | 빌더에서 자동 생성      |
+| **Aspect 연결**     | 수동 MCP 빌딩            | entity 메서드에 숨겨짐    |
+| **업데이트**           | 전체 aspect 교체        | Patch 기반 점진적     |
+| **타입 안전성**       | 최소 - 제네릭 MCP         | 강력 - 타입 entity     |
+| **지연 로딩**      | 지원 안 됨                  | TTL 기반 캐싱           |
+| **모드 인식**    | 지원 안 됨                  | SDK vs INGESTION 모드      |
+| **학습 곡선**    | 가파름 - MCP 지식 필요 | 완만함 - 직관적인 빌더 |
 
-## Performance Characteristics
+## 성능 특성
 
-### Network Efficiency
+### 네트워크 효율성
 
-- **Patch-based updates**: O(changed_fields) vs O(all_fields)
-- **Lazy loading**: Aspects fetched only when accessed
-- **Batch emission**: Multiple patches sent in single flush
-- **Connection reuse**: HTTP client pooling
+- **Patch 기반 업데이트**: O(변경된_필드) vs O(모든_필드)
+- **지연 로딩**: 접근 시에만 aspect 가져옴
+- **배치 emission**: 여러 patches를 단일 flush로 전송
+- **연결 재사용**: HTTP 클라이언트 풀링
 
-### Memory Efficiency
+### 메모리 효율성
 
-- **Aspect caching**: Only fetched aspects stored
-- **TTL expiration**: Stale aspects eligible for GC
-- **Lazy instantiation**: Aspects created on-demand
+- **Aspect 캐싱**: 가져온 aspect만 저장
+- **TTL 만료**: 오래된 aspect가 GC 대상이 됨
+- **지연 인스턴스화**: Aspect가 요청 시 생성
 
-### Time Complexity
+### 시간 복잡도
 
-- **Entity creation**: O(1) - builder accumulation
-- **Patch addition**: O(1) - append to list
-- **Upsert operation**: O(n) where n = pending patches or cached aspects
-- **Lazy fetch**: O(1) cache lookup + O(1) network if miss
+- **Entity 생성**: O(1) - 빌더 축적
+- **Patch 추가**: O(1) - 목록에 추가
+- **Upsert 작업**: O(n), n = 대기 중인 patches 또는 캐시된 aspect
+- **지연 가져오기**: O(1) 캐시 조회 + 미스 시 O(1) 네트워크
 
-## Extension Points
+## 확장 포인트
 
-SDK V2 designed for extensibility:
+SDK V2는 확장성을 위해 설계되었습니다:
 
-1. **New entity types** - Extend `Entity` base class
-2. **Custom aspects** - Use `getAspectLazy` / `getOrCreateAspect`
-3. **New patch types** - Leverage existing patch builders
-4. **Custom caching** - Override `cacheTtlMs`
-5. **Transport customization** - Customize RestEmitter via builder
+1. **새 entity 타입** - `Entity` 베이스 클래스 확장
+2. **커스텀 aspects** - `getAspectLazy` / `getOrCreateAspect` 사용
+3. **새 patch 타입** - 기존 patch 빌더 활용
+4. **커스텀 캐싱** - `cacheTtlMs` 재정의
+5. **전송 커스터마이징** - 빌더를 통해 RestEmitter 커스터마이징
 
-## Summary
+## 요약
 
-Java SDK V2 achieves its goals through principled design:
+Java SDK V2는 원칙적인 설계를 통해 목표를 달성합니다:
 
-- **Reuse over reinvention** - Leverages existing patch builders and RestEmitter
-- **Patches over replacements** - Efficient incremental updates
-- **Lazy over eager** - Aspects fetched on-demand with caching
-- **Type safety over convenience** - Strong typing throughout
-- **Layers over monoliths** - Clear separation of entity, operations, transport
-- **Pragmatism over purity** - Mode-aware behavior matches real-world usage
+- **재발명보다 재사용** - 기존 patch 빌더와 RestEmitter 활용
+- **교체보다 patches** - 효율적인 점진적 업데이트
+- **즉시 로딩보다 지연 로딩** - 캐싱으로 요청 시 aspect 가져오기
+- **편의보다 타입 안전성** - 전체에 걸친 강력한 타이핑
+- **모놀리스보다 계층** - entity, 작업, 전송의 명확한 분리
+- **순수성보다 실용성** - 모드 인식 동작이 실제 사용 패턴과 일치
 
-The result is an SDK that feels natural to Java developers while providing the efficiency and correctness required for production metadata management at scale.
+그 결과 Java 개발자에게 자연스럽게 느껴지는 SDK가 생성되며, 대규모 프로덕션 메타데이터 관리에 필요한 효율성과 정확성을 제공합니다.

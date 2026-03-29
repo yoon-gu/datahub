@@ -1,39 +1,39 @@
 # Great Expectations
 
-This guide helps to setup and configure `DataHubValidationAction` in Great Expectations to send assertions(expectations) and their results to DataHub using DataHub's Python Rest emitter.
+이 가이드는 DataHub의 Python REST 에미터를 사용하여 assertions(기대값)와 그 결과를 DataHub로 전송하기 위해 Great Expectations에서 `DataHubValidationAction`을 설정하고 구성하는 방법을 안내합니다.
 
-## Capabilities
+## 기능
 
-`DataHubValidationAction` pushes assertions metadata to DataHub. This includes
+`DataHubValidationAction`은 DataHub에 assertions 메타데이터를 푸시합니다. 여기에는 다음이 포함됩니다.
 
-- **Assertion Details**: Details of assertions (i.e. expectation) set on a Dataset (Table).
-- **Assertion Results**: Evaluation results for an assertion tracked over time.
+- **Assertion 세부 정보**: Dataset(테이블)에 설정된 assertions(기대값)의 세부 정보.
+- **Assertion 결과**: 시간이 지남에 따라 추적되는 assertion의 평가 결과.
 
-This integration supports v3 api datasources using SqlAlchemyExecutionEngine and SparkDFExecutionEngine.
+이 통합은 SqlAlchemyExecutionEngine과 SparkDFExecutionEngine을 사용하는 v3 API 데이터 소스를 지원합니다.
 
-For SparkDFExecutionEngine, DataHubValidationAction would map the **Data Asset** of GX to dataSet's entity name when constructing datasets URN.
+SparkDFExecutionEngine의 경우, DataHubValidationAction은 dataset URN을 구성할 때 GX의 **Data Asset**을 dataset의 엔티티 이름으로 매핑합니다.
 
-## Limitations
+## 제한 사항
 
-This integration does not support
+이 통합은 다음을 지원하지 않습니다.
 
-- v2 Datasources such as SqlAlchemyDataset
-- v3 Datasources using execution engine other than SqlAlchemyExecutionEngine,SparkDFExecutionEngine (Pandas)
-- Cross-dataset expectations (those involving > 1 table)
+- SqlAlchemyDataset과 같은 v2 데이터 소스
+- SqlAlchemyExecutionEngine, SparkDFExecutionEngine 이외의 실행 엔진(Pandas)을 사용하는 v3 데이터 소스
+- 여러 테이블(> 1개)을 포함하는 크로스 dataset 기대값
 
-## Compatibility
+## 호환성
 
-- DataHubValidationAction with SparkDFExecutionEngine has only been tested with **Great Expectation >= 0.18.0, <1.0.0**. Other versions may not be compatible
+- SparkDFExecutionEngine을 사용하는 DataHubValidationAction은 **Great Expectation >= 0.18.0, <1.0.0**에서만 테스트되었습니다. 다른 버전은 호환되지 않을 수 있습니다.
 
-## Setting up
+## 설정
 
-1. Install the required dependency in your Great Expectations environment.
+1. Great Expectations 환경에 필요한 종속성을 설치합니다.
 
    ```shell
    pip install 'acryl-datahub-gx-plugin'
    ```
 
-2. To add `DataHubValidationAction` in Great Expectations Checkpoint, add following configuration in action_list for your Great Expectations `Checkpoint`. For more details on setting action_list, see [Checkpoints and Actions](https://docs.greatexpectations.io/docs/reference/checkpoints_and_actions/)
+2. Great Expectations Checkpoint에 `DataHubValidationAction`을 추가하려면 Great Expectations `Checkpoint`의 action_list에 다음 설정을 추가하세요. action_list 설정에 대한 자세한 내용은 [Checkpoints and Actions](https://docs.greatexpectations.io/docs/reference/checkpoints_and_actions/)를 참고하세요.
    ```yml
    action_list:
      - name: datahub_action
@@ -42,25 +42,25 @@ This integration does not support
          class_name: DataHubValidationAction
          server_url: http://localhost:8080 #datahub server url
    ```
-   **Configuration options:**
-   - `server_url` (required): URL of DataHub GMS endpoint
-   - `env` (optional, defaults to "PROD"): Environment to use in namespace when constructing dataset URNs.
-   - `exclude_dbname` (optional): Exclude dbname / catalog when constructing dataset URNs. (Highly applicable to Trino / Presto where we want to omit catalog e.g. `hive`)
-   - `platform_alias` (optional): Platform alias when constructing dataset URNs. e.g. main data platform is `presto-on-hive` but using `trino` to run the test
-   - `platform_instance_map` (optional): Platform instance mapping to use when constructing dataset URNs. Maps the GX 'data source' name to a platform instance on DataHub. e.g. `platform_instance_map: { "datasource_name": "warehouse" }`
-   - `graceful_exceptions` (defaults to true): If set to true, most runtime errors in the lineage backend will be suppressed and will not cause the overall checkpoint to fail. Note that configuration issues will still throw exceptions.
-   - `token` (optional): Bearer token used for authentication.
-   - `timeout_sec` (optional): Per-HTTP request timeout.
-   - `retry_status_codes` (optional): Retry HTTP request also on these status codes.
-   - `retry_max_times` (optional): Maximum times to retry if HTTP request fails. The delay between retries is increased exponentially.
-   - `extra_headers` (optional): Extra headers which will be added to the datahub request.
-   - `parse_table_names_from_sql` (defaults to false): The integration can use an SQL parser to try to parse the datasets being asserted. This parsing is disabled by default, but can be enabled by setting `parse_table_names_from_sql: True`. The parser is based on the [`sqllineage`](https://pypi.org/project/sqllineage/) package.
-   - `convert_urns_to_lowercase` (optional): Whether to convert dataset urns to lowercase.
+   **설정 옵션:**
+   - `server_url` (필수): DataHub GMS 엔드포인트의 URL
+   - `env` (선택 사항, 기본값 "PROD"): dataset URN을 구성할 때 네임스페이스에 사용할 환경.
+   - `exclude_dbname` (선택 사항): dataset URN을 구성할 때 dbname/카탈로그를 제외합니다. (카탈로그를 생략하려는 Trino/Presto에 매우 적용 가능, 예: `hive`)
+   - `platform_alias` (선택 사항): dataset URN을 구성할 때의 플랫폼 별칭. 예: 주 데이터 플랫폼은 `presto-on-hive`이지만 테스트를 실행하는 데 `trino` 사용
+   - `platform_instance_map` (선택 사항): dataset URN을 구성할 때 사용할 플랫폼 인스턴스 매핑. GX '데이터 소스' 이름을 DataHub의 플랫폼 인스턴스에 매핑합니다. 예: `platform_instance_map: { "datasource_name": "warehouse" }`
+   - `graceful_exceptions` (기본값 true): true로 설정하면 lineage 백엔드의 대부분의 런타임 오류가 억제되어 전체 checkpoint가 실패하지 않습니다. 설정 문제는 여전히 예외를 발생시킵니다.
+   - `token` (선택 사항): 인증에 사용되는 Bearer 토큰.
+   - `timeout_sec` (선택 사항): HTTP 요청당 타임아웃.
+   - `retry_status_codes` (선택 사항): 이 상태 코드에서도 HTTP 요청을 재시도합니다.
+   - `retry_max_times` (선택 사항): HTTP 요청이 실패할 경우 최대 재시도 횟수. 재시도 간격은 지수적으로 증가합니다.
+   - `extra_headers` (선택 사항): datahub 요청에 추가될 추가 헤더.
+   - `parse_table_names_from_sql` (기본값 false): 통합은 SQL 파서를 사용하여 어설트되는 dataset을 파싱하려고 시도할 수 있습니다. 이 파싱은 기본적으로 비활성화되어 있지만 `parse_table_names_from_sql: True`로 설정하여 활성화할 수 있습니다. 파서는 [`sqllineage`](https://pypi.org/project/sqllineage/) 패키지를 기반으로 합니다.
+   - `convert_urns_to_lowercase` (선택 사항): dataset URN을 소문자로 변환할지 여부.
 
-## Debugging
+## 디버깅
 
-Set environment variable `DATAHUB_DEBUG` (default `false`) to `true` to enable debug logging for `DataHubValidationAction`.
+`DataHubValidationAction`에 대한 디버그 로깅을 활성화하려면 환경 변수 `DATAHUB_DEBUG` (기본값 `false`)를 `true`로 설정하세요.
 
-## Learn more
+## 더 알아보기
 
-To see the Great Expectations in action, check out [this demo](https://www.loom.com/share/d781c9f0b270477fb5d6b0c26ef7f22d) from the Feb 2022 townhall.
+Great Expectations가 실제로 작동하는 것을 보려면 2022년 2월 타운홀에서의 [이 데모](https://www.loom.com/share/d781c9f0b270477fb5d6b0c26ef7f22d)를 확인하세요.

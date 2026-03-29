@@ -1,28 +1,28 @@
 ---
-title: "Introduction"
+title: "소개"
 ---
 
 # Transformers
 
-## What’s a transformer?
+## Transformer란 무엇인가요?
 
-Oftentimes we want to modify metadata before it reaches the ingestion sink – for instance, we might want to add custom tags, ownership, properties, or patch some fields. A transformer allows us to do exactly these things.
+우리는 종종 메타데이터가 ingestion sink에 도달하기 전에 수정하고 싶습니다 – 예를 들어 커스텀 태그, 소유권, 속성을 추가하거나 일부 필드를 patch하고 싶을 수 있습니다. Transformer는 정확히 이러한 작업을 수행할 수 있게 해줍니다.
 
-Moreover, a transformer allows one to have fine-grained control over the metadata that’s ingested without having to modify the ingestion framework's code yourself. Instead, you can write your own module that can transform metadata events however you like. To include a transformer into a recipe, all that's needed is the name of the transformer as well as any configuration that the transformer needs.
+게다가, transformer를 사용하면 ingestion 프레임워크의 코드를 직접 수정하지 않고도 ingestion되는 메타데이터에 대한 세밀한 제어가 가능합니다. 대신, 원하는 방식으로 메타데이터 이벤트를 변환할 수 있는 자체 모듈을 작성할 수 있습니다. transformer를 recipe에 포함시키려면 transformer의 이름과 transformer에 필요한 구성만 있으면 됩니다.
 
 :::note
 
-Providing urns for metadata that does not already exist will result in unexpected behavior. Ensure any tags, terms, domains, etc. urns that you want to apply in your transformer already exist in your DataHub instance.
+존재하지 않는 메타데이터에 대한 URN을 제공하면 예상치 못한 동작이 발생합니다. transformer에서 적용하려는 태그, 용어, 도메인 등의 URN이 DataHub 인스턴스에 이미 존재하는지 확인하세요.
 
-For example, adding a domain urn in your transformer to apply to datasets will not create the domain entity if it doesn't exist. Therefore, you can't add documentation to it and it won't show up in Advanced Search. This goes for any metadata you are applying in transformers.
+예를 들어, transformer에서 dataset에 적용하기 위해 도메인 URN을 추가해도 해당 도메인 entity가 존재하지 않으면 생성되지 않습니다. 따라서 문서를 추가할 수 없고 고급 검색에 표시되지 않습니다. 이는 transformer에서 적용하는 모든 메타데이터에 해당됩니다.
 
 :::
 
-## Provided transformers
+## 제공되는 transformer
 
-Aside from the option of writing your own transformer (see below), we provide some simple transformers for the use cases of adding: tags, glossary terms, properties and ownership information.
+자체 transformer를 작성하는 옵션(아래 참조) 외에도, 태그, glossary terms, 속성 및 소유권 정보를 추가하는 사용 사례를 위한 간단한 transformer를 제공합니다.
 
-DataHub provided transformers for dataset are:
+DataHub가 제공하는 dataset용 transformer는 다음과 같습니다:
 
 - [Simple Add Dataset ownership](./dataset_transformer.md#simple-add-dataset-ownership)
 - [Pattern Add Dataset ownership](./dataset_transformer.md#pattern-add-dataset-ownership)

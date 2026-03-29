@@ -1,5 +1,5 @@
 ---
-description: This page provides an overview of working with DataHub Column Assertions
+description: 이 페이지에서는 DataHub Column Assertions 사용 방법에 대한 개요를 제공합니다
 ---
 
 import FeatureAvailability from '@site/src/components/FeatureAvailability';
@@ -8,186 +8,154 @@ import FeatureAvailability from '@site/src/components/FeatureAvailability';
 
 <FeatureAvailability saasOnly />
 
-> The **Column Assertions** feature is available as part of the **DataHub Cloud Observe** module of DataHub Cloud.
-> If you are interested in learning more about **DataHub Cloud Observe** or trying it out, please [visit our website](https://datahub.com/products/data-observability/).
+> **Column Assertions** 기능은 DataHub Cloud의 **DataHub Cloud Observe** 모듈의 일부로 제공됩니다.
+> **DataHub Cloud Observe**에 대해 더 알아보거나 체험해 보고 싶다면 [웹사이트를 방문](https://datahub.com/products/data-observability/)하세요.
 
-## Introduction
+## 소개
 
-Can you remember a time when an important warehouse table column changed dramatically, with little or no notice? Perhaps the number of null values suddenly spiked, or a new value was added to a fixed set of possible values. If the answer is yes, how did you initially find out? We'll take a guess - someone looking at an internal reporting dashboard or worse, a user using your your product, sounded an alarm when a number looked a bit out of the ordinary.
+예고도 없이 중요한 웨어하우스 테이블 컬럼이 급격하게 변경된 경험이 있으신가요? 아마도 null 값의 수가 갑자기 급증하거나, 고정된 값 집합에 새로운 값이 추가되었을 수 있습니다. 그렇다면 처음에 어떻게 알게 되셨나요? 내부 보고 대시보드를 보던 누군가가, 또는 더 심하게는 제품을 사용하는 사용자가 수치가 이상해 보인다며 경보를 울렸을 것입니다.
 
-There are many reasons why important columns in your Snowflake, Redshift, BigQuery, or Databricks tables may change - application code bugs, new feature rollouts, etc. Oftentimes, these changes break important assumptions made about the data used in building key downstream data products like reporting dashboards or data-driven product features.
+Snowflake, Redshift, BigQuery, Databricks 테이블의 중요한 컬럼이 변경되는 이유는 다양합니다 - 애플리케이션 코드 버그, 새 기능 출시 등. 이러한 변경은 종종 보고 대시보드나 데이터 기반 제품 기능과 같은 주요 다운스트림 데이터 제품 구축에 사용되는 데이터에 대한 중요한 가정을 깨뜨립니다.
 
-What if you could reduce the time to detect these incidents, so that the people responsible for the data were made aware of data issues before anyone else? With DataHub Cloud Column Assertions, you can.
+데이터 담당자가 다른 누구보다 먼저 데이터 문제를 인식할 수 있도록 인시던트 감지 시간을 단축할 수 있다면 어떨까요? DataHub Cloud Column Assertions를 통해 이것이 가능합니다.
 
-With DataHub Cloud, you can define **Column Value** assertions to ensure each value in a column matches specific constraints, and **Column Metric** assertions to ensure that computed metrics from columns align with your expectations. As soon as things go wrong, your team will be the first to know, before the data issue becomes a larger data incident.
+DataHub Cloud를 사용하면 컬럼의 각 값이 특정 제약 조건을 충족하는지 확인하는 **Column Value** assertion과 컬럼에서 계산된 지표가 기대치에 부합하는지 확인하는 **Column Metric** assertion을 정의할 수 있습니다. 문제가 발생하는 즉시 데이터 문제가 더 큰 인시던트로 번지기 전에 팀이 가장 먼저 알게 됩니다.
 
-In this guide, we'll cover the basics of Column Assertions - what they are, how to configure them, and more - so that you and your team can start building trust in your most important data assets.
+이 가이드에서는 Column Assertions의 기본 사항(정의, 구성 방법 등)을 다루어 팀이 중요한 데이터 자산에 대한 신뢰를 구축할 수 있도록 돕겠습니다.
 
-Let's dive in!
+자세히 살펴봅시다!
 
-## Support
+## 지원 현황
 
-Column Assertions are currently supported for:
+Column Assertions는 현재 다음을 지원합니다:
 
 1. Snowflake
 2. Redshift
 3. BigQuery
 4. Databricks
-5. DataHub Dataset Profile Metrics (collected via ingestion)
+5. DataHub Dataset Profile Metrics (수집을 통해 수집됨)
 
-Note that an Ingestion Source _must_ be configured with the data platform of your choice in
-DataHub Cloud's **Ingestion** tab.
+DataHub Cloud의 **Ingestion** 탭에서 선택한 데이터 플랫폼에 대한 수집 소스가 _반드시_ 구성되어 있어야 합니다.
 
-> Note that Column Assertions are not yet supported if you are connecting to your warehouse
-> using the DataHub CLI.
+> DataHub CLI를 사용하여 웨어하우스에 연결하는 경우 Column Assertions는 아직 지원되지 않습니다.
 
-## What is a Column Assertion?
+## Column Assertion이란?
 
-A **Column Assertion** is a highly configurable Data Quality rule used to monitor specific columns of a Data Warehouse table for unexpected changes.
+**Column Assertion**은 데이터 웨어하우스 테이블의 특정 컬럼에서 예상치 못한 변화를 모니터링하는 데 사용되는 고도로 구성 가능한 데이터 품질 규칙입니다.
 
-Column Assertions are defined to validate a specific column, and can be used to
+Column Assertions는 특정 컬럼을 검증하도록 정의되며, 다음 두 가지 용도로 사용할 수 있습니다:
 
-1. Validate that the values of the column match some constraints (regex, allowed values, max, min, etc) across rows OR
-2. Validate that specific column aggregation metrics match some expectations across rows.
+1. 컬럼 값이 여러 행에 걸쳐 특정 제약 조건(regex, 허용 값, 최대, 최소 등)과 일치하는지 검증하거나
+2. 특정 컬럼 집계 지표가 여러 행에 걸쳐 특정 기대치와 일치하는지 검증합니다.
 
-Column Assertions can be particularly useful for documenting and enforcing column-level "contracts", i.e. formal specifications about the expected contents of a particular column that can be used for coordinating among producers and consumers of the data.
+Column Assertions는 특히 컬럼 수준 "계약"(즉, 데이터 생산자와 소비자 간의 조율에 사용할 수 있는 특정 컬럼의 예상 내용에 대한 공식적인 사양)을 문서화하고 시행하는 데 유용합니다.
 
-### Anatomy of Column Assertion
+### Column Assertion의 구조
 
-Column Assertions can be divided into two main types: **Column Value** and **Column Metric** Assertions.
+Column Assertions는 두 가지 주요 유형으로 나눌 수 있습니다: **Column Value** 및 **Column Metric** Assertions.
 
-A **Column Value Assertion** is used to monitor the value of a specific column in a table, and ensure that every row
-adheres to a specific condition. In comparison, a **Column Metric Assertion** is used to compute a metric for that column,
-and ensure that the value of that metric adheres to a specific condition.
+**Column Value Assertion**은 테이블의 특정 컬럼 값을 모니터링하고 모든 행이 특정 조건을 따르도록 보장하는 데 사용됩니다. 반면 **Column Metric Assertion**은 해당 컬럼에 대한 지표를 계산하고 해당 지표 값이 특정 조건을 따르도록 보장하는 데 사용됩니다.
 
-At the most basic level, both types consist of a few important parts:
+기본적으로 두 유형 모두 몇 가지 중요한 구성 요소로 이루어집니다:
 
-1. An **Evaluation Schedule**
-2. A **Column Selection**
-3. A **Evaluation Criteria**
-4. A **Row Evaluation Type**
+1. **평가 스케줄**
+2. **컬럼 선택**
+3. **평가 기준**
+4. **행 평가 유형**
 
-In this section, we'll give an overview of each.
+이 섹션에서 각각에 대한 개요를 설명합니다.
 
-#### 1. Evaluation Schedule
+#### 1. 평가 스케줄
 
-The **Evaluation Schedule**: This defines how often to evaluate the Column Assertion against the given warehouse table.
-This should usually be configured to match the expected change frequency of the table, although it can also be less
-frequently depending on your requirements. You can also specify specific days of the week, hours in the day, or even
-minutes in an hour.
+**평가 스케줄**: 지정된 웨어하우스 테이블에 대해 Column Assertion을 평가하는 빈도를 정의합니다. 일반적으로 테이블의 예상 변경 빈도에 맞게 구성해야 하지만, 요구 사항에 따라 더 낮은 빈도로 설정할 수도 있습니다. 주의 특정 요일, 시간 내의 특정 시, 또는 시간 내의 특정 분을 지정할 수도 있습니다.
 
-#### 2. Column Selection
+#### 2. 컬럼 선택
 
-The **Column Selection**: This defines the column that should be monitored by the Column Assertion. You can choose from
-any of the columns from the table listed in the dropdown. Note that columns of struct / object type are not currently supported.
+**컬럼 선택**: Column Assertion으로 모니터링해야 할 컬럼을 정의합니다. 드롭다운에 나열된 테이블의 어떤 컬럼에서도 선택할 수 있습니다. struct/object 유형의 컬럼은 현재 지원되지 않습니다.
 
-#### 3. Evaluation Criteria
+#### 3. 평가 기준
 
-The **Evaluation Criteria**: This defines the condition that must be satisfied in order for the Column
-Assertion to pass.
+**평가 기준**: Column Assertion이 통과하기 위해 충족되어야 하는 조건을 정의합니다.
 
-For **Column Value Assertions**, you will be able to choose from a set of operators that can be applied to the column
-value. The options presented will vary based on the data type of the selected column. For example, if you've selected a numeric column, you
-can verify that the column value is greater than a particular value. For string types, you can check that the column value
-matches a particular regex pattern. Additionally, you are able to control the behavior of the check in the presence of NULL values. If the
-**Allow Nulls** option is _disabled_, then any null values encountered will be reported as a failure when evaluating the
-assertion. If **Allow Nulls** is enabled, then nulls will be ignored; the condition will be evaluated for rows where the column value is non-null.
+**Column Value Assertions**의 경우, 컬럼 값에 적용할 수 있는 연산자 집합에서 선택할 수 있습니다. 표시되는 옵션은 선택된 컬럼의 데이터 유형에 따라 달라집니다. 예를 들어 숫자형 컬럼을 선택한 경우 컬럼 값이 특정 값보다 크다는 것을 확인할 수 있습니다. 문자열 유형의 경우 컬럼 값이 특정 regex 패턴과 일치하는지 확인할 수 있습니다. 또한 NULL 값 존재 시 검사 동작을 제어할 수 있습니다. **Allow Nulls** 옵션이 _비활성화_된 경우 assertion을 평가할 때 발견된 null 값은 실패로 보고됩니다. **Allow Nulls**가 활성화된 경우 null 값은 무시되며, 컬럼 값이 null이 아닌 행에 대해서만 조건이 평가됩니다.
 
-For **Column Metric Assertions**, you will be able to choose from a list of common column metrics - MAX, MIN, MEAN, NULL COUNT, etc - and then compare these metric values to an expected value. The list of metrics will vary based on the type of the selected column. For example
-if you've selected a numeric column, you can choose to compute the MEAN value of the column, and then assert that it is greater than a
-specific number. For string types, you can choose to compute the MAX LENGTH of the string across all column values, and then assert that it
-is less than a specific number.
+**Column Metric Assertions**의 경우, 일반적인 컬럼 지표 목록(MAX, MIN, MEAN, NULL COUNT 등)에서 선택한 다음 이러한 지표 값을 예상 값과 비교할 수 있습니다. 지표 목록은 선택된 컬럼의 유형에 따라 달라집니다. 예를 들어 숫자형 컬럼을 선택한 경우 컬럼의 MEAN 값을 계산한 다음 특정 숫자보다 크다고 assertion할 수 있습니다. 문자열 유형의 경우 모든 컬럼 값에 걸쳐 문자열의 MAX LENGTH를 계산한 다음 특정 숫자보다 작다고 assertion할 수 있습니다.
 
-#### 4. Row Selection Set
+#### 4. 행 선택 집합
 
-The **Row Selection Set**: This defines which rows in the table the Column Assertion will be evaluated across. You can choose
-from the following options:
+**행 선택 집합**: Column Assertion이 평가될 테이블의 행을 정의합니다. 다음 옵션에서 선택할 수 있습니다:
 
-- **All Table Rows**: Evaluate the Column Assertion across all rows in the table. This is the default option. Note that
-  this may not be desirable for large tables.
+- **All Table Rows**: 테이블의 모든 행에 대해 Column Assertion을 평가합니다. 기본 옵션입니다. 대용량 테이블에는 적합하지 않을 수 있습니다.
 
-- **Only Rows That Have Changed**: Evaluate the Column Assertion only against rows that have changed since the last
-  evaluation of the assertion. If you choose this option, you will need to specify a **High Watermark Column** to help determine which rows
-  have changed. A **High Watermark Column** is a column that contains a constantly incrementing value - a date, a time, or
-  another always-increasing number - that can be used to find the "new rows" that were added since previous evaluation. When selected, a query will be issued to the table to find only the rows that have changed since the previous assertion evaluation.
+- **Only Rows That Have Changed**: 마지막 assertion 평가 이후 변경된 행에 대해서만 Column Assertion을 평가합니다. 이 옵션을 선택하면 어떤 행이 변경되었는지 판단하는 데 도움이 되는 **High Watermark Column**을 지정해야 합니다. **High Watermark Column**은 날짜, 시간 또는 항상 증가하는 다른 숫자와 같이 지속적으로 증가하는 값을 포함하는 컬럼으로, 이전 평가 이후 추가된 "새 행"을 찾는 데 사용됩니다. 선택하면 이전 assertion 평가 이후 변경된 행만 찾기 위해 테이블에 쿼리가 실행됩니다.
 
-## Creating a Column Assertion
+## Column Assertion 생성
 
-### Prerequisites
+### 사전 요구 사항
 
-1. **Permissions**: To create or delete Column Assertions for a specific entity on DataHub, you'll need to be granted the
-   `Edit Assertions` and `Edit Monitors` privileges for the entity. This will be granted to Entity owners as part of the `Asset Owners - Metadata Policy`
-   by default.
+1. **권한**: DataHub에서 특정 entity에 대한 Column Assertions를 생성하거나 삭제하려면 해당 entity에 대해 `Edit Assertions` 및 `Edit Monitors` 권한이 부여되어야 합니다. 이 권한은 기본적으로 `Asset Owners - Metadata Policy`의 일환으로 Entity 소유자에게 부여됩니다.
 
-2. (Optional) **Data Platform Connection**: In order to create a Column Assertion that queries the data source directly (instead of DataHub metadata), you'll need to have an **Ingestion Source**
-   configured to your Data Platform: Snowflake, BigQuery, or Redshift under the **Ingestion** tab.
+2. (선택 사항) **데이터 플랫폼 연결**: DataHub 메타데이터 대신 데이터 소스를 직접 쿼리하는 Column Assertion을 생성하려면 **Ingestion** 탭에서 데이터 플랫폼(Snowflake, BigQuery 또는 Redshift)에 대한 **수집 소스**가 구성되어 있어야 합니다.
 
-Once these are in place, you're ready to create your Column Assertions!
+이러한 사전 조건이 갖춰지면 Column Assertions를 생성할 준비가 된 것입니다!
 
-### Steps
+### 단계
 
-#### 1. Navigate to the Table that you want to monitor
+#### 1. 모니터링할 테이블로 이동합니다
 
-#### 2. Click the **Quality** tab
+#### 2. **Quality** 탭을 클릭합니다
 
 <p align="left">
   <img width="90%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/freshness/profile-validation-tab.png"/>
 </p>
 
-#### 3. Click **+ Create Assertion**
+#### 3. **+ Create Assertion**을 클릭합니다
 
-#### 4. Choose **'Column'**
+#### 4. **'Column'**을 선택합니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/assertion-builder-column-choose-type.png"/>
 </p>
 
-#### 5. Configure the evaluation **schedule**.
+#### 5. 평가 **스케줄**을 구성합니다.
 
-This is the frequency at which the assertion will be evaluated to produce a
-pass or fail result, and the times when the column values will be checked.
+이는 assertion이 통과 또는 실패 결과를 생성하기 위해 평가되는 빈도이며 컬럼 값이 확인되는 시간입니다.
 
-#### 6. Configure the **column assertion type**.
+#### 6. **컬럼 assertion 유형**을 구성합니다.
 
-You can choose from **Column Value** or **Column Metric**.
-**Column Value** assertions are used to monitor the value of a specific column in a table, and ensure that every row
-adheres to a specific condition. **Column Metric** assertions are used to compute a metric for that column, and then compare the value of that metric to your expectations.
+**Column Value** 또는 **Column Metric** 중에서 선택할 수 있습니다.
+**Column Value** assertions는 테이블의 특정 컬럼 값을 모니터링하고 모든 행이 특정 조건을 따르도록 보장합니다. **Column Metric** assertions는 해당 컬럼에 대한 지표를 계산한 다음 해당 지표 값을 기대치와 비교합니다.
 
 <p align="left">
   <img width="30%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/assertion-builder-column-assertion-type.png"/>
 </p>
 
-#### 7. Configure the **column selection**.
+#### 7. **컬럼 선택**을 구성합니다.
 
-This defines the column that should be monitored by the Column Assertion.
-You can choose from any of the columns from the table listed in the dropdown.
+Column Assertion으로 모니터링해야 할 컬럼을 정의합니다.
+드롭다운에 나열된 테이블의 어떤 컬럼에서도 선택할 수 있습니다.
 
 <p align="left">
   <img width="30%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/assertion-builder-column-field-selection.png"/>
 </p>
 
-#### 8. Configure the **evaluation criteria**. This step varies based on the type of assertion you chose in the previous step.
+#### 8. **평가 기준**을 구성합니다. 이 단계는 이전 단계에서 선택한 assertion 유형에 따라 달라집니다.
 
-- **Column Value Assertions**: You will be able to choose from a set of operators that can be applied to the column
-  value. The options presented will vary based on the data type of the selected column. For example with numeric types, you
-  can check that the column value is greater than a specific value. For string types, you can check that the column value
-  matches a particular regex pattern. You will also be able to control the behavior of null values in the column. If the
-  **Allow Nulls** option is _disabled_, any null values encountered will be reported as a failure when evaluating the
-  assertion. Note, Smart Assertions are not supported for Column Value Assertions today.
+- **Column Value Assertions**: 컬럼 값에 적용할 수 있는 연산자 집합에서 선택할 수 있습니다. 표시되는 옵션은 선택된 컬럼의 데이터 유형에 따라 달라집니다. 예를 들어 숫자 유형의 경우 컬럼 값이 특정 값보다 큰지 확인할 수 있습니다. 문자열 유형의 경우 컬럼 값이 특정 regex 패턴과 일치하는지 확인할 수 있습니다. 또한 컬럼의 null 값 동작을 제어할 수 있습니다. **Allow Nulls** 옵션이 _비활성화_된 경우 assertion을 평가할 때 발견된 null 값은 실패로 보고됩니다. 참고로 Smart Assertions는 현재 Column Value Assertions에는 지원되지 않습니다.
 
-  In addition, for the In Set and Not In Set operators, you can now choose how to provide the set of allowed values:
+  또한 In Set 및 Not In Set 연산자의 경우 허용 값 집합을 제공하는 방법을 선택할 수 있습니다:
 
-  - Static List: Manually enter a list of values (e.g., city names like "chicago", "new york").
-  - Custom SQL: Provide a SQL query that returns a single column of possible values for the set. At evaluation time, DataHub executes this query using your configured data platform connection and compares each row’s column value against the returned set.
+  - 정적 목록: 값 목록을 수동으로 입력합니다(예: "chicago", "new york"과 같은 도시 이름).
+  - Custom SQL: 집합에 대한 가능한 값의 단일 컬럼을 반환하는 SQL 쿼리를 제공합니다. 평가 시 DataHub는 구성된 데이터 플랫폼 연결을 사용하여 이 쿼리를 실행하고 각 행의 컬럼 값을 반환된 집합과 비교합니다.
 
-  Notes when using Custom SQL for sets:
+  집합에 Custom SQL 사용 시 참고 사항:
 
-  - The query must return exactly one column. Use `SELECT DISTINCT` to avoid duplicates if desired.
-  - The values returned should be comparable to the selected column’s data type (e.g., strings for VARCHAR/STRING columns, numbers for numeric columns).
-  - The query runs in the same warehouse connection you configured for the dataset. Ensure the account has read access to referenced objects and use fully qualified table names.
-  - Large or complex queries may impact evaluation latency and cost on your warehouse.
+  - 쿼리는 정확히 하나의 컬럼을 반환해야 합니다. 필요한 경우 중복을 피하려면 `SELECT DISTINCT`를 사용하세요.
+  - 반환된 값은 선택된 컬럼의 데이터 유형과 비교 가능해야 합니다(예: VARCHAR/STRING 컬럼의 경우 문자열, 숫자 컬럼의 경우 숫자).
+  - 쿼리는 dataset에 구성된 것과 동일한 웨어하우스 연결에서 실행됩니다. 계정에 참조된 오브젝트에 대한 읽기 액세스 권한이 있는지 확인하고 완전히 정규화된 테이블 이름을 사용하세요.
+  - 크거나 복잡한 쿼리는 웨어하우스의 평가 지연 및 비용에 영향을 줄 수 있습니다.
 
-  Example (allowed city values sourced from a reference table):
+  예시(참조 테이블에서 가져온 허용 도시 값):
 
   ```sql
   SELECT DISTINCT city
@@ -195,122 +163,106 @@ You can choose from any of the columns from the table listed in the dropdown.
   WHERE active = TRUE
   ```
 
-- **Column Metric Assertions**: You will be able to choose from a list of common metrics and then specify the operator
-  and value to compare against. The list of metrics will vary based on the data type of the selected column. For example
-  with numeric types, you can choose to compute the average value of the column, and then assert that it is greater than a
-  specific number. For string types, you can choose to compute the max length of all column values, and then assert that it
-  is less than a specific number. You can also select the **Detect with AI** option to use Smart Assertions to detect anomalies in the column metric. Note that the **Detect with AI** option is currently only available for the following metrics: **null_count**, **unique_count**, **empty_count**, **zero_count**, and **negative_count**. For all other metrics (e.g. min, max, mean), use a fixed threshold instead.
+- **Column Metric Assertions**: 일반적인 지표 목록에서 선택한 다음 비교할 연산자와 값을 지정할 수 있습니다. 지표 목록은 선택된 컬럼의 데이터 유형에 따라 달라집니다. 예를 들어 숫자 유형의 경우 컬럼의 평균 값을 계산한 다음 특정 숫자보다 크다고 assertion할 수 있습니다. 문자열 유형의 경우 모든 컬럼 값의 최대 길이를 계산한 다음 특정 숫자보다 작다고 assertion할 수 있습니다. **Detect with AI** 옵션을 선택하여 Smart Assertions를 사용하여 컬럼 지표의 이상을 탐지할 수 있습니다. **Detect with AI** 옵션은 현재 **null_count**, **unique_count**, **empty_count**, **zero_count**, **negative_count** 지표에만 사용할 수 있습니다. 기타 지표(예: min, max, mean)는 고정 임계값을 사용하는 일반 Column Metric Assertions를 사용하세요.
 
-#### 9. Configure the **row evaluation type**. This defines which rows in the table the Column Assertion should evaluate.
+#### 9. **행 평가 유형**을 구성합니다. Column Assertion이 평가해야 할 테이블의 행을 정의합니다.
 
-- **All Table Rows**: Evaluate the Column Assertion against all rows in the table. This is the default option. Note that
-  this may not be desirable for large tables.
+- **All Table Rows**: 테이블의 모든 행에 대해 Column Assertion을 평가합니다. 기본 옵션입니다. 대용량 테이블에는 적합하지 않을 수 있습니다.
 
-- **Only Rows That Have Changed**: Evaluate the Column Assertion only against rows that have changed since the last
-  evaluation. If you choose this option, you will need to specify a **High Watermark Column** to help determine which rows
-  have changed. A **High Watermark Column** is a column that contains a constantly-incrementing value - a date, a time, or
-  another always-increasing number. When selected, a query will be issued to the table find only the rows which have changed since the last assertion run.
+- **Only Rows That Have Changed**: 마지막 평가 이후 변경된 행에 대해서만 Column Assertion을 평가합니다. 이 옵션을 선택하면 어떤 행이 변경되었는지 판단하는 데 도움이 되는 **High Watermark Column**을 지정해야 합니다. **High Watermark Column**은 날짜, 시간 또는 항상 증가하는 다른 숫자와 같이 지속적으로 증가하는 값을 포함하는 컬럼입니다. 선택하면 마지막 assertion 실행 이후 변경된 행만 찾기 위해 테이블에 쿼리가 실행됩니다.
 
 <p align="left">
   <img width="60%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/assertion-builder-column-row-evaluation-type.png"/>
 </p>
 
-#### 10. (Optional) Click **Advanced** to further customize the Column Assertion.
+#### 10. (선택 사항) **Advanced**를 클릭하여 Column Assertion을 추가로 사용자 정의합니다.
 
-The options listed here will vary based on the type of assertion you chose in the previous step.
+여기에 나열된 옵션은 이전 단계에서 선택한 assertion 유형에 따라 달라집니다.
 
-- **Invalid Values Threshold**: For **Column Value** assertions, you can configure the number of invalid values
-  (i.e. rows) that are allowed to fail before the assertion is marked as failing. This is useful if you want to allow a limited number
-  of invalid values in the column. By default this is 0, meaning the assertion will fail if any rows have an invalid column value.
+- **Invalid Values Threshold**: **Column Value** assertions의 경우 assertion이 실패로 표시되기 전에 허용되는 유효하지 않은 값(즉, 행)의 수를 구성할 수 있습니다. 컬럼에서 제한된 수의 유효하지 않은 값을 허용하려는 경우에 유용합니다. 기본값은 0으로, assertion은 유효하지 않은 컬럼 값이 있는 행이 있으면 실패합니다.
 
-- **Source**: For **Column Metric** assertions, you can choose the mechanism that will be used to obtain the column
-  metric. **Query** will issue a query to the dataset to compute the metric. This issues a query to the table, which can be more expensive than Information Schema.
-  **DataHub Dataset Profile** will use the DataHub Dataset Profile metadata to compute the metric. This is the cheapest option, but requires that Dataset Profiles are reported to DataHub. By default, Ingestion will report Dataset Profiles to DataHub, which can be and infrequent. You can report Dataset Profiles via the DataHub APIs for more frequent and reliable data.
+- **Source**: **Column Metric** assertions의 경우 컬럼 지표를 얻는 데 사용될 메커니즘을 선택할 수 있습니다. **Query**는 dataset에 쿼리를 실행하여 지표를 계산합니다. 정보 스키마보다 비용이 많이 드는 테이블 쿼리가 발생합니다.
+  **DataHub Dataset Profile**은 DataHub Dataset Profile 메타데이터를 사용하여 지표를 계산합니다. 가장 저렴한 옵션이지만 DataHub에 Dataset Profile이 보고되어야 합니다. 기본적으로 수집 시 DataHub에 Dataset Profile을 보고하지만 빈도가 낮을 수 있습니다. 더 빈번하고 신뢰할 수 있는 데이터를 위해 DataHub API를 통해 Dataset Profile을 보고할 수 있습니다.
 
-- **Additional Filters**: You can choose to add additional filters to the query that will be used to evaluate the
-  assertion. This is useful if you want to limit the assertion to a subset of rows in the table. Note this option will not
-  be available if you choose **DataHub Dataset Profile** as the **source**.
+- **Additional Filters**: assertion을 평가하는 데 사용될 쿼리에 추가 필터를 추가하도록 선택할 수 있습니다. 테이블의 행 일부로 assertion을 제한하려는 경우에 유용합니다. **DataHub Dataset Profile**을 **소스**로 선택한 경우 이 옵션을 사용할 수 없습니다.
 
-#### 11. Configure actions that should be taken when the Column Assertion passes or fails
+#### 11. Column Assertion이 통과하거나 실패할 때 취해야 할 작업을 구성합니다
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/assertion-builder-actions.png"/>
 </p>
 
-- **Raise incident**: Automatically raise a new DataHub `Column` Incident for the Table whenever the Column Assertion is failing. This
-  may indicate that the Table is unfit for consumption. Configure Slack Notifications under **Settings** to be notified when
-  an incident is created due to an Assertion failure.
-- **Resolve incident**: Automatically resolved any incidents that were raised due to failures in this Column Assertion. Note that
-  any other incidents will not be impacted.
+- **Raise incident**: Column Assertion이 실패할 때마다 해당 테이블에 대한 새 DataHub `Column` 인시던트를 자동으로 발생시킵니다. 이는 테이블이 사용하기에 부적합함을 나타낼 수 있습니다. **Settings**에서 Slack 알림을 구성하여 Assertion 실패로 인해 인시던트가 생성될 때 알림을 받으세요.
+- **Resolve incident**: 이 Column Assertion의 실패로 인해 발생한 인시던트를 자동으로 해결합니다. 다른 인시던트에는 영향을 미치지 않습니다.
 
-#### 12. Click **Next** and then **Save**.
+#### 12. **Next**를 클릭한 다음 **Save**를 클릭합니다.
 
-And that's it! DataHub will now begin to monitor your Column Assertion for the table.
+이제 DataHub가 테이블의 Column Assertion 모니터링을 시작합니다.
 
-Once your assertion has run, you will begin to see Success or Failure status for the Table
+assertion이 실행되면 테이블의 성공 또는 실패 상태를 확인할 수 있습니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/profile-passing-column-assertions-expanded.png"/>
 </p>
 
-## Anomaly Detection with Smart Assertions ⚡
+## Smart Assertions를 활용한 이상 탐지 ⚡
 
-As part of the **DataHub Cloud Observe** module, DataHub Cloud also provides [Smart Assertions](./smart-assertions.md) out of the box. These are dynamic, AI-powered Column Metric Assertions that you can use to monitor anomalies on column metrics of important warehouse Tables, without requiring any manual setup.
+**DataHub Cloud Observe** 모듈의 일환으로 DataHub Cloud는 기본 제공 [Smart Assertions](./smart-assertions.md)도 제공합니다. 이는 수동 설정 없이 중요한 웨어하우스 테이블의 컬럼 지표에 대한 이상을 모니터링하는 데 사용할 수 있는 동적 AI 기반 Column Metric Assertions입니다.
 
-:::note Supported Metrics
-Smart Assertions for Column Metrics currently support only: **null_count**, **unique_count**, **empty_count**, **zero_count**, and **negative_count**. Other column metrics (e.g. min, max, mean, median, stddev) are available for standard Column Metric Assertions with fixed thresholds, but cannot be used with the **Detect with AI** option at this time. Any existing Smart Assertions using other metrics will continue to operate normally.
+:::note 지원 지표
+Column Metrics의 Smart Assertions는 현재 **null_count**, **unique_count**, **empty_count**, **zero_count**, **negative_count**만 지원합니다. 기타 컬럼 지표(예: min, max, mean, median, stddev)는 고정 임계값을 사용하는 표준 Column Metric Assertions에는 사용할 수 있지만, 현재 **Detect with AI** 옵션으로는 사용할 수 없습니다. 다른 지표를 사용하는 기존 Smart Assertions는 정상적으로 계속 작동합니다.
 :::
 
-You can create smart assertions by simply selecting the column and the metric you wish to monitor, and then clicking the `Detect with AI` option in the UI:
+UI에서 모니터링할 컬럼과 지표를 선택한 다음 `Detect with AI` 옵션을 클릭하여 smart assertions를 생성할 수 있습니다:
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/column/column-smart-assertion.png"/>
 </p>
 
-**Bulk Creating for Multiple Columns**
+**여러 컬럼에 대한 일괄 생성**
 
-To select several columns on a table to monitor at once, you can use the **Bulk-Create Smart Assertions** button below the column selector in the Column Metric Assertion authoring UI.
+테이블의 여러 컬럼을 한 번에 모니터링하도록 선택하려면 Column Metric Assertion 작성 UI의 컬럼 선택기 아래에 있는 **Bulk-Create Smart Assertions** 버튼을 사용할 수 있습니다.
 
 <iframe width="560" height="343" src="https://www.loom.com/embed/e71598c4394c4d8dba0770b8fc67ff06?sid=25326338-8a72-4382-98b5-026486233ef9" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
-## Time-Series Bucketing for Column Metric Assertions
+## Column Metric Assertions의 시계열 버킷팅
 
-By default, column metric assertions evaluate a metric (e.g., null count, min, max) across all rows or changed rows in your table. With **time-series bucketing**, you can partition your data into time-based buckets (e.g., daily or weekly) and evaluate column metrics within each bucket.
+기본적으로 column metric assertions는 테이블의 모든 행 또는 변경된 행에 걸쳐 지표(예: null count, min, max)를 평가합니다. **시계열 버킷팅**을 사용하면 데이터를 시간 기반 버킷(예: 일별 또는 주별)으로 분할하고 각 버킷 내에서 컬럼 지표를 평가할 수 있습니다.
 
-This is useful when:
+다음과 같은 경우에 유용합니다:
 
-- You want to monitor column quality at a day or week granularity
-- You want to detect issues like "null count spiked for today's data" rather than checking the entire table
-- Your column metrics have seasonal patterns that vary by day of week or time of year
+- 일별 또는 주별 세분성으로 컬럼 품질을 모니터링하려는 경우
+- 전체 테이블을 확인하는 대신 "오늘 데이터의 null count가 급증했다"와 같은 문제를 탐지하려는 경우
+- 컬럼 지표에 요일 또는 연도 시기에 따라 변동하는 계절적 패턴이 있는 경우
 
-### Bucketing Configuration
+### 버킷팅 구성
 
-A time-series bucketing strategy for column assertions consists of:
+column assertions의 시계열 버킷팅 전략은 다음으로 구성됩니다:
 
-- **Timestamp column**: The date/time column used to partition rows into buckets (e.g., `created_at`, `updated_at`).
-- **Bucket interval**: **Daily** (1 DAY) or **Weekly** (1 WEEK).
-- **Timezone**: The IANA timezone for bucket boundaries. Defaults to UTC.
-- **Late arrival grace period** (optional): A buffer after the bucket end time before evaluation.
+- **타임스탬프 컬럼**: 행을 버킷으로 분할하는 데 사용되는 날짜/시간 컬럼(예: `created_at`, `updated_at`).
+- **버킷 간격**: **일별** (1 DAY) 또는 **주별** (1 WEEK).
+- **시간대**: 버킷 경계에 대한 IANA 시간대. 기본값은 UTC입니다.
+- **늦은 도착 유예 기간** (선택 사항): 평가 전 버킷 종료 시간 이후의 버퍼.
 
 :::note
-When time-series bucketing is enabled, the evaluation schedule is automatically computed from the bucket configuration. Column Value assertions (`FIELD_VALUES` type) do not support time-series bucketing — only Column Metric assertions (`FIELD_METRIC` type) do.
+시계열 버킷팅이 활성화되면 평가 스케줄은 버킷 구성에서 자동으로 계산됩니다. Column Value assertions(`FIELD_VALUES` 유형)는 시계열 버킷팅을 지원하지 않으며, Column Metric assertions(`FIELD_METRIC` 유형)만 지원합니다.
 :::
 
-### Configuring Bucketing in the UI
+### UI에서 버킷팅 구성
 
-When creating a column metric assertion, you will see a **Row Evaluation Type** section with three options:
+column metric assertion 생성 시 세 가지 옵션이 있는 **Row Evaluation Type** 섹션이 표시됩니다:
 
 <p align="left">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/bucketing/column-metric-timeseries-bucketing.png"/>
 </p>
 
-- **All Table Rows**: Evaluate the assertion across all rows in the table (default).
-- **Only Rows That Have Changed**: Use a high watermark column to evaluate only new rows.
-- **Rows Within a Time Bucket**: Partition data into daily or weekly time buckets and evaluate each bucket independently.
+- **All Table Rows**: 테이블의 모든 행에 대해 assertion을 평가합니다(기본값).
+- **Only Rows That Have Changed**: high watermark 컬럼을 사용하여 새 행만 평가합니다.
+- **Rows Within a Time Bucket**: 데이터를 일별 또는 주별 시간 버킷으로 분할하고 각 버킷을 독립적으로 평가합니다.
 
-When selecting **Rows Within a Time Bucket**, you will configure the timestamp column, bucket size, timezone, and optional grace period.
+**Rows Within a Time Bucket**을 선택하면 타임스탬프 컬럼, 버킷 크기, 시간대, 선택적 유예 기간을 구성합니다.
 
-### Configuring Bucketing via the Python SDK
+### Python SDK를 통한 버킷팅 구성
 
 ```python
 from datahub.sdk import DataHubClient
@@ -321,7 +273,7 @@ dataset_urn = DatasetUrn.from_string(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,database.schema.table,PROD)"
 )
 
-# Column metric assertion with daily bucketing
+# 일별 버킷팅을 사용한 column metric assertion
 column_assertion = client.assertions.sync_column_metric_assertion(
     dataset_urn=dataset_urn,
     column_name="price",
@@ -338,7 +290,7 @@ column_assertion = client.assertions.sync_column_metric_assertion(
     enabled=True,
 )
 
-# Smart column metric assertion with weekly bucketing and backfill
+# 주별 버킷팅과 보정을 사용한 smart column metric assertion
 smart_column = client.assertions.sync_smart_column_metric_assertion(
     dataset_urn=dataset_urn,
     column_name="user_id",
@@ -356,45 +308,43 @@ smart_column = client.assertions.sync_smart_column_metric_assertion(
 ```
 
 :::info
-For smart column metric assertions with bucketing enabled, you can configure **historical backfill** to populate metrics history. See [Backfill Assertion History](./assertion-backfill.md) for details.
+버킷팅이 활성화된 smart column metric assertions의 경우 지표 이력을 채우기 위해 **과거 데이터 보정**을 구성할 수 있습니다. 자세한 내용은 [Assertion 이력 보정](./assertion-backfill.md)을 참조하세요.
 :::
 
-## Stopping a Column Assertion
+## Column Assertion 중지
 
-In order to temporarily stop the evaluation of the assertion:
+assertion 평가를 일시적으로 중지하려면:
 
-1. Navigate to the **Quality** tab of the Table with the assertion
-2. Click **Column** to open the Column Assertion assertions
-3. Click the "Stop" button for the assertion you wish to pause.
+1. assertion이 있는 테이블의 **Quality** 탭으로 이동합니다
+2. **Column**을 클릭하여 Column Assertion assertions를 엽니다
+3. 일시 중지하려는 assertion의 "Stop" 버튼을 클릭합니다.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/stop-assertion.png"/>
 </p>
 
-To resume the assertion, simply click **Start**.
+assertion을 재개하려면 **Start**를 클릭하세요.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/start-assertion.png"/>
 </p>
 
-## Creating Column Assertions via API
+## API를 통한 Column Assertions 생성
 
-Under the hood, DataHub Cloud implements Column Assertion Monitoring using two concepts:
+내부적으로 DataHub Cloud는 두 가지 개념을 사용하여 Column Assertion 모니터링을 구현합니다:
 
-- **Assertion**: The specific expectation for the column metric. e.g. "The value of an integer column is greater than 10 for all rows in the table." This is the "what".
-- **Monitor**: The process responsible for evaluating the Assertion on a given evaluation schedule and using specific
-  mechanisms. This is the "how".
+- **Assertion**: 컬럼 지표에 대한 특정 기대치(예: "테이블의 모든 행에서 정수 컬럼의 값이 10보다 크다"). 이것은 "무엇"입니다.
+- **Monitor**: 지정된 평가 스케줄에 따라 특정 메커니즘을 사용하여 Assertion을 평가하는 프로세스. 이것은 "어떻게"입니다.
 
-Note that to create or delete Assertions and Monitors for a specific entity on DataHub, you'll need the
-`Edit Assertions` and `Edit Monitors` privileges for it.
+DataHub에서 특정 entity에 대한 Assertions 및 Monitors를 생성하거나 삭제하려면 해당 entity에 대한 `Edit Assertions` 및 `Edit Monitors` 권한이 필요합니다.
 
 #### GraphQL
 
-In order to create or update a Column Assertion, you can the `upsertDatasetColumnAssertionMonitor` mutation.
+Column Assertion을 생성하거나 업데이트하려면 `upsertDatasetColumnAssertionMonitor` mutation을 사용할 수 있습니다.
 
-#### Examples
+#### 예시
 
-Creating a Field Values Column Assertion that runs every 8 hours:
+8시간마다 실행되는 Field Values Column Assertion 생성:
 
 ```graphql
 mutation upsertDatasetFieldAssertionMonitor {
@@ -426,7 +376,7 @@ mutation upsertDatasetFieldAssertionMonitor {
 }
 ```
 
-To create an AI Smart Column Nullness Metric Assertion:
+AI Smart Column Nullness Metric Assertion 생성:
 
 ```graphql
 mutation upsertDatasetFreshnessAssertionMonitor {
@@ -443,7 +393,7 @@ mutation upsertDatasetFreshnessAssertionMonitor {
         }
         metric: NULL_PERCENTAGE
         operator: BETWEEN
-        # you can provide any value for this as it will be overwritten continuously by the AI engine
+        # AI 엔진에 의해 지속적으로 덮어써지므로 여기에 어떤 값이든 제공할 수 있습니다
         parameters: {
           minValue: { value: "0", type: NUMBER }
           maxValue: { value: "0", type: NUMBER }
@@ -464,7 +414,7 @@ mutation upsertDatasetFreshnessAssertionMonitor {
 }
 ```
 
-You can use same endpoint with assertion urn input to update an existing Column Assertion and corresponding Monitor.
+동일한 엔드포인트에 assertion urn 입력을 제공하여 기존 Column Assertion 및 해당 Monitor를 업데이트할 수 있습니다.
 
 ```graphql
 mutation upsertDatasetFieldAssertionMonitor {
@@ -497,20 +447,20 @@ mutation upsertDatasetFieldAssertionMonitor {
 }
 ```
 
-You can delete assertions along with their monitors using GraphQL mutations: `deleteAssertion` and `deleteMonitor`.
+GraphQL mutations인 `deleteAssertion` 및 `deleteMonitor`를 사용하여 assertions와 모니터를 함께 삭제할 수 있습니다.
 
-### Tips
+### 팁
 
 :::info
-**Authorization**
+**인증**
 
-Remember to always provide a DataHub Personal Access Token when calling the GraphQL API. To do so, just add the 'Authorization' header as follows:
+GraphQL API를 호출할 때는 항상 DataHub Personal Access Token을 제공해야 합니다. 다음과 같이 'Authorization' 헤더를 추가하세요:
 
 ```
 Authorization: Bearer <personal-access-token>
 ```
 
-**Exploring GraphQL API**
+**GraphQL API 탐색**
 
-Also, remember that you can play with an interactive version of the DataHub Cloud GraphQL API at `https://your-account-id.acryl.io/api/graphiql`
+`https://your-account-id.acryl.io/api/graphiql`에서 DataHub Cloud GraphQL API의 인터랙티브 버전을 사용해 볼 수 있습니다.
 :::

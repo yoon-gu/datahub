@@ -1,5 +1,5 @@
 ---
-description: This page provides an overview of working with DataHub Volume Assertions
+description: 이 페이지에서는 DataHub Volume Assertions 사용 방법에 대한 개요를 제공합니다
 ---
 
 import FeatureAvailability from '@site/src/components/FeatureAvailability';
@@ -8,266 +8,224 @@ import FeatureAvailability from '@site/src/components/FeatureAvailability';
 
 <FeatureAvailability saasOnly />
 
-> The **Volume Assertions** feature is available as part of the **DataHub Cloud Observe** module of DataHub Cloud.
-> If you are interested in learning more about **DataHub Cloud Observe** or trying it out, please [visit our website](https://datahub.com/products/data-observability/).
+> **Volume Assertions** 기능은 DataHub Cloud의 **DataHub Cloud Observe** 모듈의 일부로 제공됩니다.
+> **DataHub Cloud Observe**에 대해 더 알아보거나 체험해 보고 싶다면 [웹사이트를 방문](https://datahub.com/products/data-observability/)하세요.
 
-## Introduction
+## 소개
 
-Can you remember a time when the meaning of Data Warehouse Table that you depended on fundamentally changed, with little or no notice?
-If the answer is yes, how did you find out? We'll take a guess - someone looking at an internal reporting dashboard or worse, a user using your your product, sounded an alarm when
-a number looked a bit out of the ordinary. Perhaps your table initially tracked purchases made on your company's e-commerce web store, but suddenly began to include purchases made
-through your company's new mobile app.
+의존하는 데이터 웨어하우스 테이블의 의미가 예고도 없이 근본적으로 바뀐 경험이 있으신가요?
+그렇다면 어떻게 알게 되셨나요? 내부 보고 대시보드를 보던 누군가가, 또는 더 심하게는 제품을 사용하는 사용자가 수치가 이상해 보인다며 경보를 울렸을 것입니다. 예를 들어, 처음에는 회사 이커머스 웹 스토어의 구매 내역을 추적하던 테이블에 갑자기 회사의 새 모바일 앱을 통한 구매도 포함되기 시작했을 수 있습니다.
 
-There are many reasons why an important Table on Snowflake, Redshift, BigQuery, or Databricks may change in its meaning - application code bugs, new feature rollouts,
-changes to key metric definitions, etc. Often times, these changes break important assumptions made about the data used in building key downstream data products
-like reporting dashboards or data-driven product features.
+Snowflake, Redshift, BigQuery, Databricks의 중요한 테이블이 의미 면에서 변경되는 이유는 다양합니다 - 애플리케이션 코드 버그, 새 기능 출시, 핵심 지표 정의 변경 등. 이러한 변경은 종종 보고 대시보드나 데이터 기반 제품 기능과 같은 주요 다운스트림 데이터 제품 구축에 사용되는 데이터에 대한 중요한 가정을 깨뜨립니다.
 
-What if you could reduce the time to detect these incidents, so that the people responsible for the data were made aware of data
-issues _before_ anyone else? With DataHub Cloud **Volume Assertions**, you can.
+데이터 담당자가 다른 누구보다 먼저 데이터 문제를 인식할 수 있도록 인시던트 감지 시간을 단축할 수 있다면 어떨까요? DataHub Cloud **Volume Assertions**를 통해 이것이 가능합니다.
 
-DataHub Cloud allows users to define expectations about the normal volume, or size, of a particular warehouse Table,
-and then monitor those expectations over time as the table grows and changes.
+DataHub Cloud를 통해 사용자는 특정 웨어하우스 테이블의 정상 volume 또는 크기에 대한 기대치를 정의하고, 테이블이 성장하고 변화함에 따라 시간이 지나도 해당 기대치를 모니터링할 수 있습니다.
 
-In this article, we'll cover the basics of monitoring Volume Assertions - what they are, how to configure them, and more - so that you and your team can
-start building trust in your most important data assets.
+이 문서에서는 Volume Assertions 모니터링의 기본 사항(정의, 구성 방법 등)을 다루어 팀이 중요한 데이터 자산에 대한 신뢰를 구축할 수 있도록 돕겠습니다.
 
-Let's get started!
+시작해 봅시다!
 
-## Support
+## 지원 현황
 
-Volume Assertions are currently supported for:
+Volume Assertions는 현재 다음을 지원합니다:
 
 1. Snowflake
 2. Redshift
 3. BigQuery
 4. Databricks
-5. DataHub Dataset Profile (collected via ingestion)
+5. DataHub Dataset Profile (수집을 통해 수집됨)
 
-Note that an Ingestion Source _must_ be configured with the data platform of your choice in DataHub Cloud's **Ingestion**
-tab.
+DataHub Cloud의 **Ingestion** 탭에서 선택한 데이터 플랫폼에 대한 수집 소스가 _반드시_ 구성되어 있어야 합니다.
 
-> Note that Volume Assertions are not yet supported if you are connecting to your warehouse
-> using the DataHub CLI.
+> DataHub CLI를 사용하여 웨어하우스에 연결하는 경우 Volume Assertions는 아직 지원되지 않습니다.
 
-## What is a Volume Assertion?
+## Volume Assertion이란?
 
-A **Volume Assertion** is a configurable Data Quality rule used to monitor a Data Warehouse Table
-for unexpected or sudden changes in "volume", or row count. Volume Assertions can be particularly useful when you have frequently-changing
-Tables which have a relatively stable pattern of growth or decline.
+**Volume Assertion**은 데이터 웨어하우스 테이블의 "volume"(행 수)에서 예상치 못한 또는 갑작스러운 변화를 모니터링하는 데 사용되는 구성 가능한 데이터 품질 규칙입니다. Volume Assertions는 특히 성장 또는 감소 패턴이 비교적 안정적인 자주 변경되는 테이블에 유용합니다.
 
-For example, imagine that we work for a company with a Snowflake Table that stores user clicks collected from our e-commerce website.
-This table is updated with new data on a specific cadence: once per hour (In practice, daily or even weekly are also common).
-In turn, there is a downstream Business Analytics Dashboard in Looker that shows important metrics like
-the number of people clicking our "Daily Sale" banners, and this dashboard is generated from data stored in our "clicks" table.
-It is important that our clicks Table is updated with the correct number of rows each hour, else it could mean
-that our downstream metrics dashboard becomes incorrect. The risk of this situation is obvious: our organization
-may make bad decisions based on incomplete information.
+예를 들어, 이커머스 웹사이트에서 수집된 사용자 클릭을 저장하는 Snowflake 테이블이 있다고 가정해 봅시다. 이 테이블은 특정 주기(시간당 1회)로 새 데이터로 업데이트됩니다. 그리고 이 "클릭" 테이블에 저장된 데이터를 기반으로 생성된 Looker의 비즈니스 분석 대시보드가 "일일 세일" 배너 클릭 수와 같은 중요한 지표를 보여줍니다. 클릭 테이블이 매시간 올바른 수의 행으로 업데이트되는 것이 중요한데, 그렇지 않으면 다운스트림 지표 대시보드가 부정확해질 수 있습니다. 이러한 상황의 위험은 명확합니다: 조직이 불완전한 정보에 기반하여 잘못된 결정을 내릴 수 있습니다.
 
-In such cases, we can use a **Volume Assertion** that checks whether the Snowflake "clicks" Table is growing in an expected
-way, and that there are no sudden increases or sudden decreases in the rows being added or removed from the table.
-If too many rows are added or removed within an hour, we can notify key stakeholders and begin to root cause before the problem impacts stakeholders of the data.
+이런 경우, Snowflake "클릭" 테이블이 예상대로 성장하고 있는지, 테이블에 추가되거나 제거되는 행에 갑작스러운 증가나 감소가 없는지 확인하는 **Volume Assertion**을 사용할 수 있습니다. 한 시간 내에 너무 많은 행이 추가되거나 제거되면 주요 이해관계자에게 알리고 데이터 이해관계자에게 영향을 미치기 전에 근본 원인을 파악할 수 있습니다.
 
-### Anatomy of a Volume Assertion
+### Volume Assertion의 구조
 
-At the most basic level, **Volume Assertions** consist of a few important parts:
+**Volume Assertions**는 기본적으로 몇 가지 중요한 구성 요소로 이루어집니다:
 
-1. An **Evaluation Schedule**
-2. A **Volume Condition**
-3. A **Volume Source**
+1. **평가 스케줄**
+2. **Volume 조건**
+3. **Volume 소스**
 
-In this section, we'll give an overview of each.
+이 섹션에서 각각에 대한 개요를 설명합니다.
 
-#### 1. Evaluation Schedule
+#### 1. 평가 스케줄
 
-The **Evaluation Schedule**: This defines how often to check a given warehouse Table for its volume. This should usually
-be configured to match the expected change frequency of the Table, although it can also be less frequently depending
-on the requirements. You can also specify specific days of the week, hours in the day, or even
-minutes in an hour.
+**평가 스케줄**: 지정된 웨어하우스 테이블의 volume을 확인하는 빈도를 정의합니다. 일반적으로 테이블의 예상 변경 빈도에 맞게 구성해야 하지만, 요구 사항에 따라 더 낮은 빈도로 설정할 수도 있습니다. 주의 특정 요일, 시간 내의 특정 시, 또는 시간 내의 특정 분을 지정할 수도 있습니다.
 
-#### 2. Volume Condition
+#### 2. Volume 조건
 
-The **Volume Condition**: This defines the type of condition that we'd like to monitor, or when the Assertion
-should result in failure.
+**Volume 조건**: 모니터링하려는 조건의 유형, 즉 Assertion이 실패해야 하는 경우를 정의합니다.
 
-There are a 2 different categories of conditions: **Total** Volume and **Change** Volume.
+조건에는 **총 Volume** 및 **변경 Volume**의 2가지 범주가 있습니다.
 
-_Total_ volume conditions are those which are defined against the point-in-time total row count for a table. They allow you to specify conditions like:
+_총_ volume 조건은 테이블의 특정 시점 총 행 수에 대해 정의됩니다. 다음과 같은 조건을 지정할 수 있습니다:
 
-1. **Table has too many rows**: The table should always have less than 1000 rows
-2. **Table has too few rows**: The table should always have more than 1000 rows
-3. **Table row count is outside a range**: The table should always have between 1000 and 2000 rows.
+1. **테이블 행이 너무 많음**: 테이블은 항상 1000행 미만이어야 합니다
+2. **테이블 행이 너무 적음**: 테이블은 항상 1000행 이상이어야 합니다
+3. **테이블 행 수가 범위를 벗어남**: 테이블은 항상 1000에서 2000행 사이여야 합니다.
 
-_Change_ volume conditions are those which are defined against the growth or decline rate of a table, measured between subsequent checks
-of the table volume. They allow you to specify conditions like:
+_변경_ volume 조건은 테이블 volume의 연속적인 검사 사이에 측정된 성장 또는 감소율에 대해 정의됩니다. 다음과 같은 조건을 지정할 수 있습니다:
 
-1. **Table growth is too fast**: When the table volume is checked, it should have < 1000 more rows than it had during the previous check.
-2. **Table growth is too slow**: When the table volume is checked, it should have > 1000 more rows than it had during the previous check.
-3. **Table growth is outside a range**: When the table volume is checked, it should have between 1000 and 2000 more rows than it had during the previous check.
+1. **테이블 성장이 너무 빠름**: 테이블 volume을 확인할 때 이전 검사 시보다 1000행 미만으로 더 많아야 합니다.
+2. **테이블 성장이 너무 느림**: 테이블 volume을 확인할 때 이전 검사 시보다 1000행 이상으로 더 많아야 합니다.
+3. **테이블 성장이 범위를 벗어남**: 테이블 volume을 확인할 때 이전 검사 시보다 1000에서 2000행 사이로 더 많아야 합니다.
 
-For change volume conditions, both _absolute_ row count deltas and relative percentage deltas are supported for identifying
-table that are following an abnormal pattern of growth.
+변경 volume 조건의 경우, 비정상적인 성장 패턴을 가진 테이블을 식별하기 위해 _절대_ 행 수 변화와 상대적 비율 변화가 모두 지원됩니다.
 
-#### 3. Volume Source
+#### 3. Volume 소스
 
-The **Volume Source**: This is the mechanism that DataHub Cloud should use to determine the table volume (row count). The supported
-source types vary by the platform, but generally fall into these categories:
+**Volume 소스**: DataHub Cloud가 테이블 volume(행 수)을 결정하는 데 사용해야 하는 메커니즘입니다. 지원되는 소스 유형은 플랫폼에 따라 다르지만 일반적으로 다음 범주에 속합니다:
 
-- **Information Schema**: A system Table that is exposed by the Data Warehouse which contains live information about the Databases
-  and Tables stored inside the Data Warehouse, including their row count. It is usually efficient to check, but can in some cases be slightly delayed to update
-  once a change has been made to a table. This is the optimal balance between cost and accuracy for most Data Platforms.
+- **Information Schema**: 데이터베이스 및 테이블(행 수 포함)에 대한 실시간 정보를 담고 있는 데이터 웨어하우스 시스템 테이블입니다. 일반적으로 효율적으로 확인할 수 있지만, 테이블에 변경이 이루어진 후 업데이트가 약간 지연될 수 있습니다. 대부분의 데이터 플랫폼에서 비용과 정확도 간의 최적 균형을 제공합니다.
 
-- **Query**: A `COUNT(*)` query is used to retrieve the latest row count for a table, with optional SQL filters applied (depending on platform).
-  This can be less efficient to check depending on the size of the table. This approach is more portable, as it does not involve
-  system warehouse tables, it is also easily portable across Data Warehouse and Data Lake providers. This issues a query to the table, which can be more expensive than Information Schema.
+- **Query**: 선택적 SQL 필터가 적용된(플랫폼에 따라 다름) `COUNT(*)` 쿼리를 사용하여 테이블의 최신 행 수를 검색합니다. 테이블 크기에 따라 확인 효율성이 낮을 수 있습니다. 이 접근 방식은 시스템 웨어하우스 테이블을 포함하지 않아 데이터 웨어하우스 및 데이터 레이크 공급자 간에 쉽게 이식 가능합니다. 정보 스키마보다 비용이 많이 드는 테이블 쿼리가 발생합니다.
 
-- **DataHub Dataset Profile**: The DataHub Dataset Profile aspect is used to retrieve the latest row count information for a table.
-  Using this option avoids contacting your data platform, and instead uses the DataHub Dataset Profile metadata to evaluate Volume Assertions.
-  Note if you have not configured a managed ingestion source through DataHub, then this may be the only option available. This is the cheapest option, but requires that Dataset Profiles are reported to DataHub. By default, Ingestion will report Dataset Profiles to DataHub, which can be and infrequent. You can report Dataset Profiles via the DataHub APIs for more frequent and reliable data.
+- **DataHub Dataset Profile**: DataHub Dataset Profile aspect를 사용하여 테이블의 최신 행 수 정보를 검색합니다. 이 옵션을 사용하면 데이터 플랫폼에 접촉하지 않고 DataHub Dataset Profile 메타데이터를 사용하여 Volume Assertions를 평가합니다. DataHub를 통해 관리되는 수집 소스를 구성하지 않은 경우, 이것이 유일하게 사용 가능한 옵션일 수 있습니다. 가장 저렴한 옵션이지만 DataHub에 Dataset Profile이 보고되어야 합니다. 기본적으로 수집 시 DataHub에 Dataset Profile을 보고하지만 빈도가 낮을 수 있습니다. 더 빈번하고 신뢰할 수 있는 데이터를 위해 DataHub API를 통해 Dataset Profile을 보고할 수 있습니다.
 
-Volume Assertions also have an off switch: they can be started or stopped at any time with the click of button.
+Volume Assertions에는 끄기 스위치도 있습니다: 버튼 클릭 한 번으로 언제든지 시작하거나 중지할 수 있습니다.
 
-## Creating a Volume Assertion
+## Volume Assertion 생성
 
-### Prerequisites
+### 사전 요구 사항
 
-1. **Permissions**: To create or delete Volume Assertions for a specific entity on DataHub, you'll need to be granted the
-   `Edit Assertions` and `Edit Monitors` privileges for the entity. This will be granted to Entity owners as part of the `Asset Owners - Metadata Policy`
-   by default.
+1. **권한**: DataHub에서 특정 entity에 대한 Volume Assertions를 생성하거나 삭제하려면 해당 entity에 대해 `Edit Assertions` 및 `Edit Monitors` 권한이 부여되어야 합니다. 이 권한은 기본적으로 `Asset Owners - Metadata Policy`의 일환으로 Entity 소유자에게 부여됩니다.
 
-2. (Optional) **Data Platform Connection**: In order to create a Volume Assertion that queries the source data platform directly (instead of DataHub metadata), you'll need to have an **Ingestion Source** configured to your
-   Data Platform: Snowflake, BigQuery, or Redshift under the **Integrations** tab.
+2. (선택 사항) **데이터 플랫폼 연결**: DataHub 메타데이터 대신 소스 데이터 플랫폼을 직접 쿼리하는 Volume Assertion을 생성하려면 **Integrations** 탭에서 데이터 플랫폼(Snowflake, BigQuery 또는 Redshift)에 대한 **수집 소스**가 구성되어 있어야 합니다.
 
-Once these are in place, you're ready to create your Volume Assertions!
+이러한 사전 조건이 갖춰지면 Volume Assertions를 생성할 준비가 된 것입니다!
 
-You can also apply Smart Volume Assertions at scale using [Monitoring Rules](/docs/managed-datahub/observe/data-health-dashboard.md#monitoring-rules) on the Data Health page.
+데이터 상태 페이지의 [모니터링 규칙](/docs/managed-datahub/observe/data-health-dashboard.md#monitoring-rules)을 사용하여 Smart Volume Assertions를 대규모로 적용할 수도 있습니다.
 
-### Steps
+### 단계
 
-1. Navigate to the Table that to monitor for volume
-2. Click the **Quality** tab
+1. volume을 모니터링할 테이블로 이동합니다
+2. **Quality** 탭을 클릭합니다
 
 <p align="left">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/freshness/profile-validation-tab.png"/>
 </p>
 
-3. Click **+ Create Assertion**
+3. **+ Create Assertion**을 클릭합니다
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/volume/assertion-builder-volume-choose-type.png"/>
 </p>
 
-4. Choose **Volume**
+4. **Volume**을 선택합니다
 
-5. Configure the evaluation **schedule**. This is the frequency at which the assertion will be evaluated to produce a pass or fail result, and the times
-   when the table volume will be checked.
+5. 평가 **스케줄**을 구성합니다. 이는 assertion이 통과 또는 실패 결과를 생성하기 위해 평가되는 빈도이며 테이블 volume을 확인하는 시간입니다.
 
-6. Configure the evaluation **condition type**. This determines the cases in which the new assertion will fail when it is evaluated.
+6. 평가 **조건 유형**을 구성합니다. 이는 새로운 assertion이 평가될 때 실패하는 경우를 결정합니다.
 
 <p align="left">
   <img width="30%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/volume/assertion-builder-volume-condition-type.png"/>
 </p>
 
-7. (Optional) Click **Advanced** to customize the volume **source**. This is the mechanism that will be used to obtain the table
-   row count metric. Each Data Platform supports different options including Information Schema, Query, and DataHub Dataset Profile.
+7. (선택 사항) **Advanced**를 클릭하여 volume **소스**를 사용자 정의합니다. 이는 테이블 행 수 지표를 얻는 데 사용될 메커니즘입니다. 각 데이터 플랫폼은 Information Schema, Query, DataHub Dataset Profile을 포함한 다양한 옵션을 지원합니다.
 
 <p align="left">
   <img width="30%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/volume/assertion-builder-volume-select-source-type.png"/>
 </p>
 
-- **Information Schema**: Check the Data Platform system metadata tables to determine the table row count.
-- **Query**: Issue a `COUNT(*)` query to the table to determine the row count.
-- **DataHub Dataset Profile**: Use the DataHub Dataset Profile metadata to determine the row count.
+- **Information Schema**: 데이터 플랫폼 시스템 메타데이터 테이블을 확인하여 테이블 행 수를 결정합니다.
+- **Query**: 테이블에 `COUNT(*)` 쿼리를 실행하여 행 수를 결정합니다.
+- **DataHub Dataset Profile**: DataHub Dataset Profile 메타데이터를 사용하여 행 수를 결정합니다.
 
-8. Configure actions that should be taken when the Volume Assertion passes or fails
+8. Volume Assertion이 통과하거나 실패할 때 취해야 할 작업을 구성합니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/assertion-builder-actions.png"/>
 </p>
 
-- **Raise incident**: Automatically raise a new DataHub `Volume` Incident for the Table whenever the Volume Assertion is failing. This
-  may indicate that the Table is unfit for consumption. Configure Slack Notifications under **Settings** to be notified when
-  an incident is created due to an Assertion failure.
+- **Raise incident**: Volume Assertion이 실패할 때마다 해당 테이블에 대한 새 DataHub `Volume` 인시던트를 자동으로 발생시킵니다. 이는 테이블이 사용하기에 부적합함을 나타낼 수 있습니다. **Settings**에서 Slack 알림을 구성하여 Assertion 실패로 인해 인시던트가 생성될 때 알림을 받으세요.
 
-- **Resolve incident**: Automatically resolved any incidents that were raised due to failures in this Volume Assertion. Note that
-  any other incidents will not be impacted.
+- **Resolve incident**: 이 Volume Assertion의 실패로 인해 발생한 인시던트를 자동으로 해결합니다. 다른 인시던트에는 영향을 미치지 않습니다.
 
-9. Click **Next** and provide a description.
+9. **Next**를 클릭하고 설명을 제공합니다.
 
-10. Click **Save**.
+10. **Save**를 클릭합니다.
 
-And that's it! DataHub will now begin to monitor your Volume Assertion for the table.
+이제 DataHub가 테이블의 Volume Assertion 모니터링을 시작합니다.
 
-Once your assertion has run, you will begin to see Success or Failure status for the Table
+assertion이 실행되면 테이블의 성공 또는 실패 상태를 확인할 수 있습니다
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/volume/profile-passing-volume-assertions-expanded.png"/>
 </p>
 
-## Anomaly Detection with Smart Assertions ⚡
+## Smart Assertions를 활용한 이상 탐지 ⚡
 
-As part of the **DataHub Cloud Observe** module, DataHub Cloud also provides **Smart Assertions** out of the box. These are
-dynamic, AI-powered Volume Assertions that you can use to monitor the volume of important warehouse Tables, without
-requiring any manual setup.
+**DataHub Cloud Observe** 모듈의 일환으로 DataHub Cloud는 기본 제공 **Smart Assertions**도 제공합니다. 이는 수동 설정 없이 중요한 웨어하우스 테이블의 volume을 모니터링하는 데 사용할 수 있는 동적 AI 기반 Volume Assertions입니다.
 
-You can create smart assertions by simply selecting the `Detect with AI` option in the UI:
+UI에서 `Detect with AI` 옵션을 선택하여 smart assertions를 생성할 수 있습니다:
 
 <p align="left">
   <img width="90%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/volume/volume-smart-assertion.png"/>
 </p>
 
-## Time-Series Bucketing
+## 시계열 버킷팅
 
-By default, volume assertions evaluate the **total row count** of a table at a point in time. With **time-series bucketing**, you can partition your data into time-based buckets (e.g., daily or weekly) and evaluate volume metrics within each bucket. This fundamentally changes what the assertion measures:
+기본적으로 volume assertions는 특정 시점의 테이블 **총 행 수**를 평가합니다. **시계열 버킷팅**을 사용하면 데이터를 시간 기반 버킷(예: 일별 또는 주별)으로 분할하고 각 버킷 내에서 volume 지표를 평가할 수 있습니다. 이는 assertion이 측정하는 내용을 근본적으로 변경합니다:
 
-|                      | Without Bucketing                          | With Bucketing                                              |
+|                      | 버킷팅 없음                          | 버킷팅 있음                                              |
 | -------------------- | ------------------------------------------ | ----------------------------------------------------------- |
-| **Total row count**  | Total table row count                      | Rows matching the timestamp-in-bucket condition             |
-| Example              | "Total row count should stay above 10,000" | "Rows added per day should be above 500"                    |
-| **Row count change** | Row count change since previous evaluation | Row count compared to previous bucket                       |
-| Example              | "Row count should grow by at least 100"    | "Difference in rows added per week should not exceed 5,000" |
+| **총 행 수**  | 테이블 총 행 수                      | 타임스탬프-버킷 조건과 일치하는 행 수             |
+| 예시              | "총 행 수는 10,000 이상을 유지해야 합니다" | "하루에 추가되는 행은 500 이상이어야 합니다"                    |
+| **행 수 변화** | 이전 평가 이후 행 수 변화 | 이전 버킷과 비교한 행 수                       |
+| 예시              | "행 수는 최소 100 증가해야 합니다"    | "주당 추가된 행의 차이는 5,000을 초과해서는 안 됩니다" |
 
-Time-series bucketing is useful when:
+시계열 버킷팅은 다음과 같은 경우에 유용합니다:
 
-- Your table has a timestamp column that represents when rows were created or updated
-- You want to monitor data quality at a day or week granularity rather than the whole table
-- You want to detect issues like "no data arrived today" or "this week's volume is abnormally low"
+- 테이블에 행이 생성되거나 업데이트된 시간을 나타내는 타임스탬프 컬럼이 있는 경우
+- 전체 테이블이 아닌 일별 또는 주별 세분성으로 데이터 품질을 모니터링하려는 경우
+- "오늘 데이터가 도착하지 않았다" 또는 "이번 주 volume이 비정상적으로 낮다"와 같은 문제를 탐지하려는 경우
 
-### Bucketing Configuration
+### 버킷팅 구성
 
-A time-series bucketing strategy consists of:
+시계열 버킷팅 전략은 다음으로 구성됩니다:
 
-- **Timestamp column**: The date/time column used to partition rows into buckets (e.g., `created_at`, `event_date`).
-- **Bucket interval**: The size of each time bucket. Currently supported intervals are **Daily** (1 DAY) and **Weekly** (1 WEEK).
-- **Timezone**: The IANA timezone for bucket boundaries (e.g., `America/Los_Angeles`, `UTC`). This should match your timestamp column's timezone. Defaults to UTC.
-- **Late arrival grace period** (optional): A buffer after the bucket end time before the bucket is considered complete. This accounts for late-arriving data. For example, a 2-day grace period on a daily bucket means the bucket for Monday won't be evaluated until Thursday at midnight (instead of Tuesday at midnight).
+- **타임스탬프 컬럼**: 행을 버킷으로 분할하는 데 사용되는 날짜/시간 컬럼(예: `created_at`, `event_date`).
+- **버킷 간격**: 각 시간 버킷의 크기. 현재 지원되는 간격은 **일별** (1 DAY)과 **주별** (1 WEEK)입니다.
+- **시간대**: 버킷 경계에 대한 IANA 시간대(예: `America/Los_Angeles`, `UTC`). 타임스탬프 컬럼의 시간대와 일치해야 합니다. 기본값은 UTC입니다.
+- **늦은 도착 유예 기간** (선택 사항): 버킷이 완료된 것으로 간주되기 전 버킷 종료 시간 이후의 버퍼. 늦게 도착하는 데이터를 고려합니다. 예를 들어, 일별 버킷에 2일 유예 기간은 월요일 버킷이 화요일 자정 대신 목요일 자정까지 평가되지 않음을 의미합니다.
 
 :::note
-When time-series bucketing is enabled, the assertion's **evaluation schedule is automatically computed** based on the bucket interval and grace period. You do not need to (and cannot) manually set a cron schedule for bucketed assertions.
+시계열 버킷팅이 활성화되면 assertion의 **평가 스케줄이 자동으로 계산**됩니다. 버킷팅된 assertion에 대해 cron 스케줄을 수동으로 설정할 필요가 없습니다(할 수도 없습니다).
 :::
 
-### Limitations
+### 제한 사항
 
-- Only **Query** source type supports bucketing. Information Schema and DataHub Dataset Profile sources cannot be bucketed.
-- Only single-unit bucket intervals are supported (1 DAY or 1 WEEK, not 2 DAYs).
-- Bucketing configuration (timestamp column, bucket interval, timezone) **cannot be changed after creation**. The late arrival grace period can be updated.
-- If a bucket is missed due to downtime, it will not be retroactively evaluated.
+- **Query** 소스 유형만 버킷팅을 지원합니다. Information Schema와 DataHub Dataset Profile 소스는 버킷팅할 수 없습니다.
+- 단일 단위 버킷 간격만 지원됩니다(1 DAY 또는 1 WEEK, 2 DAY는 불가).
+- 버킷팅 구성(타임스탬프 컬럼, 버킷 간격, 시간대)은 **생성 후 변경할 수 없습니다**. 늦은 도착 유예 기간은 업데이트할 수 있습니다.
+- 다운타임으로 인해 버킷이 누락된 경우 소급하여 평가되지 않습니다.
 
-### Configuring Bucketing in the UI
+### UI에서 버킷팅 구성
 
-When creating a volume assertion:
+volume assertion 생성 시:
 
 <p align="left">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/bucketing/volume-timeseries-bucketing.png"/>
 </p>
 
-1. In the assertion builder, expand the **Time-Series Bucketing** section.
-2. Toggle bucketing **on**.
-3. Select the **timestamp column** from the dropdown (filtered to date/time fields).
-4. Choose the **bucket size** (Daily or Weekly).
-5. Select a **timezone** that matches your timestamp column's timezone.
-6. (Optional) Set a **grace period** to account for late-arriving data.
+1. assertion 빌더에서 **Time-Series Bucketing** 섹션을 펼칩니다.
+2. 버킷팅을 **켜기**로 전환합니다.
+3. 드롭다운에서 **타임스탬프 컬럼**을 선택합니다(날짜/시간 필드로 필터링됨).
+4. **버킷 크기**(일별 또는 주별)를 선택합니다.
+5. 타임스탬프 컬럼의 시간대와 일치하는 **시간대**를 선택합니다.
+6. (선택 사항) 늦게 도착하는 데이터를 고려하기 위해 **유예 기간**을 설정합니다.
 
-### Configuring Bucketing via the Python SDK
+### Python SDK를 통한 버킷팅 구성
 
 ```python
 from datahub.sdk import DataHubClient
@@ -278,7 +236,7 @@ dataset_urn = DatasetUrn.from_string(
     "urn:li:dataset:(urn:li:dataPlatform:snowflake,database.schema.table,PROD)"
 )
 
-# Volume assertion with daily bucketing
+# 일별 버킷팅을 사용한 volume assertion
 volume_assertion = client.assertions.sync_volume_assertion(
     dataset_urn=dataset_urn,
     display_name="Daily Row Count Check",
@@ -295,7 +253,7 @@ volume_assertion = client.assertions.sync_volume_assertion(
     enabled=True,
 )
 
-# Smart volume assertion with weekly bucketing and backfill
+# 주별 버킷팅과 보정을 사용한 smart volume assertion
 smart_volume = client.assertions.sync_smart_volume_assertion(
     dataset_urn=dataset_urn,
     display_name="Weekly Volume Anomaly Monitor",
@@ -311,50 +269,47 @@ smart_volume = client.assertions.sync_smart_volume_assertion(
 )
 ```
 
-See the [Assertions SDK tutorial](/docs/api/tutorials/assertions.md) for more examples.
+더 많은 예시는 [Assertions SDK 튜토리얼](/docs/api/tutorials/assertions.md)을 참조하세요.
 
 :::info
-For smart assertions with bucketing enabled, you can also configure **historical backfill** to populate the assertion's metrics history. See [Backfill Assertion History](./assertion-backfill.md) for details.
+버킷팅이 활성화된 smart assertions의 경우 assertion의 지표 이력을 채우기 위해 **과거 데이터 보정**도 구성할 수 있습니다. 자세한 내용은 [Assertion 이력 보정](./assertion-backfill.md)을 참조하세요.
 :::
 
-## Stopping a Volume Assertion
+## Volume Assertion 중지
 
-In order to temporarily stop the evaluation of the assertion:
+assertion 평가를 일시적으로 중지하려면:
 
-1. Navigate to the **Quality** tab of the Table with the assertion
-2. Click **Volume** to open the Volume Assertion assertions
-3. Click the "Stop" button for the assertion you wish to pause.
+1. assertion이 있는 테이블의 **Quality** 탭으로 이동합니다
+2. **Volume**을 클릭하여 Volume Assertion assertions를 엽니다
+3. 일시 중지하려는 assertion의 "Stop" 버튼을 클릭합니다.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/stop-assertion.png"/>
 </p>
 
-To resume the assertion, simply click **Start**.
+assertion을 재개하려면 **Start**를 클릭하세요.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/start-assertion.png"/>
 </p>
 
-## Creating Volume Assertions via API
+## API를 통한 Volume Assertions 생성
 
-Under the hood, DataHub Cloud implements Volume Assertion Monitoring using two concepts:
+내부적으로 DataHub Cloud는 두 가지 개념을 사용하여 Volume Assertion 모니터링을 구현합니다:
 
-- **Assertion**: The specific expectation for volume, e.g. "The table was changed int the past 7 hours"
-  or "The table is changed on a schedule of every day by 8am". This is the "what".
+- **Assertion**: volume에 대한 특정 기대치(예: "테이블이 지난 7시간 이내에 변경됨" 또는 "테이블이 매일 오전 8시까지 변경되는 일정으로 변경됨"). 이것은 "무엇"입니다.
 
-- **Monitor**: The process responsible for evaluating the Assertion on a given evaluation schedule and using specific
-  mechanisms. This is the "how".
+- **Monitor**: 지정된 평가 스케줄에 따라 특정 메커니즘을 사용하여 Assertion을 평가하는 프로세스. 이것은 "어떻게"입니다.
 
-Note that to create or delete Assertions and Monitors for a specific entity on DataHub, you'll need the
-`Edit Assertions` and `Edit Monitors` privileges for it.
+DataHub에서 특정 entity에 대한 Assertions 및 Monitors를 생성하거나 삭제하려면 해당 entity에 대한 `Edit Assertions` 및 `Edit Monitors` 권한이 필요합니다.
 
 #### GraphQL
 
-In order to create or update a Volume Assertion, you can use the `upsertDatasetVolumeAssertionMonitor` mutation.
+Volume Assertion을 생성하거나 업데이트하려면 `upsertDatasetVolumeAssertionMonitor` mutation을 사용하세요.
 
-##### Examples
+##### 예시
 
-To create a Volume Assertion Entity that verifies that the row count for a table is between 10 and 20 rows, and runs every 8 hours:
+테이블의 행 수가 10에서 20 사이인지 확인하고 8시간마다 실행되는 Volume Assertion entity를 생성하려면:
 
 ```graphql
 mutation upsertDatasetVolumeAssertionMonitor {
@@ -382,7 +337,7 @@ mutation upsertDatasetVolumeAssertionMonitor {
 }
 ```
 
-To create an AI Smart Freshness Assertion that runs every 8 hours:
+8시간마다 실행되는 AI Smart Freshness Assertion을 생성하려면:
 
 ```graphql
 mutation upsertDatasetFreshnessAssertionMonitor {
@@ -391,7 +346,7 @@ mutation upsertDatasetFreshnessAssertionMonitor {
       entityUrn: "<urn of entity being monitored>"
       inferWithAI: true
       type: ROW_COUNT_TOTAL
-      # you can provide any value here as it will be overwritten continuously by the AI engine
+      # AI 엔진에 의해 지속적으로 덮어써지므로 여기에 어떤 값이든 제공할 수 있습니다
       rowCountTotal: {
         operator: BETWEEN
         parameters: {
@@ -412,11 +367,11 @@ mutation upsertDatasetFreshnessAssertionMonitor {
 }
 ```
 
-The supported volume assertion types are `ROW_COUNT_TOTAL` and `ROW_COUNT_CHANGE`. Other (e.g. incrementing segment) types are not yet supported.
-The supported operator types are `GREATER_THAN`, `GREATER_THAN_OR_EQUAL_TO`, `LESS_THAN`, `LESS_THAN_OR_EQUAL_TO`, and `BETWEEN` (requires minValue, maxValue).
-The supported parameter types are `NUMBER`.
+지원되는 volume assertion 유형은 `ROW_COUNT_TOTAL` 및 `ROW_COUNT_CHANGE`입니다. 기타(예: 증가 세그먼트) 유형은 아직 지원되지 않습니다.
+지원되는 연산자 유형은 `GREATER_THAN`, `GREATER_THAN_OR_EQUAL_TO`, `LESS_THAN`, `LESS_THAN_OR_EQUAL_TO`, `BETWEEN`(minValue, maxValue 필요)입니다.
+지원되는 파라미터 유형은 `NUMBER`입니다.
 
-You can use same endpoint with assertion urn input to update an existing Volume Assertion and corresponding Monitor:
+동일한 엔드포인트에 assertion urn 입력을 제공하여 기존 Volume Assertion 및 해당 Monitor를 업데이트할 수 있습니다:
 
 ```graphql
 mutation upsertDatasetVolumeAssertionMonitor {
@@ -445,20 +400,20 @@ mutation upsertDatasetVolumeAssertionMonitor {
 }
 ```
 
-You can delete assertions along with their monitors using GraphQL mutations: `deleteAssertion` and `deleteMonitor`.
+GraphQL mutations인 `deleteAssertion` 및 `deleteMonitor`를 사용하여 assertions와 모니터를 함께 삭제할 수 있습니다.
 
-### Tips
+### 팁
 
 :::info
-**Authorization**
+**인증**
 
-Remember to always provide a DataHub Personal Access Token when calling the GraphQL API. To do so, just add the 'Authorization' header as follows:
+GraphQL API를 호출할 때는 항상 DataHub Personal Access Token을 제공해야 합니다. 다음과 같이 'Authorization' 헤더를 추가하세요:
 
 ```
 Authorization: Bearer <personal-access-token>
 ```
 
-**Exploring GraphQL API**
+**GraphQL API 탐색**
 
-Also, remember that you can play with an interactive version of the DataHub Cloud GraphQL API at `https://your-account-id.acryl.io/api/graphiql`
+`https://your-account-id.acryl.io/api/graphiql`에서 DataHub Cloud GraphQL API의 인터랙티브 버전을 사용해 볼 수 있습니다.
 :::

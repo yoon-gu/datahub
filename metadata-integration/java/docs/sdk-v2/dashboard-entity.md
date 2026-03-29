@@ -1,12 +1,12 @@
 # Dashboard Entity
 
-The Dashboard entity represents collections of visualizations and reports in BI tools (e.g., Looker, Tableau, PowerBI). This guide covers comprehensive dashboard operations in SDK V2.
+Dashboard entity는 BI 도구(예: Looker, Tableau, PowerBI)의 시각화 및 보고서 모음을 나타냅니다. 이 가이드는 SDK V2의 포괄적인 dashboard 작업을 다룹니다.
 
-## Creating a Dashboard
+## Dashboard 생성
 
-### Minimal Dashboard
+### 최소 Dashboard
 
-Only tool and id are required:
+tool과 id만 필수입니다:
 
 ```java
 Dashboard dashboard = Dashboard.builder()
@@ -15,9 +15,9 @@ Dashboard dashboard = Dashboard.builder()
     .build();
 ```
 
-### With Metadata
+### 메타데이터 포함
 
-Add title and description at construction:
+구성 시 제목과 설명 추가:
 
 ```java
 Dashboard dashboard = Dashboard.builder()
@@ -28,9 +28,9 @@ Dashboard dashboard = Dashboard.builder()
     .build();
 ```
 
-### With Custom Properties
+### 커스텀 속성 포함
 
-Include custom properties in builder:
+빌더에 커스텀 속성 포함:
 
 ```java
 Map<String, String> props = new HashMap<>();
@@ -45,15 +45,15 @@ Dashboard dashboard = Dashboard.builder()
     .build();
 ```
 
-## URN Construction
+## URN 구성
 
-Dashboard URNs follow the pattern:
+Dashboard URN은 다음 패턴을 따릅니다:
 
 ```
 urn:li:dashboard:({tool},{id})
 ```
 
-**Automatic URN creation:**
+**자동 URN 생성:**
 
 ```java
 Dashboard dashboard = Dashboard.builder()
@@ -65,9 +65,9 @@ DashboardUrn urn = dashboard.getDashboardUrn();
 // urn:li:dashboard:(looker,regional_sales)
 ```
 
-## Supported BI Tools
+## 지원되는 BI 도구
 
-Common tool identifiers:
+일반적인 도구 식별자:
 
 - `looker` - Looker
 - `tableau` - Tableau
@@ -79,9 +79,9 @@ Common tool identifiers:
 - `quicksight` - Amazon QuickSight
 - `thoughtspot` - ThoughtSpot
 
-## Tags
+## 태그
 
-### Adding Tags
+### 태그 추가
 
 ```java
 // Simple tag name (auto-prefixed)
@@ -92,14 +92,14 @@ dashboard.addTag("executive");
 dashboard.addTag("urn:li:tag:production");
 ```
 
-### Removing Tags
+### 태그 제거
 
 ```java
 dashboard.removeTag("executive");
 dashboard.removeTag("urn:li:tag:production");
 ```
 
-### Tag Chaining
+### 태그 체이닝
 
 ```java
 dashboard.addTag("executive")
@@ -107,9 +107,9 @@ dashboard.addTag("executive")
          .addTag("kpi");
 ```
 
-## Owners
+## 소유자
 
-### Adding Owners
+### 소유자 추가
 
 ```java
 import com.linkedin.common.OwnershipType;
@@ -133,41 +133,41 @@ dashboard.addOwner(
 );
 ```
 
-### Removing Owners
+### 소유자 제거
 
 ```java
 dashboard.removeOwner("urn:li:corpuser:john_doe");
 ```
 
-### Owner Types
+### 소유권 타입
 
-Available ownership types:
+사용 가능한 소유권 타입:
 
-- `BUSINESS_OWNER` - Business stakeholder
-- `TECHNICAL_OWNER` - Maintains the technical implementation
-- `DATA_STEWARD` - Manages data quality and compliance
-- `DATAOWNER` - Generic data owner
-- `DEVELOPER` - Software developer
-- `PRODUCER` - Dashboard producer/creator
-- `CONSUMER` - Dashboard consumer
-- `STAKEHOLDER` - Other stakeholder
+- `BUSINESS_OWNER` - 비즈니스 이해관계자
+- `TECHNICAL_OWNER` - 기술적 구현을 유지 관리
+- `DATA_STEWARD` - 데이터 품질 및 규정 준수 관리
+- `DATAOWNER` - 일반 데이터 소유자
+- `DEVELOPER` - 소프트웨어 개발자
+- `PRODUCER` - Dashboard 생산자/제작자
+- `CONSUMER` - Dashboard 소비자
+- `STAKEHOLDER` - 기타 이해관계자
 
 ## Glossary Terms
 
-### Adding Terms
+### 용어 추가
 
 ```java
 dashboard.addTerm("urn:li:glossaryTerm:ExecutiveMetrics");
 dashboard.addTerm("urn:li:glossaryTerm:BusinessIntelligence");
 ```
 
-### Removing Terms
+### 용어 제거
 
 ```java
 dashboard.removeTerm("urn:li:glossaryTerm:ExecutiveMetrics");
 ```
 
-### Term Chaining
+### 용어 체이닝
 
 ```java
 dashboard.addTerm("urn:li:glossaryTerm:KeyPerformanceIndicator")
@@ -175,15 +175,15 @@ dashboard.addTerm("urn:li:glossaryTerm:KeyPerformanceIndicator")
          .addTerm("urn:li:glossaryTerm:RealTimeData");
 ```
 
-## Domain
+## 도메인
 
-### Setting Domain
+### 도메인 설정
 
 ```java
 dashboard.setDomain("urn:li:domain:Sales");
 ```
 
-### Removing Domain
+### 도메인 제거
 
 ```java
 // Remove a specific domain
@@ -193,9 +193,9 @@ dashboard.removeDomain("urn:li:domain:Sales");
 dashboard.clearDomains();
 ```
 
-## Custom Properties
+## 커스텀 속성
 
-### Adding Individual Properties
+### 개별 속성 추가
 
 ```java
 dashboard.addCustomProperty("team", "sales-operations");
@@ -203,9 +203,9 @@ dashboard.addCustomProperty("refresh_schedule", "hourly");
 dashboard.addCustomProperty("data_source", "snowflake");
 ```
 
-### Setting All Properties
+### 모든 속성 설정
 
-Replace all custom properties:
+모든 커스텀 속성 교체:
 
 ```java
 Map<String, String> properties = new HashMap<>();
@@ -216,33 +216,33 @@ properties.put("access_level", "executive");
 dashboard.setCustomProperties(properties);
 ```
 
-### Removing Properties
+### 속성 제거
 
 ```java
 dashboard.removeCustomProperty("refresh_schedule");
 ```
 
-## Reading Dashboard Metadata
+## Dashboard 메타데이터 읽기
 
-### Get Title
+### 제목 가져오기
 
 ```java
 String title = dashboard.getTitle();
 ```
 
-### Get Description
+### 설명 가져오기
 
 ```java
 String description = dashboard.getDescription();
 ```
 
-## Lineage Operations
+## Lineage 작업
 
-Dashboard lineage represents the data sources (datasets) that feed into the dashboard. This creates upstream lineage relationships from the dashboard to its source datasets.
+Dashboard lineage는 dashboard로 유입되는 데이터 소스(dataset)를 나타냅니다. 이를 통해 dashboard에서 소스 dataset으로의 업스트림 lineage 관계가 생성됩니다.
 
-### Adding Input Datasets
+### 입력 Dataset 추가
 
-Add datasets one at a time:
+Dataset을 하나씩 추가:
 
 ```java
 // Using DatasetUrn
@@ -257,9 +257,9 @@ dashboard.addInputDataset(
 );
 ```
 
-### Setting Input Datasets
+### 입력 Dataset 설정
 
-Replace all input datasets at once:
+모든 입력 dataset을 한 번에 교체:
 
 ```java
 List<DatasetUrn> datasets = Arrays.asList(
@@ -274,7 +274,7 @@ List<DatasetUrn> datasets = Arrays.asList(
 dashboard.setInputDatasets(datasets);
 ```
 
-### Removing Input Datasets
+### 입력 Dataset 제거
 
 ```java
 // Using DatasetUrn
@@ -289,9 +289,9 @@ dashboard.removeInputDataset(
 );
 ```
 
-### Getting Input Datasets
+### 입력 Dataset 가져오기
 
-Retrieve all input datasets:
+모든 입력 dataset 검색:
 
 ```java
 List<DatasetUrn> inputDatasets = dashboard.getInputDatasets();
@@ -300,7 +300,7 @@ for (DatasetUrn dataset : inputDatasets) {
 }
 ```
 
-### Lineage Chaining
+### Lineage 체이닝
 
 ```java
 dashboard.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,sales.orders,PROD)")
@@ -308,13 +308,13 @@ dashboard.addInputDataset("urn:li:dataset:(urn:li:dataPlatform:snowflake,sales.o
          .addInputDataset("urn:li:dataset:(urn:li:dataPlatform:salesforce,Account,PROD)");
 ```
 
-## Chart Relationships
+## Chart 관계
 
-Chart relationships represent the visualizations embedded in a dashboard. This creates "Contains" relationships between the dashboard and its charts.
+Chart 관계는 dashboard에 임베드된 시각화를 나타냅니다. 이를 통해 dashboard와 chart 사이에 "포함" 관계가 생성됩니다.
 
-### Adding Charts
+### Chart 추가
 
-Add charts one at a time:
+Chart를 하나씩 추가:
 
 ```java
 // Using ChartUrn
@@ -325,9 +325,9 @@ dashboard.addChart(chart);
 dashboard.addChart("urn:li:chart:(looker,sales_performance_chart)");
 ```
 
-### Setting Charts
+### Chart 설정
 
-Replace all charts at once:
+모든 chart를 한 번에 교체:
 
 ```java
 List<ChartUrn> charts = Arrays.asList(
@@ -339,7 +339,7 @@ List<ChartUrn> charts = Arrays.asList(
 dashboard.setCharts(charts);
 ```
 
-### Removing Charts
+### Chart 제거
 
 ```java
 // Using ChartUrn
@@ -350,9 +350,9 @@ dashboard.removeChart(chart);
 dashboard.removeChart("urn:li:chart:(looker,sales_performance_chart)");
 ```
 
-### Getting Charts
+### Chart 가져오기
 
-Retrieve all charts:
+모든 chart 검색:
 
 ```java
 List<ChartUrn> charts = dashboard.getCharts();
@@ -361,7 +361,7 @@ for (ChartUrn chart : charts) {
 }
 ```
 
-### Chart Chaining
+### Chart 체이닝
 
 ```java
 dashboard.addChart(new ChartUrn("looker", "revenue_chart"))
@@ -369,11 +369,11 @@ dashboard.addChart(new ChartUrn("looker", "revenue_chart"))
          .addChart(new ChartUrn("looker", "product_chart"));
 ```
 
-## Dashboard-Specific Properties
+## Dashboard별 속성
 
 ### Dashboard URL
 
-Set a direct link to the dashboard in its native BI tool:
+기본 BI 도구에서 dashboard에 대한 직접 링크 설정:
 
 ```java
 // Set dashboard URL
@@ -383,9 +383,9 @@ dashboard.setDashboardUrl("https://tableau.company.com/views/sales-dashboard");
 String url = dashboard.getDashboardUrl();
 ```
 
-### Last Refreshed
+### 마지막 새로 고침
 
-Track when the dashboard data was last updated:
+Dashboard 데이터가 마지막으로 업데이트된 시간 추적:
 
 ```java
 // Set last refreshed timestamp (milliseconds since epoch)
@@ -399,14 +399,14 @@ if (lastRefreshed != null) {
 }
 ```
 
-### Combined Dashboard Properties
+### 결합된 Dashboard 속성
 
 ```java
 dashboard.setDashboardUrl("https://looker.company.com/dashboards/executive")
          .setLastRefreshed(System.currentTimeMillis());
 ```
 
-## Complete Example
+## 완전한 예제
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -470,9 +470,9 @@ public class DashboardExample {
 }
 ```
 
-## Updating Existing Dashboards
+## 기존 Dashboard 업데이트
 
-### Load and Modify
+### 로드 및 수정
 
 ```java
 // Load existing dashboard
@@ -487,7 +487,7 @@ dashboard.addTag("new-tag")
 client.entities().update(dashboard);
 ```
 
-### Incremental Updates
+### 점진적 업데이트
 
 ```java
 // Just add what you need
@@ -499,27 +499,27 @@ dashboard.addCustomProperty("updated_at", String.valueOf(System.currentTimeMilli
 client.entities().update(dashboard);
 ```
 
-## Builder Options Reference
+## 빌더 옵션 참조
 
-| Method                  | Required | Description                                    |
+| 메서드                  | 필수 여부 | 설명                                    |
 | ----------------------- | -------- | ---------------------------------------------- |
-| `tool(String)`          | ✅ Yes   | BI tool identifier (e.g., "looker", "tableau") |
-| `id(String)`            | ✅ Yes   | Dashboard identifier within the tool           |
-| `title(String)`         | No       | Dashboard title                                |
-| `description(String)`   | No       | Dashboard description                          |
-| `customProperties(Map)` | No       | Map of custom key-value properties             |
+| `tool(String)`          | ✅ 예   | BI 도구 식별자 (예: "looker", "tableau") |
+| `id(String)`            | ✅ 예   | 도구 내 dashboard 식별자           |
+| `title(String)`         | 아니요       | Dashboard 제목                                |
+| `description(String)`   | 아니요       | Dashboard 설명                          |
+| `customProperties(Map)` | 아니요       | 커스텀 키-값 속성의 맵             |
 
-## Patch-Based Operations
+## Patch 기반 작업
 
-Dashboard uses patch-based updates for metadata operations. All methods like `addTag()`, `addOwner()`, etc. create patches that are accumulated until `upsert()` or `update()` is called.
+Dashboard는 메타데이터 작업에 patch 기반 업데이트를 사용합니다. `addTag()`, `addOwner()` 등의 모든 메서드는 `upsert()` 또는 `update()`가 호출될 때까지 축적되는 patches를 생성합니다.
 
-**Benefits:**
+**이점:**
 
-- **Efficient**: Multiple operations batched into fewer API calls
-- **Atomic**: All changes succeed or fail together
-- **Incremental**: Only specified fields are modified, others remain unchanged
+- **효율적**: 여러 작업이 더 적은 API 호출로 배치됨
+- **원자적**: 모든 변경 사항이 함께 성공하거나 실패
+- **점진적**: 지정된 필드만 수정되고 나머지는 변경되지 않음
 
-**Example:**
+**예제:**
 
 ```java
 Dashboard dashboard = Dashboard.builder()
@@ -536,9 +536,9 @@ dashboard.setDomain("urn:li:domain:Sales");
 client.entities().upsert(dashboard);
 ```
 
-## Common Patterns
+## 공통 패턴
 
-### Creating Multiple Dashboards
+### 여러 Dashboard 생성
 
 ```java
 List<String> dashboardIds = Arrays.asList("dashboard1", "dashboard2", "dashboard3");
@@ -557,7 +557,7 @@ for (String dashboardId : dashboardIds) {
 }
 ```
 
-### Batch Metadata Addition
+### 배치 메타데이터 추가
 
 ```java
 Dashboard dashboard = Dashboard.builder()
@@ -571,7 +571,7 @@ tags.forEach(dashboard::addTag);
 client.entities().upsert(dashboard);  // Emits all tags in one call
 ```
 
-### Conditional Metadata
+### 조건부 메타데이터
 
 ```java
 if (isExecutiveDashboard(dashboard)) {
@@ -584,7 +584,7 @@ if (requiresGovernance(dashboard)) {
 }
 ```
 
-### Dashboard with Full Lineage Context
+### 전체 Lineage 컨텍스트를 가진 Dashboard
 
 ```java
 // Create dashboard with rich metadata
@@ -629,39 +629,39 @@ dashboard.addOwner("urn:li:corpuser:product_team", OwnershipType.BUSINESS_OWNER)
 client.entities().upsert(dashboard);
 ```
 
-## Comparison with Chart Entity
+## Chart Entity와의 비교
 
-Dashboard and Chart are similar but serve different purposes:
+Dashboard와 Chart는 유사하지만 다른 목적을 가집니다:
 
-| Feature          | Dashboard                     | Chart                     |
+| 기능          | Dashboard                     | Chart                     |
 | ---------------- | ----------------------------- | ------------------------- |
-| Purpose          | Collection of visualizations  | Single visualization      |
-| URN Pattern      | `(tool,id)`                   | `(tool,id)`               |
-| Patch Operations | ✅ Full support               | ✅ Full support           |
-| Common Use Cases | Executive dashboards, reports | Individual graphs, charts |
+| 목적          | 시각화 모음  | 단일 시각화      |
+| URN 패턴      | `(tool,id)`                   | `(tool,id)`               |
+| Patch 작업 | ✅ 완전 지원               | ✅ 완전 지원           |
+| 일반적인 사용 사례 | 임원 대시보드, 보고서 | 개별 그래프, 차트 |
 
-## Next Steps
+## 다음 단계
 
-- **[Chart Entity Guide](./chart-entity.md)** - Working with chart entities
-- **[Dataset Entity Guide](./dataset-entity.md)** - Working with dataset entities
-- **[Patch Operations](./patch-operations.md)** - Deep dive into patches
-- **[Migration Guide](./migration-from-v1.md)** - Upgrading from V1
+- **[Chart Entity 가이드](./chart-entity.md)** - chart entity 작업
+- **[Dataset Entity 가이드](./dataset-entity.md)** - dataset entity 작업
+- **[Patch 작업](./patch-operations.md)** - patches에 대한 심층 분석
+- **[마이그레이션 가이드](./migration-from-v1.md)** - V1에서 업그레이드
 
-## Examples
+## 예제
 
-### Basic Dashboard Creation
+### 기본 Dashboard 생성
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DashboardCreateExample.java show_path_as_comment }}
 ```
 
-### Comprehensive Dashboard with Metadata
+### 메타데이터가 포함된 포괄적인 Dashboard
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DashboardFullExample.java show_path_as_comment }}
 ```
 
-### Dashboard with Lineage and Relationships
+### Lineage 및 관계가 있는 Dashboard
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/DashboardLineageExample.java show_path_as_comment }}

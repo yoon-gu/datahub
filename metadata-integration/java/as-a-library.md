@@ -1,32 +1,32 @@
 # Java Emitter
 
-> **Note:** This document describes the Java SDK V1, which provides low-level emitters for metadata events.
+> **참고:** 이 문서는 메타데이터 이벤트를 위한 저수준 emitter를 제공하는 Java SDK V1을 설명합니다.
 >
-> For new projects, we recommend using the **[Java SDK V2](./as-a-library-v2.md)**, which offers:
+> 새 프로젝트에서는 **[Java SDK V2](./as-a-library-v2.md)** 사용을 권장합니다. V2는 다음을 제공합니다:
 >
-> - Type-safe entity builders with fluent API
-> - Simplified CRUD operations
-> - Patch-based updates for efficient metadata management
-> - Better integration with DataHub's entity model
+> - 플루언트 API를 갖춘 타입 안전 entity 빌더
+> - 단순화된 CRUD 작업
+> - 효율적인 메타데이터 관리를 위한 patch 기반 업데이트
+> - DataHub의 entity 모델과의 더 나은 통합
 >
-> See the [Migration Guide](./docs/sdk-v2/migration-from-v1.md) for help transitioning from V1 to V2.
+> V1에서 V2로 전환하는 방법은 [마이그레이션 가이드](./docs/sdk-v2/migration-from-v1.md)를 참조하세요.
 
-In some cases, you might want to construct Metadata events directly and use programmatic ways to emit that metadata to DataHub. Use-cases are typically push-based and include emitting metadata events from CI/CD pipelines, custom orchestrators etc.
+경우에 따라 Metadata 이벤트를 직접 구성하고 프로그래밍 방식으로 DataHub에 해당 메타데이터를 emit하고 싶을 수 있습니다. 이런 사용 사례는 일반적으로 푸시 기반이며, CI/CD 파이프라인이나 커스텀 오케스트레이터 등에서 메타데이터 이벤트를 emit하는 것을 포함합니다.
 
-The [`io.acryl:datahub-client`](https://mvnrepository.com/artifact/io.acryl/datahub-client) Java package offers REST emitter API-s, which can be easily used to emit metadata from your JVM-based systems. For example, the Spark lineage integration uses the Java emitter to emit metadata events from Spark jobs.
+[`io.acryl:datahub-client`](https://mvnrepository.com/artifact/io.acryl/datahub-client) Java 패키지는 REST emitter API를 제공하며, JVM 기반 시스템에서 메타데이터를 쉽게 emit하는 데 사용할 수 있습니다. 예를 들어, Spark lineage 통합은 Java emitter를 사용하여 Spark 작업에서 메타데이터 이벤트를 emit합니다.
 
-> **Pro Tip!** Throughout our API guides, we have examples of using Java API SDK.
-> Lookout for the `| Java |` tab within our tutorials.
+> **프로 팁!** API 가이드 전반에 걸쳐 Java API SDK 사용 예제가 있습니다.
+> 튜토리얼 내 `| Java |` 탭을 확인하세요.
 
-## Installation
+## 설치
 
-Follow the specific instructions for your build system to declare a dependency on the appropriate version of the package.
+빌드 시스템에 맞는 지침에 따라 적절한 버전의 패키지에 대한 의존성을 선언하세요.
 
-**_Note_**: Check the [Maven repository](https://mvnrepository.com/artifact/io.acryl/datahub-client) for the latest version of the package before following the instructions below.
+**_참고_**: 아래 지침을 따르기 전에 [Maven 저장소](https://mvnrepository.com/artifact/io.acryl/datahub-client)에서 최신 버전을 확인하세요.
 
 ### Gradle
 
-Add the following to your build.gradle.
+`build.gradle`에 다음을 추가하세요.
 
 ```gradle
 implementation 'io.acryl:datahub-client:__version__'
@@ -34,7 +34,7 @@ implementation 'io.acryl:datahub-client:__version__'
 
 ### Maven
 
-Add the following to your `pom.xml`.
+`pom.xml`에 다음을 추가하세요.
 
 ```xml
 <!-- https://mvnrepository.com/artifact/io.acryl/datahub-client -->
@@ -48,9 +48,9 @@ Add the following to your `pom.xml`.
 
 ## REST Emitter
 
-The REST emitter is a thin wrapper on top of the [`Apache HttpClient`](https://hc.apache.org/httpcomponents-client-4.5.x/index.html) library. It supports non-blocking emission of metadata and handles the details of JSON serialization of metadata aspects over the wire.
+REST emitter는 [`Apache HttpClient`](https://hc.apache.org/httpcomponents-client-4.5.x/index.html) 라이브러리의 얇은 래퍼입니다. 메타데이터의 비블로킹 emission을 지원하며, 네트워크를 통한 메타데이터 aspect의 JSON 직렬화를 처리합니다.
 
-Constructing a REST Emitter follows a lambda-based fluent builder pattern. The config parameters mirror the Python emitter [configuration](../../metadata-ingestion/sink_docs/datahub.md#config-details) for the most part. In addition, you can also customize the HttpClient that is constructed under the hood by passing in customizations to the HttpClient builder.
+REST Emitter 구성은 람다 기반의 플루언트 빌더 패턴을 따릅니다. 설정 파라미터는 대부분 Python emitter [설정](../../metadata-ingestion/sink_docs/datahub.md#config-details)과 동일합니다. 또한, HttpClient 빌더에 커스터마이징을 전달하여 내부적으로 생성되는 HttpClient를 직접 구성할 수도 있습니다.
 
 ```java
 import datahub.client.rest.RestEmitter;
@@ -64,7 +64,7 @@ RestEmitter emitter = RestEmitter.create(b -> b
                                     );
 ```
 
-### Usage
+### 사용법
 
 ```java
 import com.linkedin.dataset.DatasetProperties;
@@ -114,17 +114,17 @@ emitter.emit(mcpw, new Callback() {
     });
 ```
 
-### REST Emitter Code
+### REST Emitter 코드
 
-If you're interested in looking at the REST emitter code, it is available [here](./datahub-client/src/main/java/datahub/client/rest/RestEmitter.java).
+REST emitter 코드에 관심이 있다면 [여기](./datahub-client/src/main/java/datahub/client/rest/RestEmitter.java)에서 확인할 수 있습니다.
 
 ## Kafka Emitter
 
-The Kafka emitter is a thin wrapper on top of the SerializingProducer class from `confluent-kafka` and offers a non-blocking interface for sending metadata events to DataHub. Use this when you want to decouple your metadata producer from the uptime of your datahub metadata server by utilizing Kafka as a highly available message bus. For example, if your DataHub metadata service is down due to planned or unplanned outages, you can still continue to collect metadata from your mission critical systems by sending it to Kafka. Also use this emitter when throughput of metadata emission is more important than acknowledgement of metadata being persisted to DataHub's backend store.
+Kafka emitter는 `confluent-kafka`의 SerializingProducer 클래스의 얇은 래퍼로, DataHub에 메타데이터 이벤트를 전송하기 위한 비블로킹 인터페이스를 제공합니다. Kafka를 고가용성 메시지 버스로 활용하여 메타데이터 프로듀서를 DataHub 메타데이터 서버의 가동 시간으로부터 분리하고 싶을 때 사용하세요. 예를 들어, 계획된 또는 예기치 않은 중단으로 인해 DataHub 메타데이터 서비스가 다운된 경우에도 Kafka로 전송하여 중요 시스템에서 메타데이터를 계속 수집할 수 있습니다. 또한, 메타데이터 emission의 처리량이 DataHub 백엔드 저장소에 대한 메타데이터 지속성 확인보다 중요할 때도 이 emitter를 사용하세요.
 
-**_Note_**: The Kafka emitter uses Avro to serialize the Metadata events to Kafka. Changing the serializer will result in unprocessable events as DataHub currently expects the metadata events over Kafka to be serialized in Avro.
+**_참고_**: Kafka emitter는 Avro를 사용하여 메타데이터 이벤트를 Kafka로 직렬화합니다. 직렬화기를 변경하면 DataHub가 현재 Kafka를 통한 메타데이터 이벤트를 Avro로 직렬화된 형태로 기대하기 때문에 처리할 수 없는 이벤트가 생성됩니다.
 
-### Usage
+### 사용법
 
 ```java
 
@@ -180,15 +180,15 @@ else {
 }
 ```
 
-### Kafka Emitter Code
+### Kafka Emitter 코드
 
-If you're interested in looking at the Kafka emitter code, it is available [here](./datahub-client/src/main/java/datahub/client/kafka/KafkaEmitter.java).
+Kafka emitter 코드에 관심이 있다면 [여기](./datahub-client/src/main/java/datahub/client/kafka/KafkaEmitter.java)에서 확인할 수 있습니다.
 
 ## File Emitter
 
-The File emitter writes metadata change proposal events (MCPs) into a JSON file that can be later handed off to the Python [Metadata File source](docs/generated/ingestion/sources/metadata-file.md) for ingestion. This works analogous to the [Metadata File sink](../../metadata-ingestion/sink_docs/metadata-file.md) in Python. This mechanism can be used when the system producing metadata events doesn't have direct connection to DataHub's REST server or Kafka brokers. The generated JSON file can be transferred later and then ingested into DataHub using the [Metadata File source](docs/generated/ingestion/sources/metadata-file.md).
+File emitter는 메타데이터 변경 제안 이벤트(MCP)를 JSON 파일에 기록하며, 나중에 Python [Metadata File source](docs/generated/ingestion/sources/metadata-file.md)에 전달하여 ingestion할 수 있습니다. 이는 Python의 [Metadata File sink](../../metadata-ingestion/sink_docs/metadata-file.md)와 유사하게 동작합니다. 메타데이터 이벤트를 생성하는 시스템이 DataHub의 REST 서버나 Kafka 브로커에 직접 연결할 수 없을 때 이 메커니즘을 사용할 수 있습니다. 생성된 JSON 파일은 나중에 전송되어 [Metadata File source](docs/generated/ingestion/sources/metadata-file.md)를 사용하여 DataHub에 ingestion할 수 있습니다.
 
-### Usage
+### 사용법
 
 ```java
 
@@ -229,16 +229,16 @@ emitter.close(); // calling close() is important to ensure file gets closed clea
 
 ```
 
-### File Emitter Code
+### File Emitter 코드
 
-If you're interested in looking at the File emitter code, it is available [here](./datahub-client/src/main/java/datahub/client/file/FileEmitter.java).
+File emitter 코드에 관심이 있다면 [여기](./datahub-client/src/main/java/datahub/client/file/FileEmitter.java)에서 확인할 수 있습니다.
 
-### Support for S3, GCS etc.
+### S3, GCS 등 지원
 
-The File emitter only supports writing to the local filesystem currently. If you're interested in adding support for S3, GCS etc., contributions are welcome!
+File emitter는 현재 로컬 파일 시스템에 대한 쓰기만 지원합니다. S3, GCS 등의 지원을 추가하는 데 관심이 있다면 기여를 환영합니다!
 
-## Other Languages
+## 다른 언어
 
-Emitter API-s are also supported for:
+Emitter API는 다음 언어에서도 지원됩니다:
 
 - [Python](../../metadata-ingestion/as-a-library.md)

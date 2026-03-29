@@ -1,23 +1,23 @@
-# Entities Overview
+# Entities 개요
 
-SDK V2 provides high-level entity classes that represent DataHub metadata entities. This guide covers common patterns across all entity types.
+SDK V2는 DataHub 메타데이터 entity를 나타내는 고수준 entity 클래스를 제공합니다. 이 가이드는 모든 entity 타입에 걸친 공통 패턴을 다룹니다.
 
-## Supported Entities
+## 지원되는 Entities
 
-SDK V2 supports all major DataHub entity types including Dataset, Chart, Dashboard, Container, DataFlow, DataJob, MLModel, and MLModelGroup. Each entity type has a dedicated guide with comprehensive examples and API documentation.
+SDK V2는 Dataset, Chart, Dashboard, Container, DataFlow, DataJob, MLModel, MLModelGroup을 포함한 모든 주요 DataHub entity 타입을 지원합니다. 각 entity 타입에는 포괄적인 예제와 API 문서가 포함된 전용 가이드가 있습니다.
 
-See the **Entity Guides** section in the sidebar for the complete list of available entities and their documentation.
+사용 가능한 entity 목록과 해당 문서는 사이드바의 **Entity 가이드** 섹션을 참조하세요.
 
-## Common Patterns
+## 공통 패턴
 
-### Entity Lifecycle
+### Entity 수명 주기
 
-All entities follow a consistent lifecycle:
+모든 entity는 일관된 수명 주기를 따릅니다:
 
-1. **Construction** - Build entity using fluent builder
-2. **Metadata Addition** - Add tags, owners, properties via methods
-3. **Persistence** - Upsert or update to DataHub
-4. **Loading** - Fetch existing entity from server
+1. **구성** - 플루언트 빌더를 사용하여 entity 빌드
+2. **메타데이터 추가** - 메서드를 통해 태그, 소유자, 속성 추가
+3. **지속** - DataHub에 upsert 또는 update
+4. **로딩** - 서버에서 기존 entity 가져오기
 
 ```java
 // 1. Construction
@@ -37,9 +37,9 @@ client.entities().upsert(dataset);
 Dataset loaded = client.entities().get(datasetUrn);
 ```
 
-### URN Management
+### URN 관리
 
-Each entity type has a strongly-typed URN class:
+각 entity 타입에는 강력한 타입의 URN 클래스가 있습니다:
 
 ```java
 // Dataset
@@ -58,7 +58,7 @@ DataJobUrn dataJobUrn = dataJob.getDataJobUrn();
 Urn genericUrn = entity.getUrn();
 ```
 
-**URN Construction:**
+**URN 구성:**
 
 ```java
 // Built automatically from builder
@@ -70,9 +70,9 @@ Dataset dataset = Dataset.builder()
 // URN: urn:li:dataset:(urn:li:dataPlatform:snowflake,db.schema.table,PROD)
 ```
 
-### Fluent Method Chaining
+### 플루언트 메서드 체이닝
 
-All mutation methods return `this` for method chaining:
+모든 변경 메서드는 메서드 체이닝을 위해 `this`를 반환합니다:
 
 ```java
 dataset.addTag("pii")
@@ -82,9 +82,9 @@ dataset.addTag("pii")
        .setDomain("urn:li:domain:Finance");
 ```
 
-### Three Creation Modes
+### 세 가지 생성 모드
 
-#### Mode 1: From Scratch (Builder)
+#### 모드 1: 처음부터 시작 (빌더)
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -96,7 +96,7 @@ Dataset dataset = Dataset.builder()
 // pendingPatches empty
 ```
 
-#### Mode 2: Loaded from Server
+#### 모드 2: 서버에서 로드
 
 ```java
 DatasetUrn urn = new DatasetUrn("snowflake", "my_table", "PROD");
@@ -105,7 +105,7 @@ Dataset dataset = client.entities().get(urn);
 // Aspects have timestamps for freshness tracking
 ```
 
-#### Mode 3: Reference with Lazy Loading
+#### 모드 3: 지연 로딩으로 참조
 
 ```java
 // Entity bound to client enables lazy loading
@@ -114,11 +114,11 @@ dataset.bindToClient(client, mode);
 String desc = dataset.getDescription();  // Fetches on first access
 ```
 
-## Aspect Management
+## Aspect 관리
 
-### Aspect Caching
+### Aspect 캐싱
 
-Entities cache aspects locally with TTL-based freshness:
+Entity는 TTL 기반 신선도를 가진 aspect를 로컬에 캐시합니다:
 
 ```java
 // Cached aspects with 60-second default TTL
@@ -128,9 +128,9 @@ dataset.setCacheTtlMs(120000);  // 2 minutes
 Map<String, RecordTemplate> aspects = dataset.getAllAspects();
 ```
 
-### Lazy Loading
+### 지연 로딩
 
-When bound to a client, aspects are fetched on-demand:
+클라이언트에 바인딩된 경우 aspect는 요청 시 가져옵니다:
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -140,11 +140,11 @@ String description = dataset.getDescription();
 // Triggers lazy fetch if not cached or expired
 ```
 
-## Patch-Based Operations
+## Patch 기반 작업
 
-### Pending Patches
+### 대기 중인 Patches
 
-Mutations accumulate as patches until save:
+변경 사항은 저장 시까지 patches로 축적됩니다:
 
 ```java
 dataset.addTag("tag1");     // Creates patch
@@ -162,17 +162,17 @@ client.entities().update(dataset);
 dataset.clearPendingPatches();
 ```
 
-### Understanding What Gets Sent
+### 전송되는 내용 이해하기
 
-The `upsert()` method emits everything accumulated on the entity:
+`upsert()` 메서드는 entity에 축적된 모든 것을 emit합니다:
 
-1. **Cached aspects** (from builder)
-2. **Full aspect replacements** (from `set*()` methods)
-3. **Patches** (from `add*/remove*` methods)
+1. **캐시된 aspect** (빌더에서)
+2. **전체 aspect 교체** (`set*()` 메서드에서)
+3. **Patches** (`add*/remove*` 메서드에서)
 
-**What gets sent depends on how the entity was created and what operations you performed:**
+**entity가 어떻게 생성되었고 어떤 작업을 수행했는지에 따라 전송되는 내용이 달라집니다:**
 
-**Builder with patches:**
+**patches가 있는 빌더:**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -184,7 +184,7 @@ dataset.addTag("pii");  // Creates patch
 client.entities().upsert(dataset);  // Sends: cached aspects + tag patch
 ```
 
-**Patches only (loaded entity):**
+**patches만 (로드된 entity):**
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -192,7 +192,7 @@ dataset.addTag("pii");  // Creates patch
 client.entities().upsert(dataset);  // Sends: tag patch only
 ```
 
-**Full aspect replacement:**
+**전체 aspect 교체:**
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -200,7 +200,7 @@ dataset.setDescription("New description");  // Creates full aspect MCP
 client.entities().upsert(dataset);  // Sends: complete description aspect
 ```
 
-**Combined operations:**
+**결합된 작업:**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -213,9 +213,9 @@ dataset.addOwner("user", OwnershipType.TECHNICAL_OWNER);  // Patch
 client.entities().upsert(dataset);  // Sends: cached aspects + description aspect + 2 patches
 ```
 
-## Mode-Aware Operations
+## 모드 인식 작업
 
-Entities respect the client's operation mode:
+Entity는 클라이언트의 작업 모드를 존중합니다:
 
 ```java
 // SDK mode client
@@ -239,9 +239,9 @@ ingestionClient.entities().upsert(dataset);
 // Writes to datasetProperties
 ```
 
-## Common Metadata Operations
+## 공통 메타데이터 작업
 
-### Tags
+### 태그
 
 ```java
 // Add tags
@@ -252,7 +252,7 @@ entity.addTag("urn:li:tag:analytics");
 entity.removeTag("pii");
 ```
 
-### Owners
+### 소유자
 
 ```java
 import com.linkedin.common.OwnershipType;
@@ -276,7 +276,7 @@ entity.addTerm("urn:li:glossaryTerm:PII");
 entity.removeTerm("urn:li:glossaryTerm:CustomerData");
 ```
 
-### Domain
+### 도메인
 
 ```java
 // Set domain
@@ -286,7 +286,7 @@ entity.setDomain("urn:li:domain:Marketing");
 entity.removeDomain();
 ```
 
-### Custom Properties
+### 커스텀 속성
 
 ```java
 // Add custom properties
@@ -297,9 +297,9 @@ entity.addCustomProperty("retention", "90_days");
 entity.removeCustomProperty("retention");
 ```
 
-## Error Handling
+## 오류 처리
 
-Handle exceptions gracefully:
+오류를 우아하게 처리하세요:
 
 ```java
 try {
@@ -317,16 +317,16 @@ try {
 }
 ```
 
-## Entity-Specific Guides
+## Entity별 가이드
 
-Each entity type has a dedicated guide with detailed information including:
+각 entity 타입에는 다음을 포함한 상세 정보가 있는 전용 가이드가 있습니다:
 
-- URN structure and construction
-- Entity-specific properties and operations
-- Comprehensive code examples
-- Best practices and common patterns
-- Lineage and relationship management
+- URN 구조 및 구성
+- Entity별 속성 및 작업
+- 포괄적인 코드 예제
+- 모범 사례 및 공통 패턴
+- Lineage 및 관계 관리
 
-**See the Entity Guides section in the sidebar** for the complete list of available entity documentation.
+사용 가능한 entity 문서의 전체 목록은 **사이드바의 Entity 가이드 섹션**을 참조하세요.
 
-Example guides include [Dataset Entity](./dataset-entity.md), [Chart Entity](./chart-entity.md), [Dashboard Entity](./dashboard-entity.md), and [DataJob Entity](./datajob-entity.md).
+예시 가이드로는 [Dataset Entity](./dataset-entity.md), [Chart Entity](./chart-entity.md), [Dashboard Entity](./dashboard-entity.md), [DataJob Entity](./datajob-entity.md)가 있습니다.

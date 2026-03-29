@@ -5,42 +5,41 @@ import TabItem from '@theme/TabItem';
 
 <FeatureAvailability saasOnly />
 
-This guide specifically covers how to use the Data Contract APIs with **DataHub Cloud**.
+이 가이드는 **DataHub Cloud**에서 Data Contract API를 사용하는 방법을 구체적으로 다룹니다.
 
-## Why Would You Use Data Contract APIs?
+## Data Contract API를 사용하는 이유
 
-The Assertions APIs allow you to create, update, and evaluate Data Contracts programmatically. This is particularly
-useful to automate the monitoring of data quality and schema compliance for your data.
+Assertions API를 사용하면 Data Contracts를 프로그래밍 방식으로 생성, 업데이트, 평가할 수 있습니다. 이는 데이터의 품질 및 schema 준수 모니터링을 자동화하는 데 특히 유용합니다.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to create, update, and check the status of aData Contract.
+이 가이드에서는 Data Contract를 생성, 업데이트하고 상태를 확인하는 방법을 보여줍니다.
 
-## Prerequisites
+## 사전 요구 사항
 
-### Privileges Required
+### 필요한 권한
 
-The actor making API calls must have the `Edit Data Contract` privileges for the Tables at hand.
+API 호출을 수행하는 액터는 해당 테이블에 대해 `Edit Data Contract` 권한이 있어야 합니다.
 
 ### Assertions
 
-Before creating a Data Contract, you should have already created the Assertions that you want to associate with the Data Contract.
-Check out the [Assertions](/docs/api/tutorials/assertions.md) guide for details on how to create DataHub Assertions.
+Data Contract를 생성하기 전에 Data Contract와 연결할 Assertions를 이미 생성해 두어야 합니다.
+DataHub Assertions 생성 방법은 [Assertions](/docs/api/tutorials/assertions.md) 가이드를 참조하세요.
 
-## Create & Update Data Contract
+## Data Contract 생성 및 업데이트
 
-You can create a new Data Contract, which is simply bundle of "important" assertions, using the following APIs.
+다음 API를 사용하여 "중요한" assertions의 묶음인 새 Data Contract를 생성할 수 있습니다.
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
 
-To create or update a Data Contract, simply use the `upsertDataContract` GraphQL Mutation.
+Data Contract를 생성하거나 업데이트하려면 `upsertDataContract` GraphQL Mutation을 사용하세요.
 
 ```graphql
 mutation upsertDataContract {
     upsertDataContract(
       input: {
-        entityUrn: "urn:li:dataset:(urn:li:dataPlatform:snowflake,purchases,PROD)", # Table to Create Contract for
+        entityUrn: "urn:li:dataset:(urn:li:dataPlatform:snowflake,purchases,PROD)", # Contract를 생성할 테이블
         freshness: [
             {
                 assertionUrn: "urn:li:assertion:your-freshness-assertion-id",
@@ -66,7 +65,7 @@ mutation upsertDataContract {
 }
 ```
 
-This API will return a unique identifier (URN) for the Data Contract if you were successful:
+성공하면 이 API는 Data Contract에 대한 고유 식별자(URN)를 반환합니다:
 
 ```json
 {
@@ -79,8 +78,7 @@ This API will return a unique identifier (URN) for the Data Contract if you were
 }
 ```
 
-If you want to update an existing Data Contract, you can use the same API, but also passing the `urn` parameter in the
-`upsertDataContract` mutation.
+기존 Data Contract를 업데이트하려면 동일한 API를 사용하되 `upsertDataContract` mutation에 `urn` 파라미터도 전달하면 됩니다.
 
 ```graphql
 mutation upsertDataContract {
@@ -115,25 +113,24 @@ mutation upsertDataContract {
 </TabItem>
 </Tabs>
 
-## Check Contract Status
+## Contract 상태 확인
 
-You can use the following APIs to check whether a Data Contract is passing or failing, which is determined
-by the last status of the assertions associated with the contract.
+다음 API를 사용하여 Data Contract의 통과 또는 실패 여부를 확인할 수 있습니다. 이는 contract와 연결된 assertions의 마지막 상태에 의해 결정됩니다.
 
 <Tabs>
 
 <TabItem value="graphql" label="GraphQL" default>
 
-### Check Contract Status for Table
+### 테이블의 Contract 상태 확인
 
 ```graphql
 query getTableContractStatus {
   dataset(urn: "urn:li:dataset(urn:li:dataPlatform:snowflake,purchases,PROD") {
     contract {
       result {
-        type # Passing or Failing.
+        type # 통과 또는 실패.
         assertionResults {
-          # Results of each contract assertion.
+          # 각 contract assertion의 결과.
           assertion {
             urn
           }
@@ -151,8 +148,7 @@ query getTableContractStatus {
 }
 ```
 
-You can also _force refresh_ all of the Contract Assertions by evaluating them on-demand by providing the `refresh` argument
-in your query.
+쿼리에 `refresh` 인수를 제공하여 모든 Contract Assertions를 온디맨드로 평가함으로써 _강제 새로 고침_할 수도 있습니다.
 
 ```graphql
 query getTableContractStatus {
@@ -164,9 +160,9 @@ query getTableContractStatus {
 }
 ```
 
-This will run any native DataHub Cloud assertions comprising the Data Contract. Be careful! This can take a while depending on how many native assertions are part of the contract.
+이렇게 하면 Data Contract를 구성하는 모든 네이티브 DataHub Cloud assertions가 실행됩니다. 주의하세요! contract의 일부인 네이티브 assertions 수에 따라 시간이 걸릴 수 있습니다.
 
-If you're successful, you'll get the latest status for the Table Contract:
+성공하면 테이블 Contract의 최신 상태를 얻을 수 있습니다:
 
 ```json
 {

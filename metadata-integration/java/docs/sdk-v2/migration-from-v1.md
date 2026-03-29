@@ -1,32 +1,32 @@
-# Migration Guide: V1 to V2
+# 마이그레이션 가이드: V1에서 V2로
 
-This guide helps you migrate from Java SDK V1 (RestEmitter) to V2 (DataHubClientV2). We'll show side-by-side examples and highlight key differences.
+이 가이드는 Java SDK V1 (RestEmitter)에서 V2 (DataHubClientV2)로 마이그레이션하는 데 도움을 드립니다. 나란히 비교하는 예제를 보여드리고 주요 차이점을 강조합니다.
 
-## Why Migrate?
+## 왜 마이그레이션해야 하나요?
 
-V2 offers significant improvements over V1:
+V2는 V1보다 크게 개선되었습니다:
 
-- ✅ **Type-safe entity builders** instead of manual MCP construction
-- ✅ **Automatic URN generation** instead of string manipulation
-- ✅ **Patch-based updates** for efficient incremental changes
-- ✅ **Fluent API** with method chaining
-- ✅ **Lazy loading** with caching
-- ✅ **Mode-aware operations** (SDK vs INGESTION)
+- ✅ 수동 MCP 구성 대신 **타입 안전 entity 빌더**
+- ✅ 문자열 조작 대신 **자동 URN 생성**
+- ✅ 효율적인 점진적 변경을 위한 **Patch 기반 업데이트**
+- ✅ 메서드 체이닝을 가진 **플루언트 API**
+- ✅ 캐싱을 통한 **지연 로딩**
+- ✅ **모드 인식 작업** (SDK vs INGESTION)
 
-## Key Differences
+## 주요 차이점
 
 | Aspect               | V1 (RestEmitter)        | V2 (DataHubClientV2)         |
 | -------------------- | ----------------------- | ---------------------------- |
-| **Abstraction**      | Low-level MCPs          | High-level entities          |
-| **URN Construction** | Manual strings          | Automatic from builder       |
-| **Updates**          | Full aspect replacement | Patch-based incremental      |
-| **Type Safety**      | Minimal                 | Strong compile-time checking |
-| **API Style**        | Imperative emission     | Fluent builders              |
-| **Entity Support**   | Generic MCPs            | Dataset, Chart, Dashboard    |
+| **추상화**      | 저수준 MCP          | 고수준 entity          |
+| **URN 구성** | 수동 문자열          | 빌더에서 자동 생성       |
+| **업데이트**          | 전체 aspect 교체 | Patch 기반 점진적      |
+| **타입 안전성**      | 최소                 | 강력한 컴파일 타임 검사 |
+| **API 스타일**        | 명령형 emission     | 플루언트 빌더            |
+| **Entity 지원**   | 제네릭 MCP            | Dataset, Chart, Dashboard    |
 
-## Migration Examples
+## 마이그레이션 예제
 
-### Example 1: Creating a Dataset
+### 예제 1: Dataset 생성
 
 **V1 (RestEmitter):**
 
@@ -87,16 +87,16 @@ DataHubClientV2 client = DataHubClientV2.builder()
 client.entities().upsert(dataset);
 ```
 
-**Changes:**
+**변경 사항:**
 
-- ❌ No manual URN construction
-- ❌ No manual aspect creation
-- ❌ No MCP wrapper construction
-- ✅ Fluent builder handles everything
-- ✅ Type-safe method calls
-- ✅ Automatic aspect wiring
+- ❌ 수동 URN 구성 없음
+- ❌ 수동 aspect 생성 없음
+- ❌ MCP 래퍼 구성 없음
+- ✅ 플루언트 빌더가 모든 것을 처리
+- ✅ 타입 안전 메서드 호출
+- ✅ 자동 aspect 연결
 
-### Example 2: Adding Tags
+### 예제 2: 태그 추가
 
 **V1 (RestEmitter):**
 
@@ -137,16 +137,16 @@ dataset.addTag("pii");
 client.entities().update(dataset);
 ```
 
-**Changes:**
+**변경 사항:**
 
-- ❌ No fetching existing tags
-- ❌ No manual aspect manipulation
-- ❌ No MCP construction
-- ✅ Single method call
-- ✅ Patch-based (doesn't overwrite other tags)
-- ✅ Automatic URN handling
+- ❌ 기존 태그 가져오기 없음
+- ❌ 수동 aspect 조작 없음
+- ❌ MCP 구성 없음
+- ✅ 단일 메서드 호출
+- ✅ Patch 기반 (다른 태그를 덮어쓰지 않음)
+- ✅ 자동 URN 처리
 
-### Example 3: Adding Owners
+### 예제 3: 소유자 추가
 
 **V1 (RestEmitter):**
 
@@ -188,16 +188,16 @@ dataset.addOwner("urn:li:corpuser:john_doe", OwnershipType.TECHNICAL_OWNER);
 client.entities().update(dataset);
 ```
 
-**Changes:**
+**변경 사항:**
 
-- ❌ No fetching existing owners
-- ❌ No manual Owner object creation
-- ❌ No array manipulation
-- ✅ Single method with parameters
-- ✅ Type-safe ownership type enum
-- ✅ Automatic patch creation
+- ❌ 기존 소유자 가져오기 없음
+- ❌ 수동 Owner 객체 생성 없음
+- ❌ 배열 조작 없음
+- ✅ 파라미터가 있는 단일 메서드
+- ✅ 타입 안전 소유권 타입 열거형
+- ✅ 자동 patch 생성
 
-### Example 4: Multiple Metadata Additions
+### 예제 4: 여러 메타데이터 추가
 
 **V1 (RestEmitter):**
 
@@ -241,15 +241,15 @@ dataset.addTag("pii")
 client.entities().upsert(dataset);  // Single call, all metadata included
 ```
 
-**Changes:**
+**변경 사항:**
 
-- ❌ No creating multiple aspects separately
-- ❌ No multiple emission calls
-- ✅ Method chaining for fluent API
-- ✅ Single upsert emits everything
-- ✅ Atomic operation
+- ❌ 별도로 여러 aspect 생성 없음
+- ❌ 여러 emission 호출 없음
+- ✅ 플루언트 API를 위한 메서드 체이닝
+- ✅ 단일 upsert가 모든 것을 emit
+- ✅ 원자적 작업
 
-### Example 5: Updating Existing Entity
+### 예제 5: 기존 Entity 업데이트
 
 **V1 (RestEmitter):**
 
@@ -280,18 +280,18 @@ dataset.setDescription("Updated description");
 client.entities().update(dataset);  // Patch only changes description
 ```
 
-**Changes:**
+**변경 사항:**
 
-- ✅ Can update without fetching (for patches)
-- ✅ Patch-based incremental update
-- ✅ No risk of overwriting other fields
-- ✅ More efficient payload
+- ✅ patches의 경우 가져오지 않고 업데이트 가능
+- ✅ Patch 기반 점진적 업데이트
+- ✅ 다른 필드를 덮어쓸 위험 없음
+- ✅ 더 효율적인 페이로드
 
-## Migration Checklist
+## 마이그레이션 체크리스트
 
-### 1. Update Dependencies
+### 1. 의존성 업데이트
 
-Keep existing dependency (backwards compatible):
+기존 의존성 유지 (하위 호환 가능):
 
 ```gradle
 dependencies {
@@ -299,16 +299,16 @@ dependencies {
 }
 ```
 
-### 2. Change Imports
+### 2. 임포트 변경
 
-**Replace:**
+**교체:**
 
 ```java
 import datahub.client.rest.RestEmitter;
 import datahub.event.MetadataChangeProposalWrapper;
 ```
 
-**With:**
+**다음으로:**
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -316,9 +316,9 @@ import datahub.client.v2.entity.Dataset;
 import datahub.client.v2.entity.Chart;
 ```
 
-### 3. Replace RestEmitter with DataHubClientV2
+### 3. RestEmitter를 DataHubClientV2로 교체
 
-**Before:**
+**이전:**
 
 ```java
 RestEmitter emitter = RestEmitter.create(b -> b
@@ -327,7 +327,7 @@ RestEmitter emitter = RestEmitter.create(b -> b
 );
 ```
 
-**After:**
+**이후:**
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -336,11 +336,11 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### 4. Use Entity Builders
+### 4. Entity 빌더 사용
 
-Replace manual MCP/URN construction with entity builders:
+수동 MCP/URN 구성을 entity 빌더로 교체:
 
-**Before:**
+**이전:**
 
 ```java
 DatasetUrn urn = new DatasetUrn(...);
@@ -350,7 +350,7 @@ MetadataChangeProposalWrapper mcp = MetadataChangeProposalWrapper.builder()...
 emitter.emit(mcp, null).get();
 ```
 
-**After:**
+**이후:**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -361,11 +361,11 @@ Dataset dataset = Dataset.builder()
 client.entities().upsert(dataset);
 ```
 
-### 5. Use Patch Operations for Updates
+### 5. 업데이트에 Patch 작업 사용
 
-Replace fetch-modify-send with patches:
+가져오기-수정-전송을 patches로 교체:
 
-**Before:**
+**이전:**
 
 ```java
 GlobalTags tags = fetch(...);
@@ -373,16 +373,16 @@ tags.getTags().add(...);
 emit(tags);
 ```
 
-**After:**
+**이후:**
 
 ```java
 dataset.addTag("...");
 client.entities().update(dataset);
 ```
 
-## Gradual Migration Strategy
+## 점진적 마이그레이션 전략
 
-You can migrate incrementally - V1 and V2 can coexist:
+V1과 V2를 함께 사용하면서 점진적으로 마이그레이션할 수 있습니다:
 
 ```java
 // V1 emitter (for unsupported operations)
@@ -402,23 +402,23 @@ MetadataChangeProposalWrapper customMcp = ...;
 emitter.emit(customMcp, null).get();
 ```
 
-## Common Pitfalls
+## 일반적인 함정
 
-### 1. Forgetting to Call `update()` or `upsert()`
+### 1. `update()` 또는 `upsert()` 호출 잊기
 
-**Problem:**
+**문제:**
 
 ```java
 dataset.addTag("pii");  // Patch created but not emitted!
 // Missing: client.entities().update(dataset);
 ```
 
-**Solution:**
-Always call `update()` or `upsert()` to emit changes.
+**해결책:**
+항상 변경 사항을 emit하기 위해 `update()` 또는 `upsert()`를 호출하세요.
 
-### 2. Using V1 Pattern with V2 Entities
+### 2. V2 Entity에서 V1 패턴 사용
 
-**Problem:**
+**문제:**
 
 ```java
 Dataset dataset = Dataset.builder()...;
@@ -426,16 +426,16 @@ Dataset dataset = Dataset.builder()...;
 emitter.emit(dataset.toMCPs(), null);  // Wrong!
 ```
 
-**Solution:**
-Use V2's EntityClient:
+**해결책:**
+V2의 EntityClient를 사용하세요:
 
 ```java
 client.entities().upsert(dataset);
 ```
 
-### 3. Mixing Operation Modes
+### 3. 작업 모드 혼합
 
-**Problem:**
+**문제:**
 
 ```java
 // Client in SDK mode
@@ -447,35 +447,35 @@ DataHubClientV2 client = DataHubClientV2.builder()
 dataset.setSystemDescription("...");  // Inconsistent!
 ```
 
-**Solution:**
-Use mode-aware methods or match mode to explicit methods:
+**해결책:**
+모드 인식 메서드를 사용하거나 모드와 명시적 메서드를 일치시키세요:
 
 ```java
 dataset.setDescription("...");  // Mode-aware
 ```
 
-## Benefits After Migration
+## 마이그레이션 후 이점
 
-- **50-80% less code** for common operations
-- **Type safety** catches errors at compile time
-- **Better performance** with patches
-- **Easier testing** with mock entities
-- **Better IDE support** with autocomplete
+- **일반적인 작업의 코드 50-80% 감소**
+- **타입 안전성**이 컴파일 타임에 오류를 잡음
+- **patches로 더 나은 성능**
+- **모의 entity로 더 쉬운 테스트**
+- **자동완성으로 더 나은 IDE 지원**
 
-## Need Help?
+## 도움이 필요하신가요?
 
-- **V2 Documentation**: [Getting Started Guide](./getting-started.md)
-- **Entity Guides**: [Dataset](./dataset-entity.md), [Chart](./chart-entity.md)
-- **Examples**: [V2 Examples Directory](../../examples/src/main/java/io/datahubproject/examples/v2/)
-- **V1 Documentation**: [Java SDK V1](../../as-a-library.md) (for reference)
+- **V2 문서**: [시작하기 가이드](./getting-started.md)
+- **Entity 가이드**: [Dataset](./dataset-entity.md), [Chart](./chart-entity.md)
+- **예제**: [V2 예제 디렉토리](../../examples/src/main/java/io/datahubproject/examples/v2/)
+- **V1 문서**: [Java SDK V1](../../as-a-library.md) (참조용)
 
-## Still Using V1 Features?
+## 여전히 V1 기능을 사용 중이신가요?
 
-Some advanced features are still V1-only:
+일부 고급 기능은 아직 V1 전용입니다:
 
-- **KafkaEmitter** - Use V1 for Kafka-based emission
-- **FileEmitter** - Use V1 for file-based emission
-- **Custom MCPs** - Use V1 for entity types not yet in V2
-- **Direct aspect access** - Use V1 for fine-grained control
+- **KafkaEmitter** - Kafka 기반 emission에는 V1 사용
+- **FileEmitter** - 파일 기반 emission에는 V1 사용
+- **커스텀 MCP** - V2에 아직 없는 entity 타입에는 V1 사용
+- **직접 aspect 접근** - 세밀한 제어에는 V1 사용
 
-You can use both V1 and V2 in the same application!
+동일한 애플리케이션에서 V1과 V2를 모두 사용할 수 있습니다!

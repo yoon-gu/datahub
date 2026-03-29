@@ -1,12 +1,12 @@
-# DataHubClientV2 Configuration
+# DataHubClientV2 구성
 
-The `DataHubClientV2` is the primary entry point for interacting with DataHub using SDK V2. This guide covers client configuration, connection management, and operation modes.
+`DataHubClientV2`는 SDK V2를 사용하여 DataHub와 상호작용하기 위한 주요 진입점입니다. 이 가이드는 클라이언트 구성, 연결 관리 및 작업 모드를 다룹니다.
 
-## Creating a Client
+## 클라이언트 생성
 
-### Basic Configuration
+### 기본 구성
 
-The minimal configuration requires only a server URL:
+최소 구성은 서버 URL만 필요합니다:
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -16,9 +16,9 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### With Authentication
+### 인증 포함
 
-For DataHub Cloud or secured instances, provide a personal access token:
+DataHub Cloud 또는 보안이 적용된 인스턴스의 경우 개인 액세스 토큰을 제공하세요:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -27,11 +27,11 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-> **Getting a Token:** In DataHub UI → Settings → Access Tokens → Generate Personal Access Token
+> **토큰 발급:** DataHub UI → 설정 → 액세스 토큰 → 개인 액세스 토큰 생성
 
-### From Environment Variables
+### 환경 변수에서 구성
 
-Configure the client using environment variables:
+환경 변수를 사용하여 클라이언트를 구성하세요:
 
 ```bash
 export DATAHUB_SERVER=http://localhost:8080
@@ -43,16 +43,16 @@ DataHubClientConfig V2 config = DataHubClientConfigV2.fromEnv();
 DataHubClientV2 client = new DataHubClientV2(config);
 ```
 
-**Supported environment variables:**
+**지원되는 환경 변수:**
 
-- `DATAHUB_SERVER` or `DATAHUB_GMS_URL` - Server URL (required)
-- `DATAHUB_TOKEN` or `DATAHUB_GMS_TOKEN` - Authentication token (optional)
+- `DATAHUB_SERVER` 또는 `DATAHUB_GMS_URL` - 서버 URL (필수)
+- `DATAHUB_TOKEN` 또는 `DATAHUB_GMS_TOKEN` - 인증 토큰 (선택 사항)
 
-## Configuration Options
+## 구성 옵션
 
-### Timeouts
+### 타임아웃
 
-Configure request timeouts to handle slow networks:
+느린 네트워크를 처리하기 위한 요청 타임아웃 구성:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -61,11 +61,11 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-**Default:** 10 seconds (10000ms)
+**기본값:** 10초 (10000ms)
 
-### Retries
+### 재시도
 
-Configure automatic retries for failed requests:
+실패한 요청에 대한 자동 재시도 구성:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -74,11 +74,11 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-**Default:** 3 retries
+**기본값:** 3회 재시도
 
-### SSL Certificate Verification
+### SSL 인증서 검증
 
-For testing environments, you can disable SSL verification:
+테스트 환경에서는 SSL 검증을 비활성화할 수 있습니다:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -87,21 +87,21 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-> **Warning:** Never disable SSL verification in production! This makes your connection vulnerable to man-in-the-middle attacks.
+> **경고:** 프로덕션에서는 SSL 검증을 절대 비활성화하지 마세요! 이렇게 하면 중간자 공격에 취약해집니다.
 
-## Operation Modes
+## 작업 모드
 
-SDK V2 supports two distinct operation modes that control how metadata is written to DataHub:
+SDK V2는 DataHub에 메타데이터가 기록되는 방식을 제어하는 두 가지 작업 모드를 지원합니다:
 
-### SDK Mode (Default)
+### SDK 모드 (기본값)
 
-**Use for:** Interactive applications, user-initiated metadata edits, real-time UI updates
+**사용 목적:** 대화형 애플리케이션, 사용자 주도 메타데이터 편집, 실시간 UI 업데이트
 
-**Behavior:**
+**동작:**
 
-- Writes to **editable aspects** (e.g., `editableDatasetProperties`)
-- Uses **synchronous DB writes** for immediate consistency
-- Returns only after metadata is committed to database
+- **편집 가능한 aspect**에 쓰기 (예: `editableDatasetProperties`)
+- 즉각적인 일관성을 위해 **동기 DB 쓰기** 사용
+- 메타데이터가 데이터베이스에 커밋된 후에만 반환
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -120,15 +120,15 @@ client.entities().upsert(dataset);
 // Metadata immediately visible after return
 ```
 
-### INGESTION Mode
+### INGESTION 모드
 
-**Use for:** ETL pipelines, data ingestion jobs, automated metadata collection, batch processing
+**사용 목적:** ETL 파이프라인, 데이터 ingestion 작업, 자동화된 메타데이터 수집, 배치 처리
 
-**Behavior:**
+**동작:**
 
-- Writes to **system aspects** (e.g., `datasetProperties`)
-- Uses **asynchronous Kafka writes** for high throughput
-- Returns immediately after message is queued
+- **시스템 aspect**에 쓰기 (예: `datasetProperties`)
+- 높은 처리량을 위해 **비동기 Kafka 쓰기** 사용
+- 메시지가 큐에 추가된 후 즉시 반환
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -147,39 +147,39 @@ client.entities().upsert(dataset);
 // High throughput for batch ingestion
 ```
 
-### Mode Comparison
+### 모드 비교
 
-| Aspect              | SDK Mode                    | INGESTION Mode                   |
+| Aspect              | SDK 모드                    | INGESTION 모드                   |
 | ------------------- | --------------------------- | -------------------------------- |
-| **Target Aspects**  | Editable aspects            | System aspects                   |
-| **Write Path**      | Synchronous (direct to DB)  | Asynchronous (via Kafka)         |
-| **Consistency**     | Immediate (linearizable)    | Eventual (async processing)      |
-| **Throughput**      | Lower (waits for DB)        | Higher (queued)                  |
-| **Use Case**        | User edits via UI/API       | Pipeline metadata extraction     |
-| **Precedence**      | Higher (overrides system)   | Lower (overridden by user edits) |
-| **Example Aspects** | `editableDatasetProperties` | `datasetProperties`              |
-| **Latency**         | ~100-500ms                  | ~10-50ms (queueing only)         |
-| **Error Handling**  | Immediate feedback          | Eventual (check logs)            |
+| **대상 Aspect**  | 편집 가능한 aspect            | 시스템 aspect                   |
+| **쓰기 경로**      | 동기 (DB 직접)  | 비동기 (Kafka를 통해)         |
+| **일관성**     | 즉각적 (선형화 가능)    | 최종적 (비동기 처리)      |
+| **처리량**      | 낮음 (DB 대기)        | 높음 (큐)                  |
+| **사용 사례**        | UI/API를 통한 사용자 편집       | 파이프라인 메타데이터 추출     |
+| **우선순위**      | 높음 (시스템 재정의)   | 낮음 (사용자 편집에 의해 재정의됨) |
+| **예시 Aspect** | `editableDatasetProperties` | `datasetProperties`              |
+| **지연 시간**         | ~100-500ms                  | ~10-50ms (큐잉만)         |
+| **오류 처리**  | 즉각적 피드백          | 최종적 (로그 확인)            |
 
-**Why two modes?**
+**왜 두 가지 모드인가요?**
 
-- **Clear provenance**: Distinguish human edits from machine-generated metadata
-- **Non-destructive updates**: Ingestion can refresh without clobbering user documentation
-- **UI consistency**: DataHub UI shows editable aspects as user overrides
-- **Performance optimization**: Async ingestion for high-volume batch writes, sync for interactive edits
+- **명확한 출처**: 사람의 편집과 기계 생성 메타데이터 구분
+- **비파괴적 업데이트**: Ingestion이 사용자 문서를 덮어쓰지 않고 새로 고침 가능
+- **UI 일관성**: DataHub UI가 편집 가능한 aspect를 사용자 재정의로 표시
+- **성능 최적화**: 고볼륨 배치 쓰기를 위한 비동기 ingestion, 대화형 편집을 위한 동기
 
-## Async Mode Control (The Escape Hatch)
+## 비동기 모드 제어 (탈출구)
 
-By default, the async mode is automatically inferred from your operation mode:
+기본적으로 비동기 모드는 작업 모드에서 자동으로 추론됩니다:
 
-- SDK mode → synchronous writes (immediate consistency)
-- INGESTION mode → asynchronous writes (high throughput)
+- SDK 모드 → 동기 쓰기 (즉각적 일관성)
+- INGESTION 모드 → 비동기 쓰기 (높은 처리량)
 
-However, you can explicitly override this behavior using the `asyncIngest` parameter when you need full control:
+그러나 완전한 제어가 필요할 때 `asyncIngest` 파라미터를 사용하여 이 동작을 명시적으로 재정의할 수 있습니다:
 
-### Force Synchronous in INGESTION Mode
+### INGESTION 모드에서 동기 강제
 
-For pipelines that need immediate consistency guarantees:
+즉각적인 일관성 보장이 필요한 파이프라인의 경우:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -199,16 +199,16 @@ client.entities().upsert(dataset);
 // Use when you need guaranteed consistency before proceeding
 ```
 
-**Use cases:**
+**사용 사례:**
 
-- Critical ingestion jobs where you must verify writes succeeded
-- Sequential processing where each step depends on previous writes
-- Testing scenarios requiring deterministic behavior
-- Compliance workflows requiring audit trail confirmation
+- 쓰기 성공을 반드시 확인해야 하는 중요 ingestion 작업
+- 각 단계가 이전 쓰기에 의존하는 순차적 처리
+- 결정론적 동작이 필요한 테스트 시나리오
+- 감사 추적 확인이 필요한 컴플라이언스 워크플로
 
-### Force Asynchronous in SDK Mode
+### SDK 모드에서 비동기 강제
 
-For high-volume SDK operations that can tolerate eventual consistency:
+최종적 일관성을 허용하는 고볼륨 SDK 작업의 경우:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -228,27 +228,27 @@ client.entities().upsert(dataset);
 // Trade immediate consistency for performance
 ```
 
-**Use cases:**
+**사용 사례:**
 
-- Bulk metadata updates from admin tools
-- Migration scripts moving large volumes of data
-- Performance-critical batch operations
-- Load testing and benchmarking
+- 관리 도구에서의 대량 메타데이터 업데이트
+- 대량의 데이터를 이동하는 마이그레이션 스크립트
+- 성능이 중요한 배치 작업
+- 부하 테스트 및 벤치마킹
 
-### Decision Guide
+### 결정 가이드
 
-| Scenario                | Operation Mode | asyncIngest | Result                           |
+| 시나리오                | 작업 모드 | asyncIngest | 결과                           |
 | ----------------------- | -------------- | ----------- | -------------------------------- |
-| User edits in web UI    | SDK            | (default)   | Sync writes to editable aspects  |
-| ETL pipeline ingestion  | INGESTION      | (default)   | Async writes to system aspects   |
-| Critical data migration | INGESTION      | false       | Sync writes to system aspects    |
-| Bulk admin updates      | SDK            | true        | Async writes to editable aspects |
+| 웹 UI에서 사용자 편집    | SDK            | (기본값)   | 편집 가능한 aspect에 동기 쓰기  |
+| ETL 파이프라인 ingestion  | INGESTION      | (기본값)   | 시스템 aspect에 비동기 쓰기   |
+| 중요 데이터 마이그레이션 | INGESTION      | false       | 시스템 aspect에 동기 쓰기    |
+| 대량 관리 업데이트      | SDK            | true        | 편집 가능한 aspect에 비동기 쓰기 |
 
-**Default behavior is best for 95% of use cases.** Only use explicit `asyncIngest` when you have specific performance or consistency requirements.
+**기본 동작은 95%의 사용 사례에 최적입니다.** 특정 성능이나 일관성 요구 사항이 있을 때만 명시적인 `asyncIngest`를 사용하세요.
 
-## Testing the Connection
+## 연결 테스트
 
-Verify connectivity before performing operations:
+작업을 수행하기 전에 연결을 확인하세요:
 
 ```java
 try {
@@ -263,13 +263,13 @@ try {
 }
 ```
 
-The `testConnection()` method performs a GET request to `/config` endpoint to verify the server is reachable.
+`testConnection()` 메서드는 서버가 접근 가능한지 확인하기 위해 `/config` 엔드포인트에 GET 요청을 수행합니다.
 
-## Client Lifecycle
+## 클라이언트 수명 주기
 
-### Resource Management
+### 리소스 관리
 
-The client implements `AutoCloseable` for automatic resource management:
+클라이언트는 자동 리소스 관리를 위해 `AutoCloseable`을 구현합니다:
 
 ```java
 try (DataHubClientV2 client = DataHubClientV2.builder()
@@ -282,9 +282,9 @@ try (DataHubClientV2 client = DataHubClientV2.builder()
 } // Client automatically closed
 ```
 
-### Manual Closing
+### 수동 닫기
 
-If not using try-with-resources, explicitly close the client:
+try-with-resources를 사용하지 않는 경우 명시적으로 클라이언트를 닫으세요:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -298,11 +298,11 @@ try {
 }
 ```
 
-**Why close?** Closing the client releases the underlying HTTP connection pool.
+**왜 닫아야 하나요?** 클라이언트를 닫으면 기본 HTTP 연결 풀이 해제됩니다.
 
-## Advanced Configuration
+## 고급 구성
 
-### Complete Configuration Example
+### 완전한 구성 예제
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -331,22 +331,22 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### Accessing the Underlying RestEmitter
+### 기본 RestEmitter 접근
 
-For advanced use cases, access the low-level REST emitter:
+고급 사용 사례의 경우 저수준 REST emitter에 접근하세요:
 
 ```java
 RestEmitter emitter = client.getEmitter();
 // Direct access to emission methods
 ```
 
-> **Note:** Most users should use the high-level `client.entities()` API instead.
+> **참고:** 대부분의 사용자는 고수준 `client.entities()` API를 사용해야 합니다.
 
-## Entity Operations
+## Entity 작업
 
-Once configured, use the client to perform entity operations:
+구성이 완료되면 클라이언트를 사용하여 entity 작업을 수행하세요:
 
-### CRUD Operations
+### CRUD 작업
 
 ```java
 // Create/Update (upsert)
@@ -359,11 +359,11 @@ client.entities().update(dataset);
 Dataset loaded = client.entities().get(datasetUrn);
 ```
 
-See the [Getting Started Guide](./getting-started.md) for comprehensive examples.
+포괄적인 예제는 [시작하기 가이드](./getting-started.md)를 참조하세요.
 
-## Configuration Best Practices
+## 구성 모범 사례
 
-### Production Deployment
+### 프로덕션 배포
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -376,7 +376,7 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### ETL Pipeline
+### ETL 파이프라인
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -388,9 +388,9 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### Critical Data Migration
+### 중요 데이터 마이그레이션
 
-For migrations where you need confirmation before proceeding:
+진행하기 전에 확인이 필요한 마이그레이션의 경우:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -403,7 +403,7 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### Local Development
+### 로컬 개발
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -413,58 +413,58 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-## Troubleshooting
+## 문제 해결
 
-### Connection Refused
+### 연결 거부
 
-**Error:** `java.net.ConnectException: Connection refused`
+**오류:** `java.net.ConnectException: Connection refused`
 
-**Solutions:**
+**해결 방법:**
 
-- Verify DataHub server is running
-- Check server URL is correct
-- Ensure port is accessible (firewall rules)
+- DataHub 서버가 실행 중인지 확인
+- 서버 URL이 올바른지 확인
+- 포트가 접근 가능한지 확인 (방화벽 규칙)
 
-### Authentication Failed
+### 인증 실패
 
-**Error:** `401 Unauthorized`
+**오류:** `401 Unauthorized`
 
-**Solutions:**
+**해결 방법:**
 
-- Verify token is valid and not expired
-- Check token has correct permissions
-- Ensure token matches the server environment
+- 토큰이 유효하고 만료되지 않았는지 확인
+- 토큰에 올바른 권한이 있는지 확인
+- 토큰이 서버 환경과 일치하는지 확인
 
-### Timeout
+### 타임아웃
 
-**Error:** `java.util.concurrent.TimeoutException`
+**오류:** `java.util.concurrent.TimeoutException`
 
-**Solutions:**
+**해결 방법:**
 
-- Increase `timeoutMs` configuration
-- Check network latency to DataHub server
-- Verify server is not overloaded
+- `timeoutMs` 구성 증가
+- DataHub 서버에 대한 네트워크 지연 시간 확인
+- 서버가 과부하되지 않았는지 확인
 
-### SSL Certificate Error
+### SSL 인증서 오류
 
-**Error:** `javax.net.ssl.SSLHandshakeException`
+**오류:** `javax.net.ssl.SSLHandshakeException`
 
-**Solutions:**
+**해결 방법:**
 
-- Ensure server SSL certificate is valid
-- Add CA certificate to Java truststore
-- For testing only: use `disableSslVerification(true)`
+- 서버 SSL 인증서가 유효한지 확인
+- Java 트러스트스토어에 CA 인증서 추가
+- 테스트 전용: `disableSslVerification(true)` 사용
 
-## Next Steps
+## 다음 단계
 
-- **[Entities Overview](./entities-overview.md)** - Working with different entity types
-- **[Dataset Entity Guide](./dataset-entity.md)** - Comprehensive dataset operations
-- **[Patch Operations](./patch-operations.md)** - Efficient incremental updates
-- **[Getting Started Guide](./getting-started.md)** - Complete walkthrough
+- **[Entities 개요](./entities-overview.md)** - 다양한 entity 타입 작업
+- **[Dataset Entity 가이드](./dataset-entity.md)** - 포괄적인 dataset 작업
+- **[Patch 작업](./patch-operations.md)** - 효율적인 점진적 업데이트
+- **[시작하기 가이드](./getting-started.md)** - 완전한 안내
 
-## API Reference
+## API 참조
 
-For complete API documentation, see:
+완전한 API 문서는 다음을 참조하세요:
 
 - [DataHubClientV2.java](../../datahub-client/src/main/java/datahub/client/v2/DataHubClientV2.java)
 - [DataHubClientConfigV2.java](../../datahub-client/src/main/java/datahub/client/v2/config/DataHubClientConfigV2.java)

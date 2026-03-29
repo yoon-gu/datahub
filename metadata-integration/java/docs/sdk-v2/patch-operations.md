@@ -1,14 +1,14 @@
-# Patch Operations Guide
+# Patch 작업 가이드
 
-SDK V2 uses **patch-based updates** for efficient, surgical modifications to metadata. This guide explains how patches work and when to use them.
+SDK V2는 메타데이터의 효율적이고 수술적인 수정을 위해 **patch 기반 업데이트**를 사용합니다. 이 가이드는 patches가 어떻게 작동하는지 설명하고 언제 사용해야 하는지 안내합니다.
 
-## What Are Patches?
+## Patches란 무엇인가요?
 
-Patches are **incremental updates** that modify specific fields without replacing entire aspects. Instead of sending the full `datasetProperties` aspect, a patch sends only the changes.
+Patches는 전체 aspect를 교체하지 않고 특정 필드만 수정하는 **점진적 업데이트**입니다. 전체 `datasetProperties` aspect를 전송하는 대신 patch는 변경 사항만 전송합니다.
 
-### Patch vs Full Update
+### Patch vs 전체 업데이트
 
-**Full Update (V1 Style):**
+**전체 업데이트 (V1 스타일):**
 
 ```java
 // Fetch entire aspect
@@ -21,7 +21,7 @@ props.setDescription("New description");
 sendAspect(urn, props);
 ```
 
-**Patch Update (V2 Style):**
+**Patch 업데이트 (V2 스타일):**
 
 ```java
 // Send only the change
@@ -30,18 +30,18 @@ client.entities().update(dataset);
 // Sends JSON Patch: { "op": "add", "path": "/description", "value": "New description" }
 ```
 
-### Benefits of Patches
+### Patches의 이점
 
-1. **Efficiency** - Only changed fields sent over network
-2. **Concurrency Safety** - Less risk of overwriting concurrent changes
-3. **Atomicity** - Multiple patches applied together or not at all
-4. **Bandwidth** - Reduced payload size
+1. **효율성** - 변경된 필드만 네트워크로 전송
+2. **동시성 안전성** - 동시 변경을 덮어쓸 위험 감소
+3. **원자성** - 여러 patches가 함께 적용되거나 전혀 적용되지 않음
+4. **대역폭** - 축소된 페이로드 크기
 
-## How Patches Work in SDK V2
+## SDK V2에서 Patches 작동 방식
 
-### Patch Accumulation Pattern
+### Patch 축적 패턴
 
-Entities accumulate patches in a pending list until save:
+Entity는 저장 시까지 대기 목록에 patches를 축적합니다:
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -66,7 +66,7 @@ System.out.println("Pending patches: " + dataset.getPendingPatches().size());
 // Output: Pending patches: 0
 ```
 
-### Under the Hood
+### 내부 동작
 
 ```java
 // From Dataset.java
@@ -83,7 +83,7 @@ public Dataset addTag(@Nonnull String tagUrn) {
 }
 ```
 
-When `update()` is called:
+`update()`가 호출되면:
 
 ```java
 // From EntityClient.java
@@ -103,33 +103,33 @@ public void upsert(Entity entity) {
 }
 ```
 
-## Reusing Existing Patch Builders
+## 기존 Patch 빌더 재사용
 
-SDK V2 **reuses existing patch builders** from `datahub.client.patch` package:
+SDK V2는 `datahub.client.patch` 패키지의 **기존 patch 빌더를 재사용**합니다:
 
-### Available Patch Builders
+### 사용 가능한 Patch 빌더
 
-| Builder                                 | Purpose                    | Example                                   |
+| 빌더                                 | 목적                    | 예제                                   |
 | --------------------------------------- | -------------------------- | ----------------------------------------- |
-| `OwnershipPatchBuilder`                 | Add/remove owners          | `addOwner()`, `removeOwner()`             |
-| `GlobalTagsPatchBuilder`                | Add/remove tags            | `addTag()`, `removeTag()`                 |
-| `GlossaryTermsPatchBuilder`             | Add/remove terms           | `addTerm()`, `removeTerm()`               |
-| `DomainsPatchBuilder`                   | Set/remove domain          | `setDomain()`, `removeDomain()`           |
-| `DatasetPropertiesPatchBuilder`         | Update properties          | `setDescription()`, `addCustomProperty()` |
-| `EditableDatasetPropertiesPatchBuilder` | Update editable properties | `setEditableDescription()`                |
+| `OwnershipPatchBuilder`                 | 소유자 추가/제거          | `addOwner()`, `removeOwner()`             |
+| `GlobalTagsPatchBuilder`                | 태그 추가/제거            | `addTag()`, `removeTag()`                 |
+| `GlossaryTermsPatchBuilder`             | 용어 추가/제거           | `addTerm()`, `removeTerm()`               |
+| `DomainsPatchBuilder`                   | 도메인 설정/제거          | `setDomain()`, `removeDomain()`           |
+| `DatasetPropertiesPatchBuilder`         | 속성 업데이트          | `setDescription()`, `addCustomProperty()` |
+| `EditableDatasetPropertiesPatchBuilder` | 편집 가능한 속성 업데이트 | `setEditableDescription()`                |
 
-### Why Reuse?
+### 왜 재사용하나요?
 
-- **Battle-tested** - Used by Python SDK V2 in production
-- **Correctness** - Complex JSON Patch logic already validated
-- **Consistency** - Same semantics across language SDKs
-- **Maintainability** - Single implementation to maintain
+- **검증됨** - Python SDK V2에서 프로덕션으로 사용
+- **정확성** - 복잡한 JSON Patch 로직 이미 검증됨
+- **일관성** - 언어별 SDK 전체에서 동일한 의미론
+- **유지보수성** - 유지관리할 단일 구현
 
-## When to Use Patches
+## Patches를 사용할 때
 
-### Use Patches For:
+### Patches 사용 케이스:
 
-✅ **Incremental changes to existing entities**
+✅ **기존 entity에 대한 점진적 변경**
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -137,7 +137,7 @@ dataset.addTag("new-tag");
 client.entities().update(dataset);  // Patch
 ```
 
-✅ **Adding metadata to entities**
+✅ **entity에 메타데이터 추가**
 
 ```java
 dataset.addOwner("urn:li:corpuser:new_owner", OwnershipType.TECHNICAL_OWNER);
@@ -145,7 +145,7 @@ dataset.addCustomProperty("updated_at", String.valueOf(System.currentTimeMillis(
 client.entities().update(dataset);  // Multiple patches
 ```
 
-✅ **Surgical updates without full entity knowledge**
+✅ **전체 entity 지식 없이 수술적 업데이트**
 
 ```java
 // Don't need to fetch entire entity
@@ -153,9 +153,9 @@ dataset.addTag("gdpr");
 client.entities().update(dataset);  // Just adds tag
 ```
 
-### Use Full Upsert For:
+### 전체 Upsert 사용 케이스:
 
-✅ **Creating new entities**
+✅ **새 entity 생성**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -167,7 +167,7 @@ Dataset dataset = Dataset.builder()
 client.entities().upsert(dataset);  // Full upsert
 ```
 
-✅ **Replacing entire aspects**
+✅ **전체 aspect 교체**
 
 ```java
 // Set complete schema
@@ -176,7 +176,7 @@ dataset.setSchema(schema);
 client.entities().upsert(dataset);  // Sends full schema aspect
 ```
 
-✅ **Builder-provided metadata**
+✅ **빌더 제공 메타데이터**
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -189,18 +189,18 @@ Dataset dataset = Dataset.builder()
 client.entities().upsert(dataset);  // Sends cached aspects
 ```
 
-## Patch Operations by Entity
+## Entity별 Patch 작업
 
 ### Dataset Patches
 
-**Ownership:**
+**소유권:**
 
 ```java
 dataset.addOwner("urn:li:corpuser:john", OwnershipType.TECHNICAL_OWNER);
 dataset.removeOwner("urn:li:corpuser:jane");
 ```
 
-**Tags:**
+**태그:**
 
 ```java
 dataset.addTag("pii");
@@ -214,14 +214,14 @@ dataset.addTerm("urn:li:glossaryTerm:CustomerData");
 dataset.removeTerm("urn:li:glossaryTerm:OldTerm");
 ```
 
-**Domain:**
+**도메인:**
 
 ```java
 dataset.setDomain("urn:li:domain:Marketing");
 dataset.removeDomain();
 ```
 
-**Properties:**
+**속성:**
 
 ```java
 dataset.addCustomProperty("team", "data-eng");
@@ -231,7 +231,7 @@ dataset.setDescription("New description");
 
 ### Chart Patches
 
-Chart supports the same patch operations as Dataset:
+Chart는 Dataset과 동일한 patch 작업을 지원합니다:
 
 ```java
 chart.addOwner("urn:li:corpuser:analyst", OwnershipType.TECHNICAL_OWNER);
@@ -240,11 +240,11 @@ chart.addTerm("urn:li:glossaryTerm:SalesMetrics");
 chart.setDomain("urn:li:domain:BusinessIntelligence");
 ```
 
-See [Chart Entity Guide](./chart-entity.md) for complete details.
+자세한 내용은 [Chart Entity 가이드](./chart-entity.md)를 참조하세요.
 
-## Advanced: Manual Patch Construction
+## 고급: 수동 Patch 구성
 
-For advanced use cases, construct patches directly:
+고급 사용 사례의 경우 직접 patches를 구성하세요:
 
 ```java
 import com.linkedin.metadata.aspect.patch.builder.OwnershipPatchBuilder;
@@ -267,23 +267,23 @@ dataset.addPatchMcp(patch);
 emitter.emit(patch, null);
 ```
 
-## Patch vs Upsert Decision Tree
+## Patch vs Upsert 결정 트리
 
 ```
-New entity from builder?
-├─ Yes → Use upsert() (sends cached aspects)
-└─ No → Loaded from server or reference?
-    ├─ Yes → Making incremental changes?
-    │   ├─ Yes → Use update() (sends patches)
-    │   └─ No → Replacing entire aspect?
-    │       └─ Yes → Use upsert() (sends full aspect)
-    └─ No → Just adding tags/owners/etc?
-        └─ Yes → Use update() (sends patches)
+빌더에서 새 entity인가요?
+├─ 예 → upsert() 사용 (캐시된 aspect 전송)
+└─ 아니요 → 서버에서 로드되거나 참조인가요?
+    ├─ 예 → 점진적 변경을 만드나요?
+    │   ├─ 예 → update() 사용 (patches 전송)
+    │   └─ 아니요 → 전체 aspect를 교체하나요?
+    │       └─ 예 → upsert() 사용 (전체 aspect 전송)
+    └─ 아니요 → 그냥 태그/소유자 등을 추가하나요?
+        └─ 예 → update() 사용 (patches 전송)
 ```
 
-## Pending Patches Management
+## 대기 중인 Patches 관리
 
-### Check for Pending Patches
+### 대기 중인 Patches 확인
 
 ```java
 if (dataset.hasPendingPatches()) {
@@ -291,7 +291,7 @@ if (dataset.hasPendingPatches()) {
 }
 ```
 
-### Get Pending Patches
+### 대기 중인 Patches 가져오기
 
 ```java
 List<MetadataChangeProposal> patches = dataset.getPendingPatches();
@@ -300,14 +300,14 @@ for (MetadataChangeProposal patch : patches) {
 }
 ```
 
-### Clear Pending Patches
+### 대기 중인 Patches 지우기
 
 ```java
 // Manually clear without emitting
 dataset.clearPendingPatches();
 ```
 
-### Batch Multiple Changes
+### 여러 변경 사항 배치
 
 ```java
 // Accumulate many patches
@@ -323,9 +323,9 @@ dataset.addTag("tag1")
 client.entities().update(dataset);
 ```
 
-## Performance Considerations
+## 성능 고려사항
 
-### Network Efficiency
+### 네트워크 효율성
 
 ```java
 // Inefficient: 3 separate network calls
@@ -343,23 +343,23 @@ dataset.addTag("tag1")
 client.entities().update(dataset);
 ```
 
-### Payload Size
+### 페이로드 크기
 
-**Full upsert (datasetProperties):**
+**전체 upsert (datasetProperties):**
 
-- ~2-5 KB for typical dataset aspect
+- 일반적인 dataset aspect의 경우 ~2-5 KB
 
-**Patch (add tag):**
+**Patch (태그 추가):**
 
-- ~200-300 bytes for single tag patch
+- 단일 태그 patch의 경우 ~200-300 바이트
 
-**10 tags:** Patches = ~3 KB, Full upsert = ~5 KB
+**태그 10개:** Patches = ~3 KB, 전체 upsert = ~5 KB
 
-## JSON Patch Format
+## JSON Patch 형식
 
-Patches use [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/html/rfc6902) format:
+Patches는 [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/html/rfc6902) 형식을 사용합니다:
 
-**Add operation:**
+**추가 작업:**
 
 ```json
 {
@@ -371,7 +371,7 @@ Patches use [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/html/rfc690
 }
 ```
 
-**Remove operation:**
+**제거 작업:**
 
 ```json
 {
@@ -380,48 +380,48 @@ Patches use [JSON Patch (RFC 6902)](https://datatracker.ietf.org/doc/html/rfc690
 }
 ```
 
-SDK V2 abstracts this complexity - you work with Java methods, not JSON.
+SDK V2는 이 복잡성을 추상화합니다 - JSON이 아닌 Java 메서드로 작업합니다.
 
-## Troubleshooting
+## 문제 해결
 
-### Patches Not Applied
+### Patches가 적용되지 않음
 
-**Issue:** Changes not visible in DataHub
+**문제:** DataHub에서 변경 사항이 보이지 않음
 
-**Solutions:**
+**해결 방법:**
 
-- Verify `update()` was called (patches don't emit automatically)
-- Check for errors in emission response
-- Ensure entity is bound to client
+- `update()`가 호출되었는지 확인 (patches는 자동으로 emit되지 않음)
+- emission 응답에서 오류 확인
+- entity가 클라이언트에 바인딩되어 있는지 확인
 
-### Concurrent Updates
+### 동시 업데이트
 
-**Issue:** Patches conflict with concurrent changes
+**문제:** Patches가 동시 변경과 충돌
 
-**Solutions:**
+**해결 방법:**
 
-- Patches are generally safe for concurrent updates
-- Each patch is atomic
-- For complex scenarios, load entity first to get latest state
+- Patches는 일반적으로 동시 업데이트에 안전함
+- 각 patch는 원자적
+- 복잡한 시나리오의 경우 최신 상태를 얻기 위해 먼저 entity 로드
 
-### Patch Cleared Unexpectedly
+### Patch가 예기치 않게 지워짐
 
-**Issue:** Pending patches disappear
+**문제:** 대기 중인 patches가 사라짐
 
-**Reason:** `upsert()` or `update()` clears patches after emission
+**이유:** `upsert()` 또는 `update()`가 emission 후 patches를 지움
 
-**Solution:** This is expected behavior - patches are one-time use
+**해결책:** 이것은 예상된 동작입니다 - patches는 일회용
 
-## Next Steps
+## 다음 단계
 
-- **[Design Principles](./design-principles.md)** - Architecture behind patches
-- **[Dataset Entity Guide](./dataset-entity.md)** - All patch operations for datasets
-- **[Migration Guide](./migration-from-v1.md)** - Moving from full updates to patches
+- **[설계 원칙](./design-principles.md)** - patches 뒤의 아키텍처
+- **[Dataset Entity 가이드](./dataset-entity.md)** - dataset을 위한 모든 patch 작업
+- **[마이그레이션 가이드](./migration-from-v1.md)** - 전체 업데이트에서 patches로 이동
 
-## API Reference
+## API 참조
 
-Key classes:
+주요 클래스:
 
-- Entity.java - Patch accumulation
+- Entity.java - Patch 축적
 - EntityClient.java - Patch emission
-- datahub.client.patch.\* - Patch builders
+- datahub.client.patch.\* - Patch 빌더

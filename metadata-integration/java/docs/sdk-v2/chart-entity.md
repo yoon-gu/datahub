@@ -1,12 +1,12 @@
 # Chart Entity
 
-The Chart entity represents visualizations and reports in BI tools (e.g., Looker, Tableau, Superset). This guide covers chart operations in SDK V2.
+Chart entity는 BI 도구(예: Looker, Tableau, Superset)의 시각화 및 보고서를 나타냅니다. 이 가이드는 SDK V2의 chart 작업을 다룹니다.
 
-## Creating a Chart
+## Chart 생성
 
-### Minimal Chart
+### 최소 Chart
 
-Only tool and id are required:
+tool과 id만 필수입니다:
 
 ```java
 Chart chart = Chart.builder()
@@ -15,9 +15,9 @@ Chart chart = Chart.builder()
     .build();
 ```
 
-### With Metadata
+### 메타데이터 포함
 
-Add title, description, and custom properties:
+제목, 설명 및 커스텀 속성 추가:
 
 ```java
 Chart chart = Chart.builder()
@@ -28,7 +28,7 @@ Chart chart = Chart.builder()
     .build();
 ```
 
-### With Custom Properties
+### 커스텀 속성 포함
 
 ```java
 Map<String, String> properties = new HashMap<>();
@@ -43,15 +43,15 @@ Chart chart = Chart.builder()
     .build();
 ```
 
-## URN Construction
+## URN 구성
 
-Chart URNs follow the pattern:
+Chart URN은 다음 패턴을 따릅니다:
 
 ```
 urn:li:chart:({tool},{id})
 ```
 
-**Example:**
+**예제:**
 
 ```java
 Chart chart = Chart.builder()
@@ -63,9 +63,9 @@ ChartUrn urn = chart.getChartUrn();
 // urn:li:chart:(looker,my_chart)
 ```
 
-## Supported BI Tools
+## 지원되는 BI 도구
 
-Common tool identifiers:
+일반적인 도구 식별자:
 
 - `looker` - Looker
 - `tableau` - Tableau
@@ -75,11 +75,11 @@ Common tool identifiers:
 - `redash` - Redash
 - `mode` - Mode Analytics
 
-## Chart Operations
+## Chart 작업
 
-### Adding Tags
+### 태그 추가
 
-Add tags to categorize and classify your charts:
+chart를 분류하고 분류하기 위한 태그 추가:
 
 ```java
 // Simple tag (automatically adds "urn:li:tag:" prefix)
@@ -90,9 +90,9 @@ chart.addTag("financial");
 chart.addTag("urn:li:tag:production");
 ```
 
-### Managing Owners
+### 소유자 관리
 
-Add owners with different ownership types:
+다양한 소유권 타입으로 소유자 추가:
 
 ```java
 import com.linkedin.common.OwnershipType;
@@ -110,9 +110,9 @@ chart.addOwner("urn:li:corpuser:compliance_team", OwnershipType.DATA_STEWARD);
 chart.removeOwner("urn:li:corpuser:old_owner");
 ```
 
-### Adding Glossary Terms
+### Glossary Terms 추가
 
-Link charts to business glossary terms:
+chart를 비즈니스 glossary 용어와 연결:
 
 ```java
 chart.addTerm("urn:li:glossaryTerm:SalesMetrics");
@@ -122,9 +122,9 @@ chart.addTerm("urn:li:glossaryTerm:QuarterlyReporting");
 chart.removeTerm("urn:li:glossaryTerm:OldTerm");
 ```
 
-### Setting Domain
+### 도메인 설정
 
-Organize charts into domains:
+chart를 도메인으로 구성:
 
 ```java
 // Set domain
@@ -136,18 +136,18 @@ chart.setDomain(null);
 chart.removeDomain();
 ```
 
-### Setting Description and Title
+### 설명 및 제목 설정
 
-Update chart description and title using patch-based updates:
+patch 기반 업데이트를 사용하여 chart 설명 및 제목 업데이트:
 
 ```java
 chart.setDescription("Updated chart description");
 chart.setTitle("New Chart Title");
 ```
 
-### Managing Custom Properties
+### 커스텀 속성 관리
 
-Add, update, or remove custom properties:
+커스텀 속성 추가, 업데이트 또는 제거:
 
 ```java
 // Add individual properties
@@ -164,13 +164,13 @@ chart.setCustomProperties(props);
 chart.removeCustomProperty("old_property");
 ```
 
-## Lineage Operations
+## Lineage 작업
 
-Chart lineage defines the data flow relationships between charts and the datasets they consume. This is essential for impact analysis, data governance, and understanding data dependencies.
+Chart lineage는 chart와 chart가 소비하는 dataset 사이의 데이터 흐름 관계를 정의합니다. 이는 영향 분석, 데이터 거버넌스 및 데이터 의존성 이해에 필수적입니다.
 
-### Setting Input Datasets
+### 입력 Dataset 설정
 
-Define which datasets a chart consumes:
+chart가 소비하는 dataset 정의:
 
 ```java
 import com.linkedin.common.urn.DatasetUrn;
@@ -186,9 +186,9 @@ DatasetUrn customerDataset = DatasetUrn.createFromString(
 chart.setInputDatasets(Arrays.asList(salesDataset, customerDataset));
 ```
 
-### Adding Individual Input Datasets
+### 개별 입력 Dataset 추가
 
-Add input datasets incrementally:
+Dataset을 점진적으로 추가:
 
 ```java
 // Add datasets one at a time
@@ -201,9 +201,9 @@ chart.addInputDataset(customerDataset);
 // - Adding new data sources to existing chart
 ```
 
-### Removing Input Datasets
+### 입력 Dataset 제거
 
-Remove datasets that are no longer consumed:
+더 이상 소비되지 않는 dataset 제거:
 
 ```java
 DatasetUrn legacyDataset = DatasetUrn.createFromString(
@@ -213,9 +213,9 @@ DatasetUrn legacyDataset = DatasetUrn.createFromString(
 chart.removeInputDataset(legacyDataset);
 ```
 
-### Retrieving Input Datasets
+### 입력 Dataset 검색
 
-Get the list of datasets a chart consumes:
+chart가 소비하는 dataset 목록 가져오기:
 
 ```java
 // Load chart from DataHub
@@ -230,7 +230,7 @@ for (DatasetUrn dataset : inputDatasets) {
 }
 ```
 
-### Complete Lineage Example
+### 완전한 Lineage 예제
 
 ```java
 // Create chart with comprehensive lineage
@@ -260,13 +260,13 @@ salesChart.addTag("sales")
 client.entities().upsert(salesChart);
 ```
 
-## Chart-Specific Properties
+## Chart별 속성
 
-Charts have several specialized properties beyond basic metadata:
+Chart에는 기본 메타데이터를 넘어선 여러 전문화된 속성이 있습니다:
 
-### Chart Type
+### Chart 타입
 
-Set the visualization type:
+시각화 타입 설정:
 
 ```java
 // Available types: BAR, LINE, PIE, TABLE, TEXT, BOXPLOT, AREA, SCATTER
@@ -276,9 +276,9 @@ chart.setChartType("BAR");
 String chartType = chart.getChartType();
 ```
 
-### Access Level
+### 접근 수준
 
-Control chart visibility:
+Chart 가시성 제어:
 
 ```java
 // Available levels: PUBLIC, PRIVATE
@@ -288,9 +288,9 @@ chart.setAccess("PUBLIC");
 String access = chart.getAccess();
 ```
 
-### External and Chart URLs
+### 외부 및 Chart URL
 
-Set URLs for accessing the chart:
+Chart에 접근하기 위한 URL 설정:
 
 ```java
 // External URL - link to view chart in source BI tool
@@ -304,9 +304,9 @@ String externalUrl = chart.getExternalUrl();
 String chartUrl = chart.getChartUrl();
 ```
 
-### Last Refreshed Timestamp
+### 마지막 새로 고침 타임스탬프
 
-Track when chart data was last updated:
+Chart 데이터가 마지막으로 업데이트된 시간 추적:
 
 ```java
 // Set timestamp (milliseconds since epoch)
@@ -325,7 +325,7 @@ if (lastRefreshed != null) {
 }
 ```
 
-### Complete Properties Example
+### 완전한 속성 예제
 
 ```java
 import java.time.Instant;
@@ -355,9 +355,9 @@ chart.addTag("sales")
 client.entities().upsert(chart);
 ```
 
-## Complete Example
+## 완전한 예제
 
-Here's a comprehensive example showing all chart operations:
+다음은 모든 chart 작업을 보여주는 포괄적인 예제입니다:
 
 ```java
 import com.linkedin.common.OwnershipType;
@@ -418,55 +418,55 @@ public class ChartExample {
 }
 ```
 
-## Builder Options Reference
+## 빌더 옵션 참조
 
-| Method                  | Required | Description                                    |
+| 메서드                  | 필수 여부 | 설명                                    |
 | ----------------------- | -------- | ---------------------------------------------- |
-| `tool(String)`          | ✅ Yes   | BI tool identifier (e.g., "looker", "tableau") |
-| `id(String)`            | ✅ Yes   | Chart identifier within the tool               |
-| `title(String)`         | No       | Chart title                                    |
-| `description(String)`   | No       | Chart description                              |
-| `customProperties(Map)` | No       | Map of custom key-value properties             |
+| `tool(String)`          | ✅ 예   | BI 도구 식별자 (예: "looker", "tableau") |
+| `id(String)`            | ✅ 예   | 도구 내 chart 식별자               |
+| `title(String)`         | 아니요       | Chart 제목                                    |
+| `description(String)`   | 아니요       | Chart 설명                              |
+| `customProperties(Map)` | 아니요       | 커스텀 키-값 속성의 맵             |
 
-## Patch-Based Operations
+## Patch 기반 작업
 
-Chart entities now support patch-based operations similar to Dataset. All mutations (addTag, addOwner, etc.) create patch MCPs that accumulate until save(). This enables:
+Chart entity는 이제 Dataset과 유사한 patch 기반 작업을 지원합니다. 모든 변경 (addTag, addOwner 등)은 save()가 호출될 때까지 축적되는 patch MCP를 생성합니다. 이를 통해:
 
-- **Efficient batching**: Multiple operations in a single network call
-- **Incremental updates**: Only modified fields are sent to the server
-- **Fluent chaining**: Build complex metadata in a readable way
+- **효율적인 배칭**: 단일 네트워크 호출로 여러 작업
+- **점진적 업데이트**: 수정된 필드만 서버로 전송
+- **플루언트 체이닝**: 읽기 쉬운 방식으로 복잡한 메타데이터 구축
 
-Available patch operations:
+사용 가능한 patch 작업:
 
-| Operation                           | Description                        |
+| 작업                           | 설명                        |
 | ----------------------------------- | ---------------------------------- |
-| `addTag(String)`                    | Add a tag to the chart             |
-| `removeTag(String)`                 | Remove a tag from the chart        |
-| `addOwner(String, OwnershipType)`   | Add an owner with ownership type   |
-| `removeOwner(String)`               | Remove an owner from the chart     |
-| `addTerm(String)`                   | Add a glossary term to the chart   |
-| `removeTerm(String)`                | Remove a glossary term             |
-| `setDomain(String)`                 | Set the domain for the chart       |
-| `removeDomain()`                    | Remove the domain from the chart   |
-| `setDescription(String)`            | Update chart description           |
-| `setTitle(String)`                  | Update chart title                 |
-| `addCustomProperty(String, String)` | Add or update a custom property    |
-| `removeCustomProperty(String)`      | Remove a custom property           |
-| `setCustomProperties(Map)`          | Replace all custom properties      |
-| `setInputDatasets(List)`            | Set input datasets (lineage)       |
-| `addInputDataset(DatasetUrn)`       | Add an input dataset (lineage)     |
-| `removeInputDataset(DatasetUrn)`    | Remove an input dataset (lineage)  |
-| `setExternalUrl(String)`            | Set external URL for the chart     |
-| `setChartUrl(String)`               | Set chart URL                      |
-| `setLastRefreshed(long)`            | Set last refreshed timestamp       |
-| `setChartType(String)`              | Set chart type (BAR, LINE, etc.)   |
-| `setAccess(String)`                 | Set access level (PUBLIC, PRIVATE) |
+| `addTag(String)`                    | chart에 태그 추가             |
+| `removeTag(String)`                 | chart에서 태그 제거        |
+| `addOwner(String, OwnershipType)`   | 소유권 타입으로 소유자 추가   |
+| `removeOwner(String)`               | chart에서 소유자 제거     |
+| `addTerm(String)`                   | chart에 glossary term 추가   |
+| `removeTerm(String)`                | glossary term 제거             |
+| `setDomain(String)`                 | chart의 도메인 설정       |
+| `removeDomain()`                    | chart에서 도메인 제거   |
+| `setDescription(String)`            | Chart 설명 업데이트           |
+| `setTitle(String)`                  | Chart 제목 업데이트                 |
+| `addCustomProperty(String, String)` | 커스텀 속성 추가 또는 업데이트    |
+| `removeCustomProperty(String)`      | 커스텀 속성 제거           |
+| `setCustomProperties(Map)`          | 모든 커스텀 속성 교체      |
+| `setInputDatasets(List)`            | 입력 dataset 설정 (lineage)       |
+| `addInputDataset(DatasetUrn)`       | 입력 dataset 추가 (lineage)     |
+| `removeInputDataset(DatasetUrn)`    | 입력 dataset 제거 (lineage)  |
+| `setExternalUrl(String)`            | chart의 외부 URL 설정     |
+| `setChartUrl(String)`               | chart URL 설정                      |
+| `setLastRefreshed(long)`            | 마지막 새로 고침 타임스탬프 설정       |
+| `setChartType(String)`              | chart 타입 설정 (BAR, LINE 등)   |
+| `setAccess(String)`                 | 접근 수준 설정 (PUBLIC, PRIVATE) |
 
-See [Patch Operations Guide](./patch-operations.md) for more details on how patch-based updates work.
+patch 기반 업데이트 작동 방식에 대한 자세한 내용은 [Patch 작업 가이드](./patch-operations.md)를 참조하세요.
 
-## Common Patterns
+## 공통 패턴
 
-### Creating Multiple Charts
+### 여러 Chart 생성
 
 ```java
 List<String> chartIds = Arrays.asList("chart1", "chart2", "chart3");
@@ -482,9 +482,9 @@ for (String chartId : chartIds) {
 }
 ```
 
-### Linking Charts to Dashboards
+### Chart를 Dashboard와 연결
 
-Use custom properties to track relationships:
+커스텀 속성을 사용하여 관계 추적:
 
 ```java
 Chart chart = Chart.builder()
@@ -500,9 +500,9 @@ chart.setCustomProperties(props);
 client.entities().upsert(chart);
 ```
 
-## Updating Charts
+## Chart 업데이트
 
-### Load and Modify
+### 로드 및 수정
 
 ```java
 // Load existing chart
@@ -516,27 +516,27 @@ chart.setDescription("Updated description");
 client.entities().update(chart);
 ```
 
-## Next Steps
+## 다음 단계
 
-- **[Dataset Entity Guide](./dataset-entity.md)** - Comprehensive dataset operations
-- **[Entities Overview](./entities-overview.md)** - Common patterns across entities
-- **[Patch Operations](./patch-operations.md)** - Understanding incremental updates
+- **[Dataset Entity 가이드](./dataset-entity.md)** - 포괄적인 dataset 작업
+- **[Entities 개요](./entities-overview.md)** - entity 전체의 공통 패턴
+- **[Patch 작업](./patch-operations.md)** - 점진적 업데이트 이해
 
-## Examples
+## 예제
 
-### Basic Chart Creation
+### 기본 Chart 생성
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/ChartCreateExample.java show_path_as_comment }}
 ```
 
-### Comprehensive Chart with Metadata and Lineage
+### 메타데이터 및 Lineage가 있는 포괄적인 Chart
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/ChartFullExample.java show_path_as_comment }}
 ```
 
-### Chart Lineage Operations
+### Chart Lineage 작업
 
 ```java
 {{ inline /metadata-integration/java/examples/src/main/java/io/datahubproject/examples/v2/ChartLineageExample.java show_path_as_comment }}

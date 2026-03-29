@@ -1,6 +1,6 @@
 ---
-title: "What is a Business Metric and How to Define and Standardize Them"
-description: Learn the importance of consistent metric definitions and calculation methods to ensure organizational alignment.
+title: "비즈니스 지표란 무엇이며 어떻게 정의하고 표준화할까"
+description: 조직 전체의 일관성을 보장하기 위한 일관된 지표 정의와 계산 방법의 중요성을 알아봅니다.
 tags: ["Business Metric", "Use Case", "For Data Analysts"]
 image: /img/learn/use-case-business-metric.png
 hide_table_of_contents: false
@@ -8,81 +8,81 @@ audience: ["Data Analysts"]
 date: 2024-06-03T04:00
 ---
 
-# What is a Business Metric and How to Define and Standardize Them
+# 비즈니스 지표란 무엇이며 어떻게 정의하고 표준화할까
 
-Learn the importance of consistent metric definitions and calculation methods to ensure organizational alignment.
+조직 전체의 일관성을 보장하기 위한 일관된 지표 정의와 계산 방법의 중요성을 알아봅니다.
 
 <!--truncate-->
 
-## Introduction
+## 소개
 
-Have you ever been part of a project where different teams had conflicting definitions for key business metrics like revenue, churn, or weekly active users? This misalignment can cause significant issues, leading to incorrect analysis and poor decision-making. In this post, we will explore the importance of defining and standardizing business metrics, why it matters, and how you can do it effectively within your organization.
+매출, 이탈률 또는 주간 활성 사용자와 같은 핵심 비즈니스 지표에 대해 서로 다른 팀이 충돌하는 정의를 가진 프로젝트에 참여한 적이 있으신가요? 이러한 불일치는 잘못된 분석과 나쁜 의사결정으로 이어지는 심각한 문제를 야기할 수 있습니다. 이 글에서는 비즈니스 지표를 정의하고 표준화하는 것의 중요성, 왜 그것이 중요한지, 그리고 조직 내에서 이를 효과적으로 수행하는 방법을 탐색합니다.
 
-## What is Business Metrics Definition and Standardization?
+## 비즈니스 지표 정의 및 표준화란 무엇인가요?
 
-Standardizing business metrics definition involves creating consistent and universally understood definitions for key performance indicators (KPIs) across your organization. Think of it as creating a common language that everyone in your company can use when discussing critical metrics like revenue, churn, or engagement. This ensures that all teams are on the same page, which is essential for accurate analysis and strategic decision-making.
+비즈니스 지표 정의 표준화는 조직 전반에 걸쳐 핵심 성과 지표(KPI)에 대한 일관적이고 보편적으로 이해되는 정의를 만드는 것입니다. 매출, 이탈률 또는 참여도와 같은 중요한 지표를 논의할 때 회사의 모든 사람이 사용할 수 있는 공통 언어를 만드는 것이라고 생각하세요. 이는 모든 팀이 같은 페이지에 있도록 하여 정확한 분석과 전략적 의사결정에 필수적입니다.
 
-## Why Should You Care About Business Metrics Definition and Standardization?
+## 왜 비즈니스 지표 정의 및 표준화를 신경 써야 하나요?
 
-### The Challenge
+### 과제
 
-In many organizations, KPIs are used to drive critical day-to-day operating decisions. They often emerge organically in response to the data needs of management. Over time, organizations can naturally develop inconsistent sources, representations, and vocabulary around such metrics. When there is a lack of consistent understanding of these metrics, it can lead to meaningful discrepancies in data interpretation and decision-making.
+많은 조직에서 KPI는 경영진의 데이터 요구에 대응하여 자연스럽게 생겨나는 일상적인 운영 결정을 이끄는 데 사용됩니다. 시간이 지남에 따라 조직은 이러한 지표에 대한 소스, 표현 및 어휘의 자연스러운 불일치를 발전시킬 수 있습니다. 이러한 지표에 대한 일관된 이해가 없으면 데이터 해석과 의사결정에 의미 있는 불일치가 발생할 수 있습니다.
 
-### Importance
+### 중요성
 
-Standardizing business metrics is crucial because these metrics are direct indicators of the performance and health of various functions within an organization. More often than not, these metrics are used for not only making day-to-day operating decisions, but also for reporting out business performance. Standardized metrics provide immediate insight into whether the business is on track to meet its objectives and serve as solid foundations upon which other second-order metrics may be derived.
+비즈니스 지표 표준화는 이러한 지표가 조직 내 다양한 기능의 성과와 건강의 직접적인 지표이기 때문에 필수적입니다. 대부분의 경우 이러한 지표는 일상적인 운영 결정을 내리는 것뿐만 아니라 비즈니스 성과를 보고하는 데도 사용됩니다. 표준화된 지표는 비즈니스가 목표를 달성하기 위해 순조롭게 진행되고 있는지에 대한 즉각적인 통찰력을 제공하고, 다른 2차 지표가 파생될 수 있는 견고한 기반 역할을 합니다.
 
-### Real-World Impact
+### 실제 영향
 
-Consider a scenario where the finance team defines revenue differently from the product team. If these discrepancies are not reconciled, it could lead to conflicting reports and misguided strategies. For instance, a marketing campaign analyzed with inconsistent metrics might appear successful in one report and unsuccessful in another, causing confusion and potentially leading to incorrect strategic decisions. Disagreements about the source-of-truth or accuracy of a given metric are commonplace; perhaps you can recall some examples from your own experience. 
+재무 팀이 제품 팀과 다르게 매출을 정의하는 시나리오를 고려해 보세요. 이러한 불일치가 해결되지 않으면 충돌하는 보고서와 잘못된 전략으로 이어질 수 있습니다. 예를 들어, 일관성 없는 지표로 분석된 마케팅 캠페인은 한 보고서에서는 성공적으로 보이고 다른 보고서에서는 실패한 것처럼 보여 혼란을 야기하고 잠재적으로 잘못된 전략적 결정으로 이어질 수 있습니다. 특정 지표의 사실의 출처나 정확성에 대한 이견은 흔한 일입니다. 아마도 자신의 경험에서 몇 가지 예를 떠올릴 수 있을 것입니다.
 
-### Example Discovery Questions and Explanations
+### 탐색 질문 예시 및 설명
 
-- **Current Management and Challenges:** "How do you currently manage and standardize definitions for core business metrics across different teams, and what challenges have you encountered in this process?" This question helps to uncover the existing processes and pain points in managing metrics, providing insights into potential areas where our product can offer significant improvements.
-- **Educating your Workforce:** “How do you educate new employees about the most important metrics at the organization?” This question helps to recognize and eliminate inefficient sharing of tribal knowledge within an organization when an employee joins or leaves.
-- **Impact of Misalignment:** "Can you describe a recent instance where misalignment on metric definitions impacted a business decision or analysis, and how was the issue resolved?" This question aims to highlight the real-world consequences of not having standardized metrics, emphasizing the importance of our solution in preventing such issues.
+- **현재 관리 및 과제:** "현재 서로 다른 팀 전반에 걸쳐 핵심 비즈니스 지표의 정의를 어떻게 관리하고 표준화하며, 이 과정에서 어떤 어려움을 겪었나요?" 이 질문은 지표를 관리하는 기존 프로세스와 문제점을 파악하여 제품이 상당한 개선을 제공할 수 있는 잠재적인 영역에 대한 통찰력을 제공합니다.
+- **인력 교육:** "조직에서 가장 중요한 지표에 대해 신입 직원을 어떻게 교육하나요?" 이 질문은 직원이 입사하거나 퇴사할 때 조직 내에서 부족 지식을 비효율적으로 공유하는 것을 인식하고 제거하는 데 도움이 됩니다.
+- **불일치의 영향:** "지표 정의 불일치가 비즈니스 결정이나 분석에 영향을 미친 최근 사례를 설명하고 문제가 어떻게 해결되었나요?" 이 질문은 표준화된 지표를 갖추지 않은 경우의 실제 결과를 강조하여 이러한 문제를 방지하는 데 있어 솔루션의 중요성을 강조합니다.
 
-## How to Define and Standardize Business Metrics
+## 비즈니스 지표를 정의하고 표준화하는 방법
 
-### General Approach
+### 일반적인 접근 방식
 
-Start by identifying key business metrics that are actively used to power decision making at the organization. Involve stakeholders from different departments to agree on a standard set of definitions, and propose a lightweight process for introducing new ones. Document these definitions and ensure they are easily accessible to everyone in the organization. Regular reviews and updates are necessary to keep the metrics relevant and aligned with business goals.
+조직에서 의사결정을 촉진하는 데 적극적으로 사용되는 핵심 비즈니스 지표를 식별하는 것부터 시작하세요. 포괄적인 범위와 합의를 보장하기 위해 다양한 부서의 이해관계자를 참여시키고, 새로운 지표를 도입하기 위한 가벼운 프로세스를 제안하세요. 이러한 정의를 문서화하고 조직의 모든 사람이 쉽게 접근할 수 있도록 하세요. 지표를 비즈니스 목표와 관련성 있고 일치하도록 유지하기 위해 정기적인 검토와 업데이트가 필요합니다.
 
-### Alternatives and Best Practices
+### 대안 및 모범 사례
 
-Some companies try to align metric definitions through emails and meetings. While this is a good place to start, it is often impractical at scale. Instead, best practices involve using a centralized system for defining and discovering key business metrics. Implementing approval flows and lineage tracking can ensure that all changes are reviewed and that the physical origins of a metric - e.g. the actual tables and rows that power it - are immediately clear. By making metrics centrally visible, you can begin to establish accountability and audibility around your key metrics, increasing their reliability through time and improving the quality of your decisions. 
+일부 회사는 이메일과 회의를 통해 지표 정의를 맞추려고 합니다. 이것은 시작하기 좋은 방법이지만 규모에서는 종종 비실용적입니다. 대신 핵심 비즈니스 지표를 정의하고 발견하기 위한 중앙화된 시스템을 사용하는 것이 모범 사례입니다. 승인 흐름과 lineage 추적을 구현하면 모든 변경 사항이 검토되고 지표의 물리적 기원 - 예: 지표를 지원하는 실제 테이블과 행 - 이 즉시 명확해집니다. 지표를 중앙에서 가시적으로 만들면 핵심 지표에 대한 책임과 감사 가능성을 확립하기 시작하고, 시간이 지남에 따라 신뢰성을 높이며 결정의 품질을 향상시킬 수 있습니다.
 
-### Our Solution
+### 솔루션
 
-DataHub Cloud offers comprehensive features designed to tackle the challenges of defining and standardizing business metrics:
+DataHub Cloud는 비즈니스 지표를 정의하고 표준화하는 과제를 해결하기 위해 설계된 포괄적인 기능을 제공합니다:
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/glossary-terms/business-glossary-center.png"/>
   <br />
-  <i style={{color:"grey"}}>Business Glossary Center</i>
+  <i style={{color:"grey"}}>비즈니스 용어집 센터</i>
 </p>
 
 
-- **[Business Glossary](https://docs.datahub.com/docs/glossary/business-glossary):** A centralized repository for all metrics definitions, ensuring consistency across the organization.
+- **[비즈니스 용어집](https://docs.datahub.com/docs/glossary/business-glossary):** 조직 전반에 걸쳐 일관성을 보장하는 모든 지표 정의의 중앙화된 저장소.
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/glossary-terms/approval-workflow.png"/>
  <br />
-  <i style={{color:"grey"}}>Approval Flows</i>
+  <i style={{color:"grey"}}>승인 흐름</i>
 </p>
 
-- **[Approval Flows](https://docs.datahub.com/docs/managed-datahub/change-proposals#using-approval-workflows):** Structured workflows for approving changes to metric definitions, maintaining accuracy and reliability.
+- **[승인 흐름](https://docs.datahub.com/docs/managed-datahub/change-proposals#using-approval-workflows):** 지표 정의 변경을 승인하기 위한 구조화된 워크플로우로 정확성과 신뢰성을 유지합니다.
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/data-freshness/lineage.png"/>
  <br />
-  <i style={{color:"grey"}}>Lineage Tracking</i>
+  <i style={{color:"grey"}}>Lineage 추적</i>
 </p>
 
-- **[Lineage Tracking](https://docs.datahub.com/docs/features/feature-guides/lineage):** Tools to track the origin and transformations of metrics, ensuring they align with standardized definitions.
+- **[Lineage 추적](https://docs.datahub.com/docs/features/feature-guides/lineage):** 지표의 기원과 변환을 추적하여 표준화된 정의와 일치하도록 보장하는 도구.
 
-By implementing these solutions, you can ensure that your business metrics are consistently defined and accurately used across all teams, supporting reliable analysis and decision-making.
+이러한 솔루션을 구현하면 비즈니스 지표가 모든 팀 전반에 걸쳐 일관되게 정의되고 정확하게 사용되어 신뢰할 수 있는 분석과 의사결정을 지원할 수 있습니다.
 
-### Conclusion
+### 결론
 
-Defining and standardizing business metrics is essential for ensuring consistent, accurate, and reliable data analysis and decision-making within an organization. By implementing best practices and leveraging advanced tools like our product’s business glossary, approval flows, and lineage tracking, you can achieve a more cohesive and efficient approach to managing business metrics. This investment will lead to better insights, more informed decisions, and ultimately, a more successful data-driven organization.
+비즈니스 지표를 정의하고 표준화하는 것은 조직 내에서 일관되고 정확하며 신뢰할 수 있는 데이터 분석과 의사결정을 보장하는 데 필수적입니다. 모범 사례를 구현하고 비즈니스 용어집, 승인 흐름, lineage 추적과 같은 제품의 고급 도구를 활용함으로써 비즈니스 지표를 관리하는 더 응집력 있고 효율적인 접근 방식을 달성할 수 있습니다. 이 투자는 더 나은 통찰력, 더 많은 정보에 기반한 결정, 그리고 궁극적으로 더 성공적인 데이터 기반 조직으로 이어질 것입니다.

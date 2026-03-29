@@ -1,5 +1,5 @@
 ---
-description: This page provides an overview of working with DataHub SQL Assertions
+description: 이 페이지에서는 DataHub SQL Assertions 사용 방법에 대한 개요를 제공합니다
 ---
 
 import FeatureAvailability from '@site/src/components/FeatureAvailability';
@@ -8,224 +8,195 @@ import FeatureAvailability from '@site/src/components/FeatureAvailability';
 
 <FeatureAvailability saasOnly />
 
-> The **Custom SQL Assertions** feature is available as part of the **DataHub Cloud Observe** module of DataHub Cloud.
-> If you are interested in learning more about **DataHub Cloud Observe** or trying it out, please [visit our website](https://datahub.com/products/data-observability/).
+> **Custom SQL Assertions** 기능은 DataHub Cloud의 **DataHub Cloud Observe** 모듈의 일부로 제공됩니다.
+> **DataHub Cloud Observe**에 대해 더 알아보거나 체험해 보고 싶다면 [웹사이트를 방문](https://datahub.com/products/data-observability/)하세요.
 
-## Introduction
+## 소개
 
-Can you remember a time when the meaning of Data Warehouse Table that you depended on fundamentally changed, with little or no notice?
-If the answer is yes, how did you find out? We'll take a guess - someone looking at an internal reporting dashboard or worse, a user using your your product, sounded an alarm when
-a number looked a bit out of the ordinary. Perhaps your table initially tracked purchases made on your company's e-commerce web store, but suddenly began to include purchases made
-through your company's new mobile app.
+의존하는 데이터 웨어하우스 테이블의 의미가 예고도 없이 근본적으로 바뀐 경험이 있으신가요?
+그렇다면 어떻게 알게 되셨나요? 내부 보고 대시보드를 보던 누군가가, 또는 더 심하게는 제품을 사용하는 사용자가 수치가 이상해 보인다며 경보를 울렸을 것입니다. 예를 들어, 처음에는 회사 이커머스 웹 스토어의 구매 내역을 추적하던 테이블에 갑자기 회사의 새 모바일 앱을 통한 구매도 포함되기 시작했을 수 있습니다.
 
-There are many reasons why an important Table on Snowflake, Redshift, BigQuery, or Databricks may change in its meaning - application code bugs, new feature rollouts,
-changes to key metric definitions, etc. Often times, these changes break important assumptions made about the data used in building key downstream data products
-like reporting dashboards or data-driven product features.
+Snowflake, Redshift, BigQuery, Databricks의 중요한 테이블이 의미 면에서 변경되는 이유는 다양합니다 - 애플리케이션 코드 버그, 새 기능 출시, 핵심 지표 정의 변경 등. 이러한 변경은 종종 보고 대시보드나 데이터 기반 제품 기능과 같은 주요 다운스트림 데이터 제품 구축에 사용되는 데이터에 대한 중요한 가정을 깨뜨립니다.
 
-What if you could reduce the time to detect these incidents, so that the people responsible for the data were made aware of data
-issues _before_ anyone else? With DataHub Cloud **Custom SQL Assertions**, you can.
+데이터 담당자가 다른 누구보다 먼저 데이터 문제를 인식할 수 있도록 인시던트 감지 시간을 단축할 수 있다면 어떨까요? DataHub Cloud **Custom SQL Assertions**를 통해 이것이 가능합니다.
 
-DataHub Cloud allows users to define complex expectations about a particular warehouse Table through custom SQL queries, and then monitor those expectations over time as the table grows and changes.
+DataHub Cloud를 통해 사용자는 커스텀 SQL 쿼리를 통해 특정 웨어하우스 테이블에 대한 복잡한 기대치를 정의하고, 테이블이 성장하고 변화함에 따라 시간이 지나도 해당 기대치를 모니터링할 수 있습니다.
 
-In this article, we'll cover the basics of monitoring Custom SQL Assertions - what they are, how to configure them, and more - so that you and your team can
-start building trust in your most important data assets.
+이 문서에서는 Custom SQL Assertions 모니터링의 기본 사항(정의, 구성 방법 등)을 다루어 팀이 중요한 데이터 자산에 대한 신뢰를 구축할 수 있도록 돕겠습니다.
 
-Let's get started!
+시작해 봅시다!
 
-## Support
+## 지원 현황
 
-Custom SQL Assertions are currently supported for:
+Custom SQL Assertions는 현재 다음을 지원합니다:
 
 1. Snowflake
 2. Redshift
 3. BigQuery
 4. Databricks
 
-Note that an Ingestion Source _must_ be configured with the data platform of your choice in DataHub Cloud's **Ingestion**
-tab.
+DataHub Cloud의 **Ingestion** 탭에서 선택한 데이터 플랫폼에 대한 수집 소스가 _반드시_ 구성되어 있어야 합니다.
 
-> Note that SQL Assertions are not yet supported if you are connecting to your warehouse
-> using the DataHub CLI.
+> DataHub CLI를 사용하여 웨어하우스에 연결하는 경우 SQL Assertions는 아직 지원되지 않습니다.
 
-## What is a Custom SQL Assertion?
+## Custom SQL Assertion이란?
 
-A **Custom SQL Assertion** is a highly configurable Data Quality rule used to monitor a Data Warehouse Table
-for unexpected or sudden changes in its meaning. Custom SQL Assertions are defined through a raw SQL query that is evaluated against
-the Table. You have full control over the SQL query, and can use any SQL features supported by your Data Warehouse.
-Custom SQL Assertions can be particularly useful when you have complex tables or relationships
-that are used to generate important metrics or reports, and where the meaning of the table is expected to be stable over time.
-If you have existing SQL queries that you already use to monitor your data, you may find that Custom SQL Assertions are an easy way to port them
-to DataHub Cloud to get started.
+**Custom SQL Assertion**은 데이터 웨어하우스 테이블의 의미에서 예상치 못한 또는 갑작스러운 변화를 모니터링하는 데 사용되는 고도로 구성 가능한 데이터 품질 규칙입니다. Custom SQL Assertions는 테이블에 대해 평가되는 원시 SQL 쿼리를 통해 정의됩니다. SQL 쿼리를 완전히 제어할 수 있으며 데이터 웨어하우스에서 지원하는 모든 SQL 기능을 사용할 수 있습니다.
+Custom SQL Assertions는 중요한 지표나 보고서를 생성하는 데 사용되는 복잡한 테이블이나 관계가 있고 테이블의 의미가 시간이 지나도 안정적이어야 하는 경우에 특히 유용합니다.
+데이터를 모니터링하는 데 이미 사용하는 기존 SQL 쿼리가 있다면, Custom SQL Assertions가 시작하기 좋은 쉬운 방법이 될 수 있습니다.
 
-For example, imagine that you have a Table that tracks the number of purchases made on your company's e-commerce web store.
-You have a SQL query that you use to calculate the number of purchases made in the past 24 hours, and you'd like to monitor this
-metric over time to ensure that it is always greater than 1000. You can use a Custom SQL Assertion to do this!
+예를 들어, 회사 이커머스 웹 스토어에서 이루어진 구매 수를 추적하는 테이블이 있다고 가정해 봅시다. 지난 24시간 내의 구매 수를 계산하는 SQL 쿼리가 있고, 항상 1000보다 크도록 이 지표를 시간에 따라 모니터링하려고 합니다. Custom SQL Assertion을 사용하여 이것을 할 수 있습니다!
 
-### Anatomy of a Custom SQL Assertion
+### Custom SQL Assertion의 구조
 
-At the most basic level, **Custom SQL Assertions** consist of a few important parts:
+**Custom SQL Assertions**는 기본적으로 몇 가지 중요한 구성 요소로 이루어집니다:
 
-1. An **Evaluation Schedule**
-2. A **Query**
-3. A **Condition Type**
+1. **평가 스케줄**
+2. **쿼리**
+3. **조건 유형**
 
-In this section, we'll give an overview of each.
+이 섹션에서 각각에 대한 개요를 설명합니다.
 
-#### 1. Evaluation Schedule
+#### 1. 평가 스케줄
 
-The **Evaluation Schedule**: This defines how often to query the given warehouse Table. This should usually
-be configured to match the expected change frequency of the Table, although it can also be less frequently depending
-on the requirements. You can also specify specific days of the week, hours in the day, or even
-minutes in an hour.
+**평가 스케줄**: 지정된 웨어하우스 테이블을 쿼리하는 빈도를 정의합니다. 일반적으로 테이블의 예상 변경 빈도에 맞게 구성해야 하지만, 요구 사항에 따라 더 낮은 빈도로 설정할 수도 있습니다. 주의 특정 요일, 시간 내의 특정 시, 또는 시간 내의 특정 분을 지정할 수도 있습니다.
 
-#### 2. Query
+#### 2. 쿼리
 
-The **Query**: This is the SQL query that will be used to evaluate the Table. The query should return a **single row** containing a **single numeric column** (integers, floats).
-The query can be as simple or as complex as you'd like, and can use any SQL features supported by your Data Warehouse. This requires that the configured user account has read access to the asset. Make sure to use the fully qualified name of the Table in your query.
+**쿼리**: 테이블을 평가하는 데 사용될 SQL 쿼리입니다. 쿼리는 **단일 행**에 **단일 숫자형 컬럼**(정수, 부동소수점)을 포함하는 결과를 반환해야 합니다.
+쿼리는 원하는 만큼 단순하거나 복잡하게 작성할 수 있으며 데이터 웨어하우스에서 지원하는 모든 SQL 기능을 사용할 수 있습니다. 이를 위해 구성된 사용자 계정에 자산에 대한 읽기 액세스 권한이 있어야 합니다. 쿼리에서 테이블의 완전히 정규화된 이름을 사용해야 합니다.
 
-Use the "Try it out" button to test your query and ensure that it returns a single row with a single column. The query will be run against the Table in the context of the configured user account, so ensure that the user has read access to the Table.
+"Try it out" 버튼을 사용하여 쿼리를 테스트하고 단일 컬럼이 있는 단일 행을 반환하는지 확인하세요. 쿼리는 구성된 사용자 계정 컨텍스트에서 테이블에 대해 실행되므로 사용자에게 테이블에 대한 읽기 액세스 권한이 있는지 확인하세요.
 
-#### 3. Condition Type
+#### 3. 조건 유형
 
-The **Condition Type**: This defines the conditions under which the Assertion will **fail**. The list of supported operations is:
+**조건 유형**: Assertion이 **실패**하는 조건을 정의합니다. 지원되는 작업 목록:
 
-- **Is Equal To**: The assertion will fail if the query result is equal to the configured value
-- **Is Not Equal To**: The assertion will fail if the query result is not equal to the configured value
-- **Is Greater Than**: The assertion will fail if the query result is greater than the configured value
-- **Is Less Than**: The assertion will fail if the query result is less than the configured value
-- **Is Outside a Range**: The assertion will fail if the query result is outside the configured range
-- **Grows More Than**: The assertion will fail if the query result grows more than the configured range. This can be either a percentage (**Percentage**) or a number (**Value**).
-- **Grows Less Than**: The assertion will fail if the query result grows less than the configured percentage. This can be either a percentage (**Percentage**) or a number (**Value**).
-- **Growth is outside a range**: The assertion will fail if the query result growth is outside the configured range. This can be either a percentage (**Percentage**) or a number (**Value**).
+- **Is Equal To**: 쿼리 결과가 구성된 값과 같으면 assertion이 실패합니다
+- **Is Not Equal To**: 쿼리 결과가 구성된 값과 다르면 assertion이 실패합니다
+- **Is Greater Than**: 쿼리 결과가 구성된 값보다 크면 assertion이 실패합니다
+- **Is Less Than**: 쿼리 결과가 구성된 값보다 작으면 assertion이 실패합니다
+- **Is Outside a Range**: 쿼리 결과가 구성된 범위를 벗어나면 assertion이 실패합니다
+- **Grows More Than**: 쿼리 결과가 구성된 범위보다 많이 증가하면 assertion이 실패합니다. 비율(**Percentage**) 또는 값(**Value**) 중 하나를 사용할 수 있습니다.
+- **Grows Less Than**: 쿼리 결과가 구성된 비율보다 적게 증가하면 assertion이 실패합니다. 비율(**Percentage**) 또는 값(**Value**) 중 하나를 사용할 수 있습니다.
+- **Growth is outside a range**: 쿼리 결과 성장이 구성된 범위를 벗어나면 assertion이 실패합니다. 비율(**Percentage**) 또는 값(**Value**) 중 하나를 사용할 수 있습니다.
 
-Custom SQL Assertions also have an off switch: they can be started or stopped at any time with the click of button.
+Custom SQL Assertions에는 끄기 스위치도 있습니다: 버튼 클릭 한 번으로 언제든지 시작하거나 중지할 수 있습니다.
 
-## Creating a Custom SQL Assertion
+## Custom SQL Assertion 생성
 
-### Prerequisites
+### 사전 요구 사항
 
-1. **Permissions**: To create or delete Custom SQL Assertions for a specific entity on DataHub, you'll need to be granted the
-   `Edit Assertions`, `Edit Monitors`, **and the additional `Edit SQL Assertion Monitors`** privileges for the entity. This will be granted to Entity owners as part of the `Asset Owners - Metadata Policy`
-   by default.
+1. **권한**: DataHub에서 특정 entity에 대한 Custom SQL Assertions를 생성하거나 삭제하려면 해당 entity에 대해 `Edit Assertions`, `Edit Monitors`, **그리고 추가적으로 `Edit SQL Assertion Monitors`** 권한이 부여되어야 합니다. 이 권한은 기본적으로 `Asset Owners - Metadata Policy`의 일환으로 Entity 소유자에게 부여됩니다.
 
-2. **Data Platform Connection**: In order to create a Custom SQL Assertion, you'll need to have an **Ingestion Source** configured to your
-   Data Platform: Snowflake, BigQuery, Redshift, or Databricks under the **Integrations** tab.
+2. **데이터 플랫폼 연결**: Custom SQL Assertion을 생성하려면 **Integrations** 탭에서 데이터 플랫폼(Snowflake, BigQuery, Redshift 또는 Databricks)에 대한 **수집 소스**가 구성되어 있어야 합니다.
 
-Once these are in place, you're ready to create your Custom SQL Assertions!
+이러한 사전 조건이 갖춰지면 Custom SQL Assertions를 생성할 준비가 된 것입니다!
 
-### Steps
+### 단계
 
-1. Navigate to the Table you want to monitor
-2. Click the **Quality** tab
+1. 모니터링할 테이블로 이동합니다
+2. **Quality** 탭을 클릭합니다
 
 <p align="left">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/freshness/profile-validation-tab.png"/>
 </p>
 
-3. Click **+ Create Assertion**
+3. **+ Create Assertion**을 클릭합니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/custom/assertion-builder-custom-choose-type.png"/>
 </p>
 
-4. Choose **Custom**
+4. **Custom**을 선택합니다
 
-5. Configure the evaluation **schedule**. This is the frequency at which the assertion will be evaluated to produce a pass or fail result, and the times
-   when the query will be executed.
+5. 평가 **스케줄**을 구성합니다. 이는 assertion이 통과 또는 실패 결과를 생성하기 위해 평가되는 빈도이며 쿼리가 실행되는 시간입니다.
 
-6. Provide a SQL **query** that will be used to evaluate the Table. The query should return a single row with a single column. Currently only numeric values are supported (integer and floats). The query can be as simple or as complex as you'd like, and can use any SQL features supported by your Data Warehouse. Make sure to use the fully qualified name of the Table in your query.
+6. 테이블을 평가하는 데 사용될 SQL **쿼리**를 제공합니다. 쿼리는 단일 컬럼이 있는 단일 행을 반환해야 합니다. 현재 숫자 값만 지원됩니다(정수 및 부동소수점). 쿼리는 원하는 만큼 단순하거나 복잡하게 작성할 수 있으며 데이터 웨어하우스에서 지원하는 모든 SQL 기능을 사용할 수 있습니다. 쿼리에서 테이블의 완전히 정규화된 이름을 사용해야 합니다.
 
 <p align="left">
   <img width="50%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/custom/assertion-builder-custom-query-editor.png"/>
 </p>
 
-7. Configure the evaluation **condition type**. This determines the cases in which the new assertion will fail when it is evaluated.
+7. 평가 **조건 유형**을 구성합니다. 이는 새로운 assertion이 평가될 때 실패하는 경우를 결정합니다.
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/custom/assertion-builder-custom-condition-type.png"/>
 </p>
 
-8. Configure actions that should be taken when the Custom SQL Assertion passes or fails
+8. Custom SQL Assertion이 통과하거나 실패할 때 취해야 할 작업을 구성합니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/assertion-builder-actions.png"/>
 </p>
 
-- **Raise incident**: Automatically raise a new DataHub Incident for the Table whenever the Custom SQL Assertion is failing. This
-  may indicate that the Table is unfit for consumption. Configure Slack Notifications under **Settings** to be notified when
-  an incident is created due to an Assertion failure.
+- **Raise incident**: Custom SQL Assertion이 실패할 때마다 해당 테이블에 대한 새 DataHub 인시던트를 자동으로 발생시킵니다. 이는 테이블이 사용하기에 부적합함을 나타낼 수 있습니다. **Settings**에서 Slack 알림을 구성하여 Assertion 실패로 인해 인시던트가 생성될 때 알림을 받으세요.
 
-- **Resolve incident**: Automatically resolved any incidents that were raised due to failures in this Custom SQL Assertion. Note that
-  any other incidents will not be impacted.
+- **Resolve incident**: 이 Custom SQL Assertion의 실패로 인해 발생한 인시던트를 자동으로 해결합니다. 다른 인시던트에는 영향을 미치지 않습니다.
 
-9. (Optional) Use the **Try it out** button to test your query and ensure that it returns a single row with a single column, and passes the configured condition type.
+9. (선택 사항) **Try it out** 버튼을 사용하여 쿼리를 테스트하고 단일 컬럼이 있는 단일 행을 반환하며 구성된 조건 유형을 통과하는지 확인합니다.
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/custom/assertion-builder-custom-try-it-out.png"/>
 </p>
 
-10. Click **Next** and then add a description.
+10. **Next**를 클릭한 다음 설명을 추가합니다.
 
-11. Click **Save**
+11. **Save**를 클릭합니다.
 
-And that's it! DataHub will now begin to monitor your Custom SQL Assertion for the table.
+이제 DataHub가 테이블의 Custom SQL Assertion 모니터링을 시작합니다.
 
-Once your assertion has run, you will begin to see Success or Failure status for the Table
+assertion이 실행되면 테이블의 성공 또는 실패 상태를 확인할 수 있습니다
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/custom/profile-passing-custom-assertions-expanded.png"/>
 </p>
 
-## Stopping a Custom SQL Assertion
+## Custom SQL Assertion 중지
 
-In order to temporarily stop the evaluation of the assertion:
+assertion 평가를 일시적으로 중지하려면:
 
-1. Navigate to the **Quality** tab of the Table with the assertion
-2. Click **Custom SQL** to open the SQL Assertion assertions
-3. Click the "Stop" button for the assertion you wish to pause.
+1. assertion이 있는 테이블의 **Quality** 탭으로 이동합니다
+2. **Custom SQL**을 클릭하여 SQL Assertion assertions를 엽니다
+3. 일시 중지하려는 assertion의 "Stop" 버튼을 클릭합니다.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/stop-assertion.png"/>
 </p>
 
-To resume the assertion, simply click **Start**.
+assertion을 재개하려면 **Start**를 클릭하세요.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/start-assertion.png"/>
 </p>
 
-## Anomaly Detection with Smart Assertions ⚡
+## Smart Assertions를 활용한 이상 탐지 ⚡
 
-As part of the **DataHub Cloud Observe** module, DataHub Cloud also provides [Smart Assertions](./smart-assertions.md) out of the box. These are
-dynamic, AI-powered Custom SQL Assertions that you can use to monitor a metric computed by your SQL query, without
-requiring any manual setup.
+**DataHub Cloud Observe** 모듈의 일환으로 DataHub Cloud는 기본 제공 [Smart Assertions](./smart-assertions.md)도 제공합니다. 이는 수동 설정 없이 SQL 쿼리로 계산된 지표를 모니터링하는 데 사용할 수 있는 동적 AI 기반 Custom SQL Assertions입니다.
 
-You can create smart assertions by simply selecting the `Detect with AI` option in the UI:
+UI에서 `Detect with AI` 옵션을 선택하여 smart assertions를 생성할 수 있습니다:
 
 <p align="left">
   <img width="90%"  src="/imgs/observe/custom/custom-sql-smart-assertion.png"/>
 </p>
 
-## Creating Custom SQL Assertions via API
+## API를 통한 Custom SQL Assertions 생성
 
-Under the hood, DataHub Cloud implements Custom SQL Assertion Monitoring using two concepts:
+내부적으로 DataHub Cloud는 두 가지 개념을 사용하여 Custom SQL Assertion 모니터링을 구현합니다:
 
-- **Assertion**: The specific expectation for the custom assertion, e.g. "The table was changed in the past 7 hours"
-  or "The table is changed on a schedule of every day by 8am". This is the "what".
+- **Assertion**: 커스텀 assertion에 대한 특정 기대치(예: "테이블이 지난 7시간 이내에 변경됨" 또는 "테이블이 매일 오전 8시까지 변경되는 일정으로 변경됨"). 이것은 "무엇"입니다.
 
-- **Monitor**: The process responsible for evaluating the Assertion on a given evaluation schedule and using specific
-  mechanisms. This is the "how".
+- **Monitor**: 지정된 평가 스케줄에 따라 특정 메커니즘을 사용하여 Assertion을 평가하는 프로세스. 이것은 "어떻게"입니다.
 
-Note that to create or delete Assertions and Monitors for a specific entity on DataHub, you'll need the
-`Edit Assertions` and `Edit Monitors` privileges for it.
+DataHub에서 특정 entity에 대한 Assertions 및 Monitors를 생성하거나 삭제하려면 해당 entity에 대한 `Edit Assertions` 및 `Edit Monitors` 권한이 필요합니다.
 
 #### GraphQL
 
-In order to create or update a Custom SQL Assertion, you can use the `upsertDatasetSqlAssertionMonitor` mutation.
+Custom SQL Assertion을 생성하거나 업데이트하려면 `upsertDatasetSqlAssertionMonitor` mutation을 사용하세요.
 
-##### Examples
+##### 예시
 
-To create a Custom SQL Assertion Entity that checks whether a query result is greater than 100 that runs every 8 hours:
+8시간마다 실행되며 쿼리 결과가 100보다 큰지 확인하는 Custom SQL Assertion entity를 생성하려면:
 
 ```graphql
 mutation upsertDatasetSqlAssertionMonitor {
@@ -249,7 +220,7 @@ mutation upsertDatasetSqlAssertionMonitor {
 }
 ```
 
-You can use same endpoint with assertion urn input to update an existing Custom SQL Assertion and corresponding Monitor.
+동일한 엔드포인트에 assertion urn 입력을 제공하여 기존 Custom SQL Assertion 및 해당 Monitor를 업데이트할 수 있습니다.
 
 ```graphql
 mutation upsertDatasetSqlAssertionMonitor {
@@ -274,20 +245,20 @@ mutation upsertDatasetSqlAssertionMonitor {
 }
 ```
 
-You can delete assertions along with their monitors using GraphQL mutations: `deleteAssertion` and `deleteMonitor`.
+GraphQL mutations인 `deleteAssertion` 및 `deleteMonitor`를 사용하여 assertions와 모니터를 함께 삭제할 수 있습니다.
 
-### Tips
+### 팁
 
 :::info
-**Authorization**
+**인증**
 
-Remember to always provide a DataHub Personal Access Token when calling the GraphQL API. To do so, just add the 'Authorization' header as follows:
+GraphQL API를 호출할 때는 항상 DataHub Personal Access Token을 제공해야 합니다. 다음과 같이 'Authorization' 헤더를 추가하세요:
 
 ```
 Authorization: Bearer <personal-access-token>
 ```
 
-**Exploring GraphQL API**
+**GraphQL API 탐색**
 
-Also, remember that you can play with an interactive version of the DataHub Cloud GraphQL API at `https://your-account-id.acryl.io/api/graphiql`
+`https://your-account-id.acryl.io/api/graphiql`에서 DataHub Cloud GraphQL API의 인터랙티브 버전을 사용해 볼 수 있습니다.
 :::

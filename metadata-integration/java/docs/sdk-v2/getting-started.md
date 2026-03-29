@@ -1,20 +1,20 @@
-# Getting Started with Java SDK V2
+# Java SDK V2 시작하기
 
-This guide walks you through setting up and using the DataHub Java SDK V2 to interact with DataHub's metadata platform.
+이 가이드는 DataHub Java SDK V2를 설정하고 사용하여 DataHub의 메타데이터 플랫폼과 상호작용하는 방법을 안내합니다.
 
-## Prerequisites
+## 사전 요구사항
 
-- Java 8 or higher
-- Access to a DataHub instance (Cloud or self-hosted)
-- (Optional) A DataHub personal access token for authentication
+- Java 8 이상
+- DataHub 인스턴스에 대한 접근 권한 (Cloud 또는 자체 호스팅)
+- (선택 사항) 인증을 위한 DataHub 개인 액세스 토큰
 
-## Installation
+## 설치
 
-Add the DataHub client library to your project's build configuration.
+프로젝트의 빌드 구성에 DataHub 클라이언트 라이브러리를 추가하세요.
 
 ### Gradle
 
-Add to your `build.gradle`:
+`build.gradle`에 추가:
 
 ```gradle
 dependencies {
@@ -24,7 +24,7 @@ dependencies {
 
 ### Maven
 
-Add to your `pom.xml`:
+`pom.xml`에 추가:
 
 ```xml
 <dependency>
@@ -34,11 +34,11 @@ Add to your `pom.xml`:
 </dependency>
 ```
 
-> **Tip:** Find the latest version on [Maven Central](https://mvnrepository.com/artifact/io.acryl/datahub-client).
+> **팁:** [Maven Central](https://mvnrepository.com/artifact/io.acryl/datahub-client)에서 최신 버전을 확인하세요.
 
-## Creating a Client
+## 클라이언트 생성
 
-The `DataHubClientV2` is your entry point to all SDK operations. Create one by specifying your DataHub server URL:
+`DataHubClientV2`는 모든 SDK 작업의 진입점입니다. DataHub 서버 URL을 지정하여 생성하세요:
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -48,9 +48,9 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### With Authentication
+### 인증 포함
 
-For DataHub Cloud or secured instances, provide a personal access token:
+DataHub Cloud 또는 보안이 적용된 인스턴스의 경우 개인 액세스 토큰을 제공하세요:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -59,11 +59,11 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-> **How to get a token:** In DataHub UI, go to Settings → Access Tokens → Generate Personal Access Token
+> **토큰 발급 방법:** DataHub UI에서 설정 → 액세스 토큰 → 개인 액세스 토큰 생성으로 이동하세요
 
-### Testing the Connection
+### 연결 테스트
 
-Verify your client can reach the DataHub server:
+클라이언트가 DataHub 서버에 접근할 수 있는지 확인하세요:
 
 ```java
 try {
@@ -78,11 +78,11 @@ try {
 }
 ```
 
-## Creating Your First Entity
+## 첫 번째 Entity 생성
 
-Let's create a dataset with some metadata.
+메타데이터와 함께 dataset을 생성해 봅시다.
 
-### Step 1: Import Required Classes
+### 1단계: 필요한 클래스 임포트
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -90,9 +90,9 @@ import datahub.client.v2.entity.Dataset;
 import com.linkedin.common.OwnershipType;
 ```
 
-### Step 2: Build a Dataset
+### 2단계: Dataset 빌드
 
-Use the fluent builder to construct a dataset:
+플루언트 빌더를 사용하여 dataset을 구성하세요:
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -104,17 +104,17 @@ Dataset dataset = Dataset.builder()
     .build();
 ```
 
-**Breaking down the builder:**
+**빌더 파라미터 설명:**
 
-- `platform` - Data platform identifier (e.g., "snowflake", "bigquery", "postgres")
-- `name` - Fully qualified dataset name (database.schema.table or similar)
-- `env` - Environment (PROD, DEV, STAGING, etc.)
-- `description` - Human-readable description of the dataset
-- `displayName` - Friendly name shown in DataHub UI
+- `platform` - 데이터 플랫폼 식별자 (예: "snowflake", "bigquery", "postgres")
+- `name` - 완전 정규화된 dataset 이름 (database.schema.table 또는 유사한 형식)
+- `env` - 환경 (PROD, DEV, STAGING 등)
+- `description` - dataset에 대한 사람이 읽을 수 있는 설명
+- `displayName` - DataHub UI에 표시되는 친숙한 이름
 
-### Step 3: Add Metadata
+### 3단계: 메타데이터 추가
 
-Enrich the dataset with tags, owners, and custom properties:
+태그, 소유자 및 커스텀 속성으로 dataset을 풍부하게 만드세요:
 
 ```java
 dataset.addTag("pii")
@@ -124,9 +124,9 @@ dataset.addTag("pii")
        .addCustomProperty("team", "data-engineering");
 ```
 
-### Step 4: Upsert to DataHub
+### 4단계: DataHub에 Upsert
 
-Send the dataset to DataHub:
+dataset을 DataHub에 전송하세요:
 
 ```java
 try {
@@ -137,9 +137,9 @@ try {
 }
 ```
 
-## Complete Example
+## 완전한 예제
 
-Here's a complete, runnable example:
+다음은 완전하고 실행 가능한 예제입니다:
 
 ```java
 import datahub.client.v2.DataHubClientV2;
@@ -195,11 +195,11 @@ public class DataHubQuickStart {
 }
 ```
 
-For more complete examples, see the [Dataset Entity Guide](./dataset-entity.md#examples).
+더 완전한 예제는 [Dataset Entity 가이드](./dataset-entity.md#examples)를 참조하세요.
 
-## Reading Entities
+## Entities 읽기
 
-Load an existing entity from DataHub:
+DataHub에서 기존 entity를 로드하세요:
 
 ```java
 import com.linkedin.common.urn.DatasetUrn;
@@ -221,11 +221,11 @@ try {
 }
 ```
 
-> **Important:** Entities fetched from the server are **read-only by default**. Additional aspects are lazy-loaded on demand.
+> **중요:** 서버에서 가져온 entity는 **기본적으로 읽기 전용**입니다. 추가 aspect는 필요에 따라 지연 로딩됩니다.
 
-### Understanding Read-Only Entities
+### 읽기 전용 Entity 이해하기
 
-When you fetch an entity from DataHub, it's immutable to prevent accidental modifications:
+DataHub에서 entity를 가져오면 우발적인 수정을 방지하기 위해 불변 상태가 됩니다:
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -238,11 +238,11 @@ List<String> tags = dataset.getTags();
 // dataset.addTag("pii");  // ERROR: Cannot mutate read-only entity!
 ```
 
-**Why?** Immutability-by-default makes mutation intent explicit, prevents accidental changes when passing entities between functions, and enables safe entity sharing.
+**왜 그런가요?** 기본적인 불변성은 변경 의도를 명시적으로 만들고, 함수 간에 entity를 전달할 때 우발적인 변경을 방지하며, entity 공유를 안전하게 활성화합니다.
 
-## Updating Entities with Patches
+## Patches로 Entities 업데이트
 
-To modify a fetched entity, create a mutable copy first:
+가져온 entity를 수정하려면 먼저 변경 가능한 복사본을 만드세요:
 
 ```java
 // 1. Load existing dataset (read-only)
@@ -259,13 +259,13 @@ mutable.addTag("gdpr")
 client.entities().update(mutable);
 ```
 
-The `update()` method sends only the changes (patches) to DataHub, not the full entity. This is more efficient and safer for concurrent updates.
+`update()` 메서드는 전체 entity가 아닌 변경 사항(patches)만 DataHub에 전송합니다. 이는 더 효율적이며 동시 업데이트에 더 안전합니다.
 
-### Entity Lifecycle
+### Entity 수명 주기
 
-Understanding when entities are mutable vs read-only:
+entity가 변경 가능한 상태와 읽기 전용 상태인 경우 이해하기:
 
-**Builder-created entities** - Mutable from creation:
+**빌더로 생성된 entity** - 생성 시 변경 가능:
 
 ```java
 Dataset dataset = Dataset.builder()
@@ -277,7 +277,7 @@ dataset.isMutable();  // true - can mutate immediately
 dataset.addTag("test");  // Works without .mutable()
 ```
 
-**Server-fetched entities** - Read-only by default:
+**서버에서 가져온 entity** - 기본적으로 읽기 전용:
 
 ```java
 Dataset dataset = client.entities().get(urn);
@@ -289,17 +289,17 @@ Dataset mutable = dataset.mutable();  // Get writable copy
 mutable.addTag("test");  // Now works
 ```
 
-See the [Patch Operations Guide](./patch-operations.md) for details.
+자세한 내용은 [Patch 작업 가이드](./patch-operations.md)를 참조하세요.
 
 ## Upserting vs Updating
 
-SDK V2 provides two methods for persisting entities:
+SDK V2는 entity를 지속하기 위한 두 가지 메서드를 제공합니다:
 
 ### `upsert(entity)`
 
-- **Use for:** New entities or full replacements
-- **Sends:** All aspects from the entity
-- **Behavior:** Creates if doesn't exist, replaces if exists
+- **용도:** 새 entity 또는 전체 교체
+- **전송:** entity의 모든 aspect
+- **동작:** 존재하지 않으면 생성, 존재하면 교체
 
 ```java
 client.entities().upsert(dataset);
@@ -307,17 +307,17 @@ client.entities().upsert(dataset);
 
 ### `update(entity)`
 
-- **Use for:** Incremental changes to existing entities
-- **Sends:** Only pending patches accumulated since the entity was loaded or created
-- **Behavior:** Applies surgical updates to specific fields
+- **용도:** 기존 entity에 대한 점진적 변경
+- **전송:** entity가 로드되거나 생성된 이후 축적된 대기 중인 patches만
+- **동작:** 특정 필드에 대한 수술적 업데이트 적용
 
 ```java
 client.entities().update(dataset);
 ```
 
-## Working with Other Entities
+## 다른 Entities 작업
 
-SDK V2 supports multiple entity types beyond datasets:
+SDK V2는 dataset 외에도 여러 entity 타입을 지원합니다:
 
 ### Charts
 
@@ -334,15 +334,15 @@ Chart chart = Chart.builder()
 client.entities().upsert(chart);
 ```
 
-See the [Chart Entity Guide](./chart-entity.md) for details.
+자세한 내용은 [Chart Entity 가이드](./chart-entity.md)를 참조하세요.
 
 ### Dashboards
 
-Coming soon! Dashboard entity support is planned for a future release.
+출시 예정! Dashboard entity 지원은 향후 릴리스에서 계획되어 있습니다.
 
-## Configuration Options
+## 구성 옵션
 
-Customize the client for your environment:
+환경에 맞게 클라이언트를 커스터마이징하세요:
 
 ```java
 DataHubClientV2 client = DataHubClientV2.builder()
@@ -362,12 +362,12 @@ DataHubClientV2 client = DataHubClientV2.builder()
     .build();
 ```
 
-### Operation Modes
+### 작업 모드
 
-SDK V2 supports two operation modes:
+SDK V2는 두 가지 작업 모드를 지원합니다:
 
-- **SDK Mode** (default): For interactive applications, provides patch-based updates and lazy loading
-- **INGESTION Mode**: For ETL pipelines, optimizes for high-throughput batch operations
+- **SDK 모드** (기본값): 대화형 애플리케이션용, patch 기반 업데이트 및 지연 로딩 제공
+- **INGESTION 모드**: ETL 파이프라인용, 고처리량 배치 작업에 최적화
 
 ```java
 // SDK mode (default) - interactive use
@@ -383,11 +383,11 @@ DataHubClientV2 ingestionClient = DataHubClientV2.builder()
     .build();
 ```
 
-See [DataHubClientV2 Configuration](./client.md) for all available options.
+모든 사용 가능한 옵션은 [DataHubClientV2 구성](./client.md)을 참조하세요.
 
-## Error Handling
+## 오류 처리
 
-Handle errors gracefully:
+오류를 우아하게 처리하세요:
 
 ```java
 try {
@@ -404,9 +404,9 @@ try {
 }
 ```
 
-## Resource Management
+## 리소스 관리
 
-Always close the client when done to release resources:
+리소스를 해제하기 위해 완료되면 항상 클라이언트를 닫으세요:
 
 ```java
 try (DataHubClientV2 client = DataHubClientV2.builder()
@@ -419,7 +419,7 @@ try (DataHubClientV2 client = DataHubClientV2.builder()
 } // Client automatically closed
 ```
 
-Or close explicitly:
+또는 명시적으로 닫으세요:
 
 ```java
 try {
@@ -429,19 +429,19 @@ try {
 }
 ```
 
-## Next Steps
+## 다음 단계
 
-Now that you've created your first entity, explore more advanced topics:
+첫 번째 entity를 생성했으니 더 고급 주제를 탐색해 보세요:
 
-- **[Design Principles](./design-principles.md)** - Understand the architecture behind SDK V2
-- **[Dataset Entity Guide](./dataset-entity.md)** - Comprehensive dataset operations
-- **[Chart Entity Guide](./chart-entity.md)** - Working with chart entities
-- **[Patch Operations](./patch-operations.md)** - Deep dive into incremental updates
-- **[Client Configuration](./client.md)** - Advanced client setup and options
+- **[설계 원칙](./design-principles.md)** - SDK V2의 아키텍처 이해
+- **[Dataset Entity 가이드](./dataset-entity.md)** - 포괄적인 dataset 작업
+- **[Chart Entity 가이드](./chart-entity.md)** - chart entity 작업
+- **[Patch 작업](./patch-operations.md)** - 점진적 업데이트에 대한 심층 분석
+- **[클라이언트 구성](./client.md)** - 고급 클라이언트 설정 및 옵션
 
-Or check out complete examples in the entity guides:
+또는 entity 가이드의 완전한 예제를 확인하세요:
 
-- [Dataset Examples](./dataset-entity.md#examples)
-- [Chart Examples](./chart-entity.md#examples)
-- [Dashboard Examples](./dashboard-entity.md#examples)
-- [DataJob Examples](./datajob-entity.md#examples)
+- [Dataset 예제](./dataset-entity.md#examples)
+- [Chart 예제](./chart-entity.md#examples)
+- [Dashboard 예제](./dashboard-entity.md#examples)
+- [DataJob 예제](./datajob-entity.md#examples)

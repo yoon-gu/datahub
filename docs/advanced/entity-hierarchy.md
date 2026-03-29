@@ -1,3 +1,3 @@
-# Entity Hierarchy
+# Entity 계층 구조
 
-WIP
+작성 중 (WIP)

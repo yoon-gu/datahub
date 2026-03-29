@@ -1,3 +1,3 @@
-# Derived Aspects
+# 파생 Aspects
 
-WIP
+작성 중 (WIP)

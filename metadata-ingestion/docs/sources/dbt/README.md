@@ -1,26 +1,26 @@
-## Overview
+## 개요
 
-dbt is a data platform used to store and query analytical or operational data. Learn more in the [official dbt documentation](https://www.getdbt.com/).
+dbt는 분석 또는 운영 데이터를 저장하고 쿼리하는 데 사용되는 데이터 플랫폼입니다. 자세한 내용은 [공식 dbt 문서](https://www.getdbt.com/)를 참조하세요.
 
-The DataHub integration for dbt covers core metadata entities such as datasets/tables/views, schema fields, and containers. Depending on module capabilities, it can also capture features such as lineage, usage, profiling, ownership, tags, and stateful deletion detection.
+DataHub의 dbt 통합은 dataset/테이블/뷰, schema 필드, 컨테이너와 같은 핵심 메타데이터 entity를 다룹니다. 모듈 기능에 따라 lineage, 사용량, 프로파일링, 소유권, 태그 및 stateful 삭제 감지와 같은 기능도 캡처할 수 있습니다.
 
-:::info Run both dbt and data warehouse ingestion for lineage
+:::info lineage를 위해 dbt와 데이터 웨어하우스 ingestion 모두 실행하기
 
-1. You must **run ingestion for both dbt and your data warehouse** (target platform). They can be run in any order.
-2. It generates column lineage between the `dbt` nodes (e.g. when a model/snapshot depends on a dbt source or ephemeral model) as well as lineage between the `dbt` nodes and the underlying target platform nodes (e.g. BigQuery Table -> dbt source, dbt model -> BigQuery table/view).
-3. It automatically generates "sibling" relationships between the dbt nodes and the target / data warehouse nodes. These nodes will show up in the UI with both platform logos.
-4. We also support automated actions (like add a tag, term or owner) based on properties defined in dbt meta.
+1. **dbt와 데이터 웨어하우스(대상 플랫폼) 모두에 대해 ingestion을 실행**해야 합니다. 어떤 순서로든 실행할 수 있습니다.
+2. `dbt` 노드 간(예: 모델/스냅샷이 dbt source 또는 임시 모델에 의존할 때) 열 lineage뿐만 아니라 `dbt` 노드와 기본 대상 플랫폼 노드 간의 lineage(예: BigQuery 테이블 -> dbt source, dbt 모델 -> BigQuery 테이블/뷰)도 생성합니다.
+3. dbt 노드와 대상/데이터 웨어하우스 노드 간의 "sibling" 관계를 자동으로 생성합니다. 이러한 노드는 두 플랫폼 로고와 함께 UI에 표시됩니다.
+4. dbt meta에 정의된 속성을 기반으로 자동화된 액션(예: 태그, 용어 또는 소유자 추가)도 지원합니다.
    :::
 
 ## Concept Mapping
 
-| Source Concept | DataHub Concept                                                        | Notes                   |
+| Source 개념 | DataHub 개념                                                        | 참고                   |
 | -------------- | ---------------------------------------------------------------------- | ----------------------- |
-| Source         | [Dataset](../../metamodel/entities/dataset.md)                         | Subtype `Source`        |
-| Seed           | [Dataset](../../metamodel/entities/dataset.md)                         | Subtype `Seed`          |
-| Model          | [Dataset](../../metamodel/entities/dataset.md)                         | Subtype `Model`         |
-| Snapshot       | [Dataset](../../metamodel/entities/dataset.md)                         | Subtype `Snapshot`      |
-| Semantic View  | [Dataset](../../metamodel/entities/dataset.md)                         | Subtype `Semantic View` |
+| Source         | [Dataset](../../metamodel/entities/dataset.md)                         | 서브타입 `Source`        |
+| Seed           | [Dataset](../../metamodel/entities/dataset.md)                         | 서브타입 `Seed`          |
+| Model          | [Dataset](../../metamodel/entities/dataset.md)                         | 서브타입 `Model`         |
+| Snapshot       | [Dataset](../../metamodel/entities/dataset.md)                         | 서브타입 `Snapshot`      |
+| Semantic View  | [Dataset](../../metamodel/entities/dataset.md)                         | 서브타입 `Semantic View` |
 | Test           | [Assertion](../../metamodel/entities/assertion.md)                     |                         |
 | Test Result    | [Assertion Run Result](../../metamodel/entities/assertion.md)          |                         |
 | Model Runs     | [DataProcessInstance](../../metamodel/entities/dataProcessInstance.md) |                         |

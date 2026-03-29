@@ -1,41 +1,41 @@
 ---
-title: "Serving Tier"
+title: "서빙 계층"
 ---
 
-# DataHub Serving Architecture
+# DataHub 서빙 아키텍처
 
-The figure below shows the high-level system diagram for DataHub's Serving Tier.
+아래 그림은 DataHub 서빙 계층의 고수준 시스템 다이어그램을 보여줍니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/datahub-serving.png"/>
 </p>
 
-The primary component is called [the Metadata Service](../../metadata-service) and exposes a REST API and a GraphQL API for performing CRUD operations on metadata. The service also exposes search and graph query API-s to support secondary-index style queries, full-text search queries as well as relationship queries like lineage. In addition, the [datahub-frontend](../../datahub-frontend) service expose a GraphQL API on top of the metadata graph.
+주요 컴포넌트는 [메타데이터 서비스](../../metadata-service)로, 메타데이터에 대한 CRUD 작업을 수행하기 위한 REST API와 GraphQL API를 노출합니다. 이 서비스는 보조 인덱스 스타일 쿼리, 전문 검색 쿼리, 그리고 lineage와 같은 relationship 쿼리를 지원하기 위한 검색 및 그래프 쿼리 API도 노출합니다. 또한 [datahub-frontend](../../datahub-frontend) 서비스는 메타데이터 그래프 위에 GraphQL API를 노출합니다.
 
-## DataHub Serving Tier Components
+## DataHub 서빙 계층 컴포넌트
 
-### Metadata Storage
+### 메타데이터 스토리지
 
-The DataHub Metadata Service persists metadata in a document store (an RDBMS like MySQL, Postgres, or Cassandra, etc.).
+DataHub 메타데이터 서비스는 메타데이터를 문서 저장소(MySQL, Postgres, Cassandra 등 RDBMS)에 영구 저장합니다.
 
-### Metadata Change Log Stream (MCL)
+### Metadata Change Log 스트림 (MCL)
 
-The DataHub Service Tier also emits a commit event [Metadata Change Log] when a metadata change has been successfully committed to persistent storage. This event is sent over Kafka.
+DataHub 서비스 계층은 메타데이터 변경 사항이 영구 스토리지에 성공적으로 커밋되면 커밋 이벤트인 [Metadata Change Log]를 발행합니다. 이 이벤트는 Kafka를 통해 전송됩니다.
 
-The MCL stream is a public API and can be subscribed to by external systems (for example, the Actions Framework) providing an extremely powerful way to react in real-time to changes happening in metadata. For example, you could build an access control enforcer that reacts to change in metadata (e.g. a previously world-readable dataset now has a pii field) to immediately lock down the dataset in question.
-Note that not all MCP-s will result in an MCL, because the DataHub serving tier will ignore any duplicate changes to metadata.
+MCL 스트림은 공개 API이며 외부 시스템(예: Actions Framework)이 구독할 수 있어, 메타데이터에서 발생하는 변경 사항에 실시간으로 반응하는 매우 강력한 방법을 제공합니다. 예를 들어, 메타데이터 변경(예: 이전에 모든 사용자가 읽을 수 있었던 dataset에 PII 필드가 추가됨)에 반응하여 해당 dataset을 즉시 잠그는 액세스 제어 시행자를 구축할 수 있습니다.
+모든 MCP가 MCL로 이어지는 것은 아닙니다. DataHub 서빙 계층은 메타데이터에 대한 중복 변경을 무시하기 때문입니다.
 
-### Metadata Index Applier (mae-consumer-job)
+### 메타데이터 인덱스 적용기 (mae-consumer-job)
 
-[Metadata Change Log]s are consumed by another Spring job, [mae-consumer-job], which applies the changes to the [graph] and [search index] accordingly.
-The job is entity-agnostic and will execute corresponding graph & search index builders, which will be invoked by the job when a specific metadata aspect is changed.
-The builder should instruct the job how to update the graph and search index based on the metadata change.
+[Metadata Change Log]는 또 다른 Spring 작업인 [mae-consumer-job]에 의해 소비되며, 이 작업은 변경 사항을 [그래프][graph] 및 [검색 인덱스][search index]에 적절히 적용합니다.
+이 작업은 entity에 독립적이며, 특정 메타데이터 aspect가 변경될 때 작업에 의해 호출되는 해당 그래프 및 검색 인덱스 빌더를 실행합니다.
+빌더는 메타데이터 변경을 기반으로 그래프와 검색 인덱스를 어떻게 업데이트할지 작업에 지시해야 합니다.
 
-To ensure that metadata changes are processed in the correct chronological order, MCLs are keyed by the entity [URN] — meaning all MAEs for a particular entity will be processed sequentially by a single thread.
+메타데이터 변경 사항이 올바른 시간 순서로 처리되도록 보장하기 위해, MCL은 entity [URN][URN]을 키로 사용합니다. 즉, 특정 entity에 대한 모든 MAE는 단일 스레드에 의해 순차적으로 처리됩니다.
 
-### Metadata Query Serving
+### 메타데이터 쿼리 서빙
 
-Primary-key based reads (e.g. getting schema metadata for a dataset based on the `dataset-urn`) on metadata are routed to the document store. Secondary index based reads on metadata are routed to the search index (or alternately can use the strongly consistent secondary index support described [here]()). Full-text and advanced search queries are routed to the search index. Complex graph queries such as lineage are routed to the graph index.
+메타데이터에 대한 기본 키 기반 읽기(예: `dataset-urn`을 기반으로 dataset의 schema 메타데이터 가져오기)는 문서 저장소로 라우팅됩니다. 메타데이터에 대한 보조 인덱스 기반 읽기는 검색 인덱스로 라우팅됩니다(또는 [여기]()에 설명된 강력한 일관성 보조 인덱스 지원을 사용할 수도 있습니다). 전문 검색 및 고급 검색 쿼리는 검색 인덱스로 라우팅됩니다. lineage와 같은 복잡한 그래프 쿼리는 그래프 인덱스로 라우팅됩니다.
 
 [RecordTemplate]: https://github.com/linkedin/rest.li/blob/master/data/src/main/java/com/linkedin/data/template/RecordTemplate.java
 [GenericRecord]: https://github.com/apache/avro/blob/master/lang/java/avro/src/main/java/org/apache/avro/generic/GenericRecord.java

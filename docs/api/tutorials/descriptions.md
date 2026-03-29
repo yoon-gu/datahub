@@ -1,35 +1,35 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Description
+# 설명(Description)
 
-## Why Would You Use Description on Dataset?
+## Dataset에 설명을 왜 사용하나요?
 
-Adding a description and related link to a dataset can provide important information about the data, such as its source, collection methods, and potential uses. This can help others understand the context of the data and how it may be relevant to their own work or research. Including a related link can also provide access to additional resources or related datasets, further enriching the information available to users.
+dataset에 설명과 관련 링크를 추가하면 데이터의 출처, 수집 방법 및 잠재적 용도와 같은 중요한 정보를 제공할 수 있습니다. 이를 통해 다른 사람들이 데이터의 맥락과 자신의 작업이나 연구에 어떻게 관련될 수 있는지 이해하는 데 도움이 됩니다. 관련 링크를 포함하면 추가 리소스나 관련 dataset에 대한 접근도 제공하여 사용자가 이용할 수 있는 정보를 더욱 풍부하게 만들 수 있습니다.
 
-### Goal Of This Guide
+### 이 가이드의 목표
 
-This guide will show you how to
+이 가이드에서는 다음을 수행하는 방법을 안내합니다.
 
-- Read dataset description: read a description of a dataset.
-- Read column description: read a description of columns of a dataset`.
-- Add dataset description: add a description and a link to dataset.
-- Add column description: add a description to a column of a dataset.
+- Dataset 설명 읽기: dataset의 설명을 읽습니다.
+- 컬럼 설명 읽기: dataset 컬럼의 설명을 읽습니다.
+- Dataset 설명 추가: dataset에 설명과 링크를 추가합니다.
+- 컬럼 설명 추가: dataset의 컬럼에 설명을 추가합니다.
 
-## Prerequisites
+## 사전 요구 사항
 
-For this tutorial, you need to deploy DataHub Quickstart and ingest sample data.
-For detailed steps, please refer to [DataHub Quickstart Guide](/docs/quickstart.md).
+이 튜토리얼을 위해서는 DataHub Quickstart를 배포하고 샘플 데이터를 수집해야 합니다.
+자세한 단계는 [DataHub Quickstart 가이드](/docs/quickstart.md)를 참고하세요.
 
 :::note
-Before adding a description, you need to ensure the targeted dataset is already present in your datahub.
-If you attempt to manipulate entities that do not exist, your operation will fail.
-In this guide, we will be using data from sample ingestion.
+설명을 추가하기 전에 대상 dataset이 이미 DataHub에 존재하는지 확인해야 합니다.
+존재하지 않는 엔티티를 조작하려고 하면 작업이 실패합니다.
+이 가이드에서는 샘플 ingestion의 데이터를 사용합니다.
 :::
 
-In this example, we will add a description to `user_name `column of a dataset `fct_users_deleted`.
+이 예시에서는 `fct_users_deleted` dataset의 `user_name` 컬럼에 설명을 추가합니다.
 
-## Read Description on Dataset
+## Dataset 설명 읽기
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -44,7 +44,7 @@ query {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음과 같은 응답이 표시되면 작업이 성공한 것입니다:
 
 ```json
 {
@@ -69,7 +69,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "query { dataset(urn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_deleted,PROD)\") { properties { description } } }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -94,7 +94,7 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-## Read Description on Columns
+## 컬럼 설명 읽기
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -112,7 +112,7 @@ query {
 }
 ```
 
-If you see the following response, the operation was successful:
+다음과 같은 응답이 표시되면 작업이 성공한 것입니다:
 
 ```json
 {
@@ -147,7 +147,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "query { dataset(urn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_deleted,PROD)\") { schemaMetadata { fields { fieldPath description } } } }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -194,7 +194,7 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-## Add Description on Dataset
+## Dataset에 설명 추가
 
 <Tabs>
 <TabItem value="graphQL" label="GraphQL">
@@ -221,7 +221,7 @@ mutation updateDataset {
 }
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -248,7 +248,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 }'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 {
@@ -271,15 +271,15 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcomes of Adding Description on Dataset
+### Dataset에 설명 추가 예상 결과
 
-You can now see the description is added to `fct_users_deleted`.
+이제 `fct_users_deleted`에 설명이 추가된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/dataset-description-added.png"/>
 </p>
 
-## Add Description on Column
+## 컬럼에 설명 추가
 
 <Tabs>
 <TabItem value="graphql" label="GraphQL" default>
@@ -297,7 +297,7 @@ mutation updateDescription {
 }
 ```
 
-Note that you can use general markdown in `description`. For example, you can do the following.
+`description`에는 일반 마크다운을 사용할 수 있습니다. 예를 들어 다음과 같이 작성할 수 있습니다.
 
 ```json
 mutation updateDescription {
@@ -315,10 +315,10 @@ mutation updateDescription {
 }
 ```
 
-`updateDescription` currently only supports Dataset Schema Fields, Containers.
-For more information about the `updateDescription` mutation, please refer to [updateLineage](https://docs.datahub.com/docs/graphql/mutations/#updateDescription).
+`updateDescription`은 현재 Dataset Schema 필드와 컨테이너만 지원합니다.
+`updateDescription` mutation에 대한 자세한 내용은 [updateLineage](https://docs.datahub.com/docs/graphql/mutations/#updateDescription)를 참고하세요.
 
-If you see the following response, the operation was successful:
+다음과 같은 응답이 표시되면 작업이 성공한 것입니다:
 
 ```json
 {
@@ -339,7 +339,7 @@ curl --location --request POST 'http://localhost:8080/api/graphql' \
 --data-raw '{ "query": "mutation updateDescription { updateDescription ( input: { description: \"Name of the user who was deleted. This description is updated via GrpahQL.\", resourceUrn: \"urn:li:dataset:(urn:li:dataPlatform:hive,fct_users_deleted,PROD)\", subResource: \"user_name\", subResourceType:DATASET_FIELD }) }", "variables":{}}'
 ```
 
-Expected Response:
+예상 응답:
 
 ```json
 { "data": { "updateDescription": true }, "extensions": {} }
@@ -355,9 +355,9 @@ Expected Response:
 </TabItem>
 </Tabs>
 
-### Expected Outcomes of Adding Description on Column
+### 컬럼에 설명 추가 예상 결과
 
-You can now see column description is added to `user_name` column of `fct_users_deleted`.
+이제 `fct_users_deleted`의 `user_name` 컬럼에 설명이 추가된 것을 확인할 수 있습니다.
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/apis/tutorials/column-description-added.png"/>

@@ -1,5 +1,5 @@
 ---
-description: This page provides an overview of working with DataHub Schema Assertions
+description: 이 페이지에서는 DataHub Schema Assertions 사용 방법에 대한 개요를 제공합니다
 ---
 
 import FeatureAvailability from '@site/src/components/FeatureAvailability';
@@ -8,85 +8,67 @@ import FeatureAvailability from '@site/src/components/FeatureAvailability';
 
 <FeatureAvailability saasOnly />
 
-> The **Schema Assertions** feature is available as part of the **DataHub Cloud Observe** module of DataHub Cloud.
-> If you are interested in learning more about **DataHub Cloud Observe** or trying it out, please [visit our website](https://datahub.com/products/data-observability/).
+> **Schema Assertions** 기능은 DataHub Cloud의 **DataHub Cloud Observe** 모듈의 일부로 제공됩니다.
+> **DataHub Cloud Observe**에 대해 더 알아보거나 체험해 보고 싶다면 [웹사이트를 방문](https://datahub.com/products/data-observability/)하세요.
 
-## Introduction
+## 소개
 
-Can you remember a time when columns were unexpectedly added, removed, or altered for a key Table in your Data Warehouse?
-Perhaps this caused downstream tables, views, dashboards, data pipelines, or AI models to break.
+데이터 웨어하우스의 핵심 테이블에 예고 없이 컬럼이 추가, 제거 또는 변경된 경험이 있으신가요?
+이로 인해 다운스트림 테이블, 뷰, 대시보드, 데이터 파이프라인 또는 AI 모델이 손상된 적이 있으신가요?
 
-There are many reasons why the structure of an important Table on Snowflake, Redshift, or BigQuery may schema change, breaking the expectations
-of downstream consumers of the table.
+Snowflake, Redshift, BigQuery의 중요한 테이블 구조가 변경되어 테이블의 다운스트림 소비자의 기대를 깨뜨리는 이유는 다양합니다.
 
-What if you could reduce the time to detect these incidents, so that the people responsible for the data were made aware of data
-issues _before_ anyone else? With DataHub Cloud **Schema Assertions**, you can.
+데이터 담당자가 다른 누구보다 먼저 데이터 문제를 인식할 수 있도록 인시던트 감지 시간을 단축할 수 있다면 어떨까요? DataHub Cloud **Schema Assertions**를 통해 이것이 가능합니다.
 
-DataHub Cloud allows users to define expectations about a table's columns and their data types, and will monitor and validate these expectations over
-time, notifying you when a breaking change occurs.
+DataHub Cloud를 통해 사용자는 테이블의 컬럼과 데이터 유형에 대한 기대치를 정의하고, 이를 시간에 따라 모니터링하고 검증하며, 주요 변경이 발생했을 때 알림을 받을 수 있습니다.
 
-In this article, we'll cover the basics of monitoring Schema Assertions - what they are, how to configure them, and more - so that you and your team can
-start building trust in your most important data assets.
+이 문서에서는 Schema Assertions 모니터링의 기본 사항(정의, 구성 방법 등)을 다루어 팀이 중요한 데이터 자산에 대한 신뢰를 구축할 수 있도록 돕겠습니다.
 
-Let's get started!
+시작해 봅시다!
 
-## Support
+## 지원 현황
 
-Schema Assertions are currently supported for all data sources that provide a schema via the normal ingestion process.
+Schema Assertions는 현재 일반 수집 프로세스를 통해 schema를 제공하는 모든 데이터 소스를 지원합니다.
 
-## What is a Schema Assertion?
+## Schema Assertion이란?
 
-A **Schema Assertion** is a Data Quality rule used to monitor the columns in a particular table and their data types.
-They allow you to define a set of "required" columns for the table along with their expected types, and then be notified
-if anything changes via a failing assertion.
+**Schema Assertion**은 특정 테이블의 컬럼과 데이터 유형을 모니터링하는 데 사용되는 데이터 품질 규칙입니다.
+테이블에 "필수" 컬럼 집합과 예상 유형을 정의하고, 변경이 발생했을 때 실패한 assertion을 통해 알림을 받을 수 있습니다.
 
-This type of assertion can be particularly useful if you want to monitor the structure of a table which is outside of your
-direct control, for example the result of an ETL process from an upstream application or tables provided by a 3rd party data vendor. It
-allows you to get ahead of potentially breaking schema changes, by alerting you as soon as they occur, and before
-they have a chance to negatively impact downstream assets.
+이 유형의 assertion은 직접 제어할 수 없는 테이블의 구조를 모니터링하려는 경우에 특히 유용합니다. 예를 들어, 업스트림 애플리케이션의 ETL 프로세스 결과 또는 서드파티 데이터 벤더가 제공하는 테이블 등이 해당됩니다. 잠재적으로 문제가 될 schema 변경이 발생하는 즉시 알림을 받아 다운스트림 자산에 부정적인 영향을 미치기 전에 대처할 수 있습니다.
 
-### Anatomy of a Schema Assertion
+### Schema Assertion의 구조
 
-At the most basic level, **Schema Assertions** consist of a few important parts:
+**Schema Assertions**는 기본적으로 몇 가지 중요한 구성 요소로 이루어집니다:
 
-1. A **Condition Type**
-2. A set of **Expected Columns**
+1. **조건 유형**
+2. **예상 컬럼** 집합
 
-In this section, we'll give an overview of each.
+이 섹션에서 각각에 대한 개요를 설명합니다.
 
-#### 1. Condition Type
+#### 1. 조건 유형
 
-The **Condition Type** defines the conditions under which the Assertion will **fail**. More concretely, it determines
-how the _expected_ columns should be compared to the _actual_ columns found in the schema to determine a passing or failing
-state for the data quality check.
+**조건 유형**은 Assertion이 **실패**하는 조건을 정의합니다. 더 구체적으로, _예상_ 컬럼과 schema에서 실제로 발견된 _실제_ 컬럼을 비교하여 데이터 품질 검사의 통과 또는 실패 상태를 결정하는 방법을 결정합니다.
 
-The list of supported condition types:
+지원되는 조건 유형 목록:
 
-- **Contains**: The assertion will fail if the actual schema does not contain all expected columns and their types.
-- **Exact Match**: The assertion will fail if the actual schema does not EXACTLY match the expected columns and their types. No
-  additional columns will be permitted.
+- **Contains**: 실제 schema에 예상 컬럼과 해당 유형이 모두 포함되지 않으면 assertion이 실패합니다.
+- **Exact Match**: 실제 schema가 예상 컬럼과 해당 유형과 정확히 일치하지 않으면 assertion이 실패합니다. 추가 컬럼은 허용되지 않습니다.
 
-Schema Assertions will be evaluated whenever a change in the schema of the underlying table is detected.
-They also have an off switch: they can be started or stopped at any time by pressing the start (play) or stop (pause) buttons.
+Schema Assertions는 기본 테이블의 schema 변경이 감지될 때마다 평가됩니다.
+또한 끄기 스위치도 있습니다: 시작(재생) 또는 중지(일시 정지) 버튼을 눌러 언제든지 시작하거나 중지할 수 있습니다.
 
-#### 2. Expected Columns
+#### 2. 예상 컬럼
 
-The **Expected Columns** are a set of column **names** along with their high-level **data
-types** that should be used to compare against the _actual_ columns found in the table. By default, the expected column
-set will be derived from the current set of columns found in the table. This conveniently allows you to "freeze" or "lock"
-the current schema of a table in just a few clicks.
+**예상 컬럼**은 테이블에서 _실제로_ 발견된 컬럼과 비교하는 데 사용해야 하는 컬럼 **이름** 및 고수준 **데이터 유형** 집합입니다. 기본적으로 예상 컬럼 집합은 테이블에서 현재 발견된 컬럼 집합에서 파생됩니다. 이를 통해 클릭 몇 번으로 테이블의 현재 schema를 "동결" 또는 "잠금"할 수 있습니다.
 
-Each "expected column" is composed of a
+각 "예상 컬럼"은 다음으로 구성됩니다:
 
-1. **Name**: The name of the column that should be present in the table. Nested columns are supported in a flattened
-   fashion by simply providing a dot-separated path to the nested column. For example, `user.id` would be a nested column `id`.
-   In the case of a complex array or map, each field in the elements of the array or map will be treated as dot-delimited columns.
-   Note that verifying the specific type of object in primitive arrays or maps is not currently supported. Note that the comparison performed
-   is currently not case-sensitive.
+1. **Name**: 테이블에 존재해야 하는 컬럼의 이름. 중첩 컬럼은 중첩 컬럼에 대한 점 구분 경로를 제공하여 평탄화된 방식으로 지원됩니다. 예를 들어, `user.id`는 중첩 컬럼 `id`입니다.
+   복잡한 배열 또는 맵의 경우, 배열 또는 맵의 요소에 있는 각 필드는 점 구분 컬럼으로 처리됩니다.
+   기본 배열 또는 맵의 오브젝트 특정 유형 확인은 현재 지원되지 않습니다. 비교는 현재 대소문자를 구분하지 않습니다.
 
-2. **Type**: The high-level data type of the column in the table. This type intentionally "high level" to allow for normal column widening practices
-   without the risk of failing the assertion unnecessarily. For example a `varchar(64)` and a `varchar(256)` will both resolve to the same high-level
-   "STRING" type. The currently supported set of data types include the following:
+2. **Type**: 테이블의 컬럼의 고수준 데이터 유형. 이 유형은 의도적으로 "고수준"으로 설정되어 있어 불필요하게 assertion이 실패할 위험 없이 일반적인 컬럼 확장 작업을 허용합니다. 예를 들어 `varchar(64)`와 `varchar(256)`는 모두 동일한 고수준 "STRING" 유형으로 해석됩니다. 현재 지원되는 데이터 유형 집합은 다음과 같습니다:
 
    - String
    - Number
@@ -100,102 +82,96 @@ Each "expected column" is composed of a
    - Bytes
    - Enum
 
-## Creating a Schema Assertion
+## Schema Assertion 생성
 
-### Prerequisites
+### 사전 요구 사항
 
-- **Permissions**: To create or delete Schema Assertions for a specific entity on DataHub, you'll need to be granted the
-  `Edit Assertions`, `Edit Monitors` privileges for the entity. This will be granted to Entity owners as part of the `Asset Owners - Metadata Policy`
-  by default.
+- **권한**: DataHub에서 특정 entity에 대한 Schema Assertions를 생성하거나 삭제하려면 해당 entity에 대해 `Edit Assertions`, `Edit Monitors` 권한이 부여되어야 합니다. 이 권한은 기본적으로 `Asset Owners - Metadata Policy`의 일환으로 Entity 소유자에게 부여됩니다.
 
-Once these are in place, you're ready to create your Schema Assertions!
+이러한 사전 조건이 갖춰지면 Schema Assertions를 생성할 준비가 된 것입니다!
 
-### Steps
+### 단계
 
-1. Navigate to the Table you want to monitor
-2. Click the **Quality** tab
+1. 모니터링할 테이블로 이동합니다
+2. **Quality** 탭을 클릭합니다
 
 <p align="left">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/freshness/profile-validation-tab.png"/>
 </p>
 
-3. Click **+ Create Assertion**
+3. **+ Create Assertion**을 클릭합니다
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/schema/assertion-builder-choose-type.png"/>
 </p>
 
-4. Choose **Schema**
+4. **Schema**를 선택합니다
 
-5. Select the **condition type**.
+5. **조건 유형**을 선택합니다.
 
-6. Define the **expected columns** that will be continually compared against the actual column set. This defaults to the current columns for the table.
+6. 실제 컬럼 집합과 지속적으로 비교될 **예상 컬럼**을 정의합니다. 기본값은 테이블의 현재 컬럼으로 설정됩니다.
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/schema/assertion-builder-config.png"/>
 </p>
 
-7. Configure actions that should be taken when the assertion passes or fails
+7. assertion이 통과하거나 실패할 때 취해야 할 작업을 구성합니다
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/assertion-builder-actions.png"/>
 </p>
 
-- **Raise incident**: Automatically raise a new DataHub Incident for the Table whenever the Custom SQL Assertion is failing. This
-  may indicate that the Table is unfit for consumption. Configure Slack Notifications under **Settings** to be notified when
-  an incident is created due to an Assertion failure.
+- **Raise incident**: Custom SQL Assertion이 실패할 때마다 해당 테이블에 대한 새 DataHub 인시던트를 자동으로 발생시킵니다. 이는 테이블이 사용하기에 부적합함을 나타낼 수 있습니다. **Settings**에서 Slack 알림을 구성하여 Assertion 실패로 인해 인시던트가 생성될 때 알림을 받으세요.
 
-- **Resolve incident**: Automatically resolved any incidents that were raised due to failures in this Custom SQL Assertion. Note that
-  any other incidents will not be impacted.
+- **Resolve incident**: 이 Custom SQL Assertion의 실패로 인해 발생한 인시던트를 자동으로 해결합니다. 다른 인시던트에는 영향을 미치지 않습니다.
 
-Then click **Next**.
+**Next**를 클릭합니다.
 
-7. (Optional) Add a **description** for the assertion. This is a human-readable description of the assertion. If you do not provide one, a description will be generated for you.
+7. (선택 사항) assertion에 대한 **설명**을 추가합니다. 이는 assertion에 대한 사람이 읽을 수 있는 설명입니다. 제공하지 않으면 자동으로 생성됩니다.
 
 <p align="left">
   <img width="40%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/assertion-builder-description.png"/>
 </p>
 
-8. Click **Save**.
+8. **Save**를 클릭합니다.
 
-And that's it! DataHub will now begin to monitor your Schema Assertion for the table.
+이제 DataHub가 테이블의 Schema Assertion 모니터링을 시작합니다.
 
-Once your assertion has run, you will begin to see Success or Failure status:
+assertion이 실행되면 성공 또는 실패 상태를 확인할 수 있습니다:
 
 <p align="left">
   <img width="45%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/schema/assertion-results.png"/>
 </p>
 
-## Stopping a Schema Assertion
+## Schema Assertion 중지
 
-In order to temporarily stop the evaluation of the assertion:
+assertion 평가를 일시적으로 중지하려면:
 
-1. Navigate to the **Quality** tab of the Table with the assertion
-2. Click **Schema** to open the Schema Assertion
-3. Click the "Stop" button.
+1. assertion이 있는 테이블의 **Quality** 탭으로 이동합니다
+2. **Schema**를 클릭하여 Schema Assertion을 엽니다
+3. "Stop" 버튼을 클릭합니다.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/stop-assertion.png"/>
 </p>
 
-To resume the assertion, simply click **Start**.
+assertion을 재개하려면 **Start**를 클릭하세요.
 
 <p align="left">
   <img width="25%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/observe/shared/start-assertion.png"/>
 </p>
 
-## Creating Schema Assertions via API
+## API를 통한 Schema Assertions 생성
 
-Note that to create or delete Assertions and Monitors for a specific entity on DataHub, you'll need the
-`Edit Assertions` and `Edit Monitors` privileges to create schema assertion via API.
+DataHub에서 특정 entity에 대한 Assertions 및 Monitors를 생성하거나 삭제하려면 API를 통해 schema assertion을 생성하기 위해 `Edit Assertions` 및 `Edit Monitors` 권한이 필요합니다.
 
 #### GraphQL
 
-In order to create a Schema Assertions, you can use the `upsertDatasetSchemaAssertionMonitor` mutation.
+Schema Assertions를 생성하려면 `upsertDatasetSchemaAssertionMonitor` mutation을 사용하세요.
 
-##### Examples
+##### 예시
 
-To create a Schema Assertion that checks for a the presence of a specific set of columns:
+특정 컬럼 집합의 존재를 확인하는 Schema Assertion을 생성하려면:
 
 ```graphql
 mutation upsertDatasetSchemaAssertionMonitor {
@@ -203,7 +179,7 @@ mutation upsertDatasetSchemaAssertionMonitor {
     input: {
       entityUrn: "<urn of the table to be monitored>"
       assertion: {
-        compatibility: SUPERSET # How the actual columns will be compared against the expected fields (provided next)
+        compatibility: SUPERSET # 예상 필드(다음에 제공)와 실제 컬럼을 비교하는 방법
         fields: [
           { path: "id", type: STRING }
           { path: "count", type: NUMBER }
@@ -218,9 +194,9 @@ mutation upsertDatasetSchemaAssertionMonitor {
 }
 ```
 
-The supported compatibility types are `EXACT_MATCH` and `SUPERSET` (Contains).
+지원되는 호환성 유형은 `EXACT_MATCH` 및 `SUPERSET`(Contains)입니다.
 
-You can use same endpoint with assertion urn input to update an existing Schema Assertion, simply add the `assertionUrn` field:
+동일한 엔드포인트에 assertion urn 입력을 제공하여 기존 Schema Assertion을 업데이트할 수 있습니다. `assertionUrn` 필드를 추가하기만 하면 됩니다:
 
 ```graphql
 mutation upsertDatasetSchemaAssertionMonitor {
@@ -244,20 +220,20 @@ mutation upsertDatasetSchemaAssertionMonitor {
 }
 ```
 
-You can delete assertions along with their monitors using GraphQL mutations: `deleteAssertion` and `deleteMonitor`.
+GraphQL mutations인 `deleteAssertion` 및 `deleteMonitor`를 사용하여 assertions와 모니터를 함께 삭제할 수 있습니다.
 
-### Tips
+### 팁
 
 :::info
-**Authorization**
+**인증**
 
-Remember to always provide a DataHub Personal Access Token when calling the GraphQL API. To do so, just add the 'Authorization' header as follows:
+GraphQL API를 호출할 때는 항상 DataHub Personal Access Token을 제공해야 합니다. 다음과 같이 'Authorization' 헤더를 추가하세요:
 
 ```
 Authorization: Bearer <personal-access-token>
 ```
 
-**Exploring GraphQL API**
+**GraphQL API 탐색**
 
-Also, remember that you can play with an interactive version of the DataHub Cloud GraphQL API at `https://your-account-id.acryl.io/api/graphiql`
+`https://your-account-id.acryl.io/api/graphiql`에서 DataHub Cloud GraphQL API의 인터랙티브 버전을 사용해 볼 수 있습니다.
 :::

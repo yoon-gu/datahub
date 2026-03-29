@@ -4,7 +4,7 @@ title: "Universal transformers"
 
 # Transformers
 
-The below table shows transformer which can transform aspects of any entity having them.
+아래 표는 해당 aspect를 가진 모든 entity의 aspect를 변환할 수 있는 transformer를 보여줍니다.
 
 | Aspect          | Transformer                           |
 | --------------- | ------------------------------------- |
@@ -12,17 +12,16 @@ The below table shows transformer which can transform aspects of any entity havi
 
 ## Set browsePaths
 
-This transformer operates on `browsePathsV2` aspect. If it is not emitted by the ingestion source, it will be created
-by the transformer. By default it will prepend configured path to the original path (so it will add it as a prefix).
+이 transformer는 `browsePathsV2` aspect에서 작동합니다. ingestion 소스에서 내보내지 않은 경우 transformer가 생성합니다. 기본적으로 설정된 경로를 원래 경로 앞에 추가합니다 (접두사로 추가합니다).
 
-### Config Details
+### Config 세부 사항
 
 | Field              | Required | Type         | Default | Description                                                                                         |
 | ------------------ | -------- | ------------ | ------- | --------------------------------------------------------------------------------------------------- |
-| `path`             | ✅       | list[string] |         | List of nodes in the new path.                                                                      |
-| `replace_existing` |          | boolean      | `false` | Whether to overwrite existing browse path, if set to `false`, the configured path will be prepended |
+| `path`             | ✅       | list[string] |         | 새 경로의 노드 목록.                                                                                |
+| `replace_existing` |          | boolean      | `false` | 기존 browse path를 덮어쓸지 여부. `false`로 설정하면 설정된 경로가 앞에 추가됩니다.               |
 
-In the most basic case `path` contains list of static strings, for example, below config:
+가장 기본적인 경우 `path`에는 정적 문자열 목록이 포함됩니다. 예를 들어 아래 config는:
 
 ```yaml
 transformers:
@@ -33,17 +32,11 @@ transformers:
         - def
 ```
 
-will be reflected as every entity having path prefixed by `abc` and `def` nodes (`def` will be contained by `abc`).
+모든 entity가 `abc`와 `def` 노드가 접두사로 붙은 경로를 갖게 됩니다 (`def`는 `abc` 내에 포함됩니다).
 
 ### Variable substitution
 
-The transformer has a mechanism of variables substitution in the path, where list of variables are build based on
-existing `browsePathsV2` aspect of the entity. Every _node_ in the existing path, as long as it contains reference to
-another entity (e.g. a `container` or a `dataPlatformInstance`) is stored in the list of variables to use. Since
-we can have multiple references to entities of the same type (e.g. `containers`) in the browse path, they are stored
-in a list-like object, with original order being respected. Let's consider an example, real-world situation, of a table
-ingested from Snowflake source, and having `platform_instance` set to some value. Such table will have `browsePathsV2`
-aspect set to contain below references:
+transformer에는 경로의 변수 치환 메커니즘이 있습니다. 변수 목록은 entity의 기존 `browsePathsV2` aspect를 기반으로 구성됩니다. 기존 경로의 모든 _노드_가 다른 entity(예: `container` 또는 `dataPlatformInstance`)에 대한 참조를 포함하는 한 사용할 변수 목록에 저장됩니다. 동일한 타입의 entity(예: `containers`)에 대한 여러 참조가 browse path에 있을 수 있으므로, 원래 순서를 유지하면서 목록 형태의 객체에 저장됩니다. 실제 상황의 예를 살펴보겠습니다. Snowflake 소스에서 수집된 테이블이 있고 `platform_instance`가 일부 값으로 설정된 경우, 해당 테이블은 다음 참조를 포함하는 `browsePathsV2` aspect를 갖게 됩니다:
 
 ```yaml
 - urn:li:dataPlatformInstance:(urn:li:dataPlatform:snowflake,my_platform_instance)
@@ -51,9 +44,9 @@ aspect set to contain below references:
 - urn:li:container:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
 ```
 
-where `urn:li:container:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` identifies a `container` reflecting a Snowflake's _database_ and
-`urn:li:container:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb` identifies a `container` reflecting a Snowflake's _schema_.
-Such, existing, path will be mapped into variables as shown below:
+여기서 `urn:li:container:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa`는 Snowflake의 _데이터베이스_를 나타내는 `container`를 식별하고,
+`urn:li:container:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`는 Snowflake의 _스키마_를 나타내는 `container`를 식별합니다.
+기존 경로는 아래와 같이 변수로 매핑됩니다:
 
 ```python
 dataPlatformInstance[0] = "urn:li:dataPlatformInstance:(urn:li:dataPlatform:snowflake,my_platform_instance)"
@@ -61,7 +54,7 @@ container[0] = "urn:li:container:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 container[1] = "urn:li:container:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
 ```
 
-Those variables can be refered to, from the config, by using `$` character, like below:
+이 변수들은 아래와 같이 config에서 `$` 문자를 사용하여 참조할 수 있습니다:
 
 ```yaml
 transformers:
@@ -73,10 +66,10 @@ transformers:
         - $container[1]
 ```
 
-Additionally, 2 more rules apply to the variables resolution:
+추가로 변수 해석에 다음 2가지 규칙이 적용됩니다:
 
-- If a variable does not exist (or if the index reached outside of list's length) - it will be ignored and not used in the path, all the other nodes will be used and path will be modified
-- `$variable[*]` will expand entire list of variables to multiple _nodes_ in the path (think about it as a "flat map"), for example, the equivalent of above config, would be:
+- 변수가 존재하지 않는 경우(또는 인덱스가 목록 길이를 벗어나는 경우) 무시되고 경로에서 사용되지 않으며, 다른 모든 노드는 사용되고 경로가 수정됩니다.
+- `$variable[*]`는 변수의 전체 목록을 경로의 여러 _노드_로 확장합니다 (flat map으로 생각하면 됩니다). 예를 들어, 위 config와 동일한 효과를 내는 설정은:
   ```yaml
   transformers:
     - type: "set_browse_path"
@@ -86,9 +79,9 @@ Additionally, 2 more rules apply to the variables resolution:
           - $container[*]
   ```
 
-### Examples
+### 예제
 
-Add (prefix) a top-level node "datahub" to paths emitted by the source:
+소스에서 내보낸 경로에 최상위 노드 "datahub"를 추가(접두사):
 
 ```yaml
 transformers:
@@ -98,7 +91,7 @@ transformers:
         - datahub
 ```
 
-Remove data platform instance from the path (if it was set), while retaining containers structure:
+container 구조를 유지하면서 경로에서 data platform instance를 제거(설정된 경우):
 
 ```yaml
 transformers:

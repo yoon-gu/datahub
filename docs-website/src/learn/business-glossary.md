@@ -1,6 +1,6 @@
 ---
-title: "What is a Business Glossary and How to Standardize It"
-description: Understand how a standardized business glossary aids in achieving consistency, compliance, and efficient data use.
+title: "비즈니스 용어집이란 무엇이며 어떻게 표준화할까"
+description: 표준화된 비즈니스 용어집이 일관성, 규정 준수 및 효율적인 데이터 사용을 달성하는 데 어떻게 도움이 되는지 이해합니다.
 tags: ["Business Glossary", "Use Case", "For Data Governance Leads"]
 image: /img/learn/use-case-business-glossary.png
 hide_table_of_contents: false
@@ -8,113 +8,113 @@ audience: ["Data Governance Leads"]
 date: 2024-06-03T05:00
 ---
 
-# What is a Business Glossary and How to Standardize It
+# 비즈니스 용어집이란 무엇이며 어떻게 표준화할까
 
-Understand how a standardized business glossary aids in achieving consistency, compliance, and efficient data use.
+표준화된 비즈니스 용어집이 일관성, 규정 준수 및 효율적인 데이터 사용을 달성하는 데 어떻게 도움이 되는지 이해합니다.
 
 <!--truncate-->
 
-## Introduction
+## 소개
 
-Have you ever faced confusion due to inconsistent business terminology within your organization? This lack of standardization can lead to misunderstandings, compliance issues, and inefficient data use. In this post, we’ll explore the importance of having a standardized business glossary, its benefits, and how you can implement one effectively in your organization.
+조직 내에서 일관성 없는 비즈니스 용어로 인해 혼란을 겪은 경험이 있으신가요? 이러한 표준화 부재는 오해, 규정 준수 문제 및 비효율적인 데이터 사용으로 이어질 수 있습니다. 이 글에서는 표준화된 비즈니스 용어집을 갖는 것의 중요성, 이점 및 조직 내에서 효과적으로 구현하는 방법을 탐색합니다.
 
-## What is a Business Glossary?
+## 비즈니스 용어집이란 무엇인가요?
 
-A Business Glossary is like a dictionary for your company. It contains definitions of key business terms that everyone in the organization uses, ensuring everyone speaks the same language, especially when it comes to important concepts related to the data your company collects, processes, and uses.
+비즈니스 용어집은 회사의 사전과 같습니다. 조직의 모든 사람이 사용하는 핵심 비즈니스 용어의 정의를 담고 있어 특히 회사가 수집, 처리 및 사용하는 데이터와 관련된 중요한 개념에 대해 모든 사람이 동일한 언어를 사용하도록 보장합니다.
 
-For example, below are some sales-related glossary terms that can be used in an IT company.
+예를 들어, 아래는 IT 회사에서 사용할 수 있는 몇 가지 판매 관련 용어집 용어입니다.
 
-| Term | Definition | Usage |
+| 용어 | 정의 | 사용 |
 | --- | --- | --- |
-| CRM (Customer Relationship Management) | Software that manages a company's interactions with current and potential customers. | CRMs help streamline processes and improve customer relationships. |
-| Lead | A potential customer who has shown interest in a company's product or service. | Leads are nurtured by the sales team to convert into customers. |
-| Pipeline | The stages through which a sales prospect moves from initial contact to final sale. | Sales pipelines track progress and forecast future sales. |
-| Quota | A sales target set for a salesperson or team for a specific period. | Quotas motivate sales teams and measure performance. |
-| Conversion Rate | The percentage of leads that turn into actual sales. | High conversion rates indicate effective sales strategies. |
-| Upselling | Encouraging customers to purchase a more expensive or upgraded version of a product. | Upselling increases revenue by enhancing the customer purchase. |
-| Churn Rate | The percentage of customers who stop using a product or service over a given period. | Reducing churn rate is crucial for maintaining steady growth. |
-| MQL (Marketing Qualified Lead) | A lead that has been deemed more likely to become a customer based on marketing efforts. | MQLs are passed from the marketing team to the sales team for further nurturing. |
-| ARR (Annual Recurring Revenue) | The amount of revenue that a company expects to receive from its customers on an annual basis for subscriptions. | ARR helps in financial forecasting and performance measurement. |
+| CRM (고객 관계 관리) | 회사의 현재 및 잠재 고객과의 상호작용을 관리하는 소프트웨어. | CRM은 프로세스를 간소화하고 고객 관계를 개선하는 데 도움이 됩니다. |
+| 리드 | 회사의 제품이나 서비스에 관심을 보인 잠재 고객. | 리드는 영업팀이 고객으로 전환하기 위해 육성합니다. |
+| 파이프라인 | 판매 가망 고객이 첫 번째 연락부터 최종 판매까지 이동하는 단계. | 판매 파이프라인은 진행 상황을 추적하고 미래 판매를 예측합니다. |
+| 할당량 | 특정 기간 동안 영업사원이나 팀에 설정된 판매 목표. | 할당량은 영업팀에 동기를 부여하고 성과를 측정합니다. |
+| 전환율 | 리드 중 실제 판매로 이어지는 비율. | 높은 전환율은 효과적인 판매 전략을 나타냅니다. |
+| 업셀링 | 고객이 더 비싸거나 업그레이드된 제품 버전을 구매하도록 장려하는 것. | 업셀링은 고객 구매를 향상시켜 매출을 증가시킵니다. |
+| 이탈률 | 특정 기간 동안 제품이나 서비스 사용을 중단하는 고객의 비율. | 이탈률을 줄이는 것은 지속적인 성장을 유지하는 데 중요합니다. |
+| MQL (마케팅 적격 리드) | 마케팅 노력을 기반으로 고객이 될 가능성이 더 높다고 판단된 리드. | MQL은 마케팅팀에서 영업팀으로 전달되어 추가 육성을 받습니다. |
+| ARR (연간 반복 매출) | 구독에 대해 고객으로부터 연간 기준으로 받을 것으로 예상되는 매출 금액. | ARR은 재무 예측과 성과 측정에 도움이 됩니다. |
 
-## What is Business Glossary Standardization?
+## 비즈니스 용어집 표준화란 무엇인가요?
 
-Business glossary standardization means creating and maintaining a consistent set of business terms and definitions used across the organization. This practice is essential for maintaining clarity and consistency in how data is interpreted and used across different departments.
+비즈니스 용어집 표준화는 조직 전반에 걸쳐 사용되는 일관된 비즈니스 용어와 정의 집합을 만들고 유지하는 것입니다. 이 관행은 다양한 부서에 걸쳐 데이터를 해석하고 사용하는 방식의 명확성과 일관성을 유지하는 데 필수적입니다.
 
-## Why Should You Care?
+## 왜 신경 써야 하나요?
 
-### The Challenge
+### 과제
 
-Without a consistent understanding and use of business terminology, your company lacks a unified understanding of its data. This can lead to inconsistencies, increased compliance risk, and less effective use of data. Different teams may describe the same concepts in various ways, causing confusion about customers, key metrics, products, marketing, and more.
+일관된 비즈니스 용어의 이해와 사용 없이는 회사가 데이터에 대한 통합된 이해를 갖추지 못합니다. 이는 불일치, 증가된 규정 준수 위험 및 비효율적인 데이터 사용으로 이어질 수 있습니다. 서로 다른 팀은 동일한 개념을 다양한 방식으로 설명할 수 있어 고객, 핵심 지표, 제품, 마케팅 등에 대한 혼란을 야기합니다.
 
-### The Benefits
+### 이점
 
-For a governance lead, standardizing the business glossary is crucial for several reasons:
+거버넌스 책임자에게 비즈니스 용어집을 표준화하는 것은 여러 이유에서 중요합니다:
 
-- **Reduces Confusion, Facilitates Discovery:** Ensures data quality, consistency, and reliability, which are critical for effective decision-making.
-- **Regulatory Compliance:** Aligns data use with regulatory definitions and requirements, essential for compliance with financial regulations.
-- **Supports Risk Management:** Provides consistent terminology for analyzing market trends, credit risk, and operational risks.
-- **Training and Onboarding:** Helps new employees quickly understand the company’s specific language and metrics, speeding up the training process.
+- **혼란 감소, 발견 촉진:** 효과적인 의사결정에 중요한 데이터 품질, 일관성 및 신뢰성을 보장합니다.
+- **규정 준수:** 규제 정의 및 요구 사항과 데이터 사용을 맞추어 재무 규정 준수에 필수적입니다.
+- **위험 관리 지원:** 시장 동향, 신용 위험 및 운영 위험을 분석하기 위한 일관된 용어를 제공합니다.
+- **교육 및 온보딩:** 신입 직원이 회사의 특정 언어와 지표를 빠르게 이해할 수 있도록 도와 교육 프로세스를 가속화합니다.
 
-### Real-World Impact
+### 실제 영향
 
-Imagine a financial services company where different teams use varied terminologies for the same concepts, such as "customer lifetime value." (CLV) This inconsistency can lead to misinterpretations, faulty risk assessments, and regulatory non-compliance, ultimately affecting the company's reputation and financial stability.
+"고객 생애 가치"(CLV)와 같은 동일한 개념에 대해 서로 다른 팀이 다양한 용어를 사용하는 금융 서비스 회사를 상상해 보세요. 이러한 불일치는 오해, 잘못된 위험 평가 및 규정 불준수로 이어져 궁극적으로 회사의 평판과 재정적 안정성에 영향을 미칠 수 있습니다.
 
-Here's how different teams might interpret CLV and the potential implications:
+다양한 팀이 CLV를 해석하는 방식과 잠재적인 영향은 다음과 같습니다:
 
-| Team | Interpretation of CLV | Focus | Implications |
+| 팀 | CLV 해석 | 초점 | 영향 |
 | --- | --- | --- | --- |
-| Marketing | Total revenue generated from a customer over their entire relationship with the company | Campaign effectiveness, customer acquisition costs, return on marketing investment | Revenue maximization through frequent promotions, potentially ignoring the cost of service and risk associated with certain customer segments |
-| Sales | Projected future sales from a customer based on past purchasing behavior | Sales targets, customer retention, cross-selling/up-selling opportunities | Aggressive sales tactics to boost short-term sales, potentially leading to customer churn if the value delivered does not meet |
-| Finance | Net present value (NPV), factoring in the time value of money and associated costs over the customer relationship period | Profitability, cost management, financial forecasting | Conservative growth strategies, focusing on high-value, low-risk customers, potentially overlooking opportunities for broader market expansion |
+| 마케팅 | 회사와의 전체 관계 기간 동안 고객으로부터 창출된 총 매출 | 캠페인 효과, 고객 획득 비용, 마케팅 투자 수익률 | 빈번한 프로모션을 통한 매출 극대화, 특정 고객 세그먼트와 관련된 서비스 비용 및 위험 무시 가능성 |
+| 영업 | 과거 구매 행동을 기반으로 한 고객으로부터의 예상 미래 판매 | 판매 목표, 고객 유지, 교차 판매/업셀링 기회 | 단기 판매를 높이기 위한 공격적인 판매 전술, 제공된 가치가 충족되지 않으면 고객 이탈로 이어질 가능성 |
+| 재무 | 고객 관계 기간 동안의 화폐 시간 가치와 관련 비용을 고려한 순현재가치(NPV) | 수익성, 비용 관리, 재무 예측 | 고가치, 저위험 고객에 집중하는 보수적 성장 전략, 더 광범위한 시장 확장 기회를 간과할 가능성 |
 
- Different interpretations can lead to conflicting strategies and objectives across teams. For instance, Marketing’s aggressive acquisition strategy may lead to a significant increase in new customers and short-term revenue. However, if Finance’s NPV analysis reveals that these customers are not profitable long-term, the company may face financial strain due to high acquisition costs and low profitability.
+ 다양한 해석은 팀 간에 충돌하는 전략과 목표로 이어질 수 있습니다. 예를 들어, 마케팅의 공격적인 획득 전략은 신규 고객과 단기 매출의 상당한 증가로 이어질 수 있습니다. 그러나 재무의 NPV 분석이 이러한 고객이 장기적으로 수익성이 없음을 드러낸다면 높은 획득 비용과 낮은 수익성으로 인해 회사는 재정적 압박에 직면할 수 있습니다.
 
- The Sales team’s push for upselling may generate short-term sales increases, aligning with their CLV projections. However, if customers feel pressured and perceive the upsells as unnecessary, this could lead to dissatisfaction and higher churn rates, ultimately reducing the actual lifetime value of these customers.
+ 영업팀의 업셀링 추진은 단기 판매 증가를 창출하여 그들의 CLV 예측과 일치할 수 있습니다. 그러나 고객이 압박감을 느끼고 업셀링을 불필요하게 인식한다면 불만과 더 높은 이탈률로 이어져 궁극적으로 이러한 고객의 실제 생애 가치를 줄일 수 있습니다.
 
- The conflicting strategies can result in misaligned priorities, where Marketing focuses on volume, Sales on immediate revenue, and Finance on long-term profitability. This misalignment can lead to inefficient resource allocation, where Marketing spends heavily on acquisition, Sales focuses on short-term gains, and Finance restricts budgets due to profitability concerns.
+ 충돌하는 전략은 마케팅이 볼륨에, 영업이 즉각적인 매출에, 재무가 장기적인 수익성에 집중하는 불일치된 우선순위를 초래할 수 있습니다. 이러한 불일치는 마케팅이 획득에 과도하게 지출하고, 영업이 단기 이익에 집중하고, 재무가 수익성 우려로 예산을 제한하는 비효율적인 자원 배분으로 이어질 수 있습니다.
 
-### Example Discovery Questions
+### 탐색 질문 예시
 
-- Have you ever experienced confusion or errors due to inconsistent terminology in your organization's data reports? How do you currently manage and standardize business terms across departments?
-- If your organization lacks a standardized business glossary, what challenges do you face in ensuring regulatory compliance and reliable data analysis?
-- When onboarding new employees, do you find that inconsistent terminology slows down their training and understanding of company data? How could a standardized glossary improve this process?
+- 조직의 데이터 보고서에서 일관성 없는 용어로 인해 혼란이나 오류를 경험한 적이 있나요? 현재 부서 간 비즈니스 용어를 어떻게 관리하고 표준화하나요?
+- 조직에 표준화된 비즈니스 용어집이 없는 경우 규정 준수 및 신뢰할 수 있는 데이터 분석을 보장하는 데 어떤 어려움을 겪나요?
+- 신입 직원을 온보딩할 때 일관성 없는 용어가 교육과 회사 데이터 이해를 늦추나요? 표준화된 용어집이 이 프로세스를 어떻게 개선할 수 있나요?
 
-## How to Standardize a Business Glossary
+## 비즈니스 용어집을 표준화하는 방법
 
-### General Approach
+### 일반적인 접근 방식
 
-To standardize a business glossary, start by identifying key business terms and their definitions. Engage stakeholders from various departments to ensure comprehensive coverage and agreement. Regularly update the glossary to reflect changes in business processes and regulatory requirements.
+비즈니스 용어집을 표준화하려면 핵심 비즈니스 용어와 그 정의를 파악하는 것부터 시작하세요. 포괄적인 범위와 합의를 보장하기 위해 다양한 부서의 이해관계자를 참여시키세요. 비즈니스 프로세스와 규제 요구 사항의 변화를 반영하기 위해 용어집을 정기적으로 업데이트하세요.
 
-### Alternatives and Best Practices
+### 대안 및 모범 사례
 
-Some companies use manual methods to track data terminology and manage access requests. While these methods can work, they are often inefficient and error-prone. Best practices include using automated tools that provide consistent updates and easy access to the glossary for all employees.
+일부 회사는 데이터 용어를 추적하고 접근 요청을 관리하기 위해 수동 방법을 사용합니다. 이러한 방법이 효과적일 수 있지만 종종 비효율적이고 오류가 발생하기 쉽습니다. 모범 사례에는 모든 직원에게 일관된 업데이트와 용어집에 대한 쉬운 접근을 제공하는 자동화된 도구를 사용하는 것이 포함됩니다.
 
-### Our Solution
+### 솔루션
 
-DataHub Cloud offers comprehensive features designed to support the authoring of a unified business glossary for your organization:
+DataHub Cloud는 조직을 위한 통합된 비즈니스 용어집 작성을 지원하도록 설계된 포괄적인 기능을 제공합니다:
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/glossary-terms/business-glossary-center.png"/>
   <br />
-  <i style={{color:"grey"}}>Business Glossary Center</i>
+  <i style={{color:"grey"}}>비즈니스 용어집 센터</i>
 </p>
 
-- **[Centralized Business Glossary](https://docs.datahub.com/docs/glossary/business-glossary):** A repository for all business terms and definitions, ensuring consistency across the organization.
+- **[중앙화된 비즈니스 용어집](https://docs.datahub.com/docs/glossary/business-glossary):** 조직 전반에 걸쳐 일관성을 보장하는 모든 비즈니스 용어와 정의의 저장소.
 
 
 <p align="center">
   <img width="80%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/blogs/glossary-terms/approval-workflow.png"/>
  <br />
-  <i style={{color:"grey"}}>Approval Flows</i>
+  <i style={{color:"grey"}}>승인 흐름</i>
 </p>
 
 
-- **[Approval Flows](https://docs.datahub.com/docs/managed-datahub/change-proposals#using-approval-workflows):** Structured workflows for approving changes to the glossary, maintaining quality and consistency through time
+- **[승인 흐름](https://docs.datahub.com/docs/managed-datahub/change-proposals#using-approval-workflows):** 용어집 변경을 승인하기 위한 구조화된 워크플로우로 시간이 지남에 따라 품질과 일관성을 유지합니다.
 
-- **Automated Data Classification:** Tools to tag critical data assets - tables, columns, dashboards, and pipelines - with terms from the business glossary using automations and custom rules.
- 
-By implementing these solutions, you can ensure that your business terminology is consistently defined and accurately used across all teams, supporting reliable decision-making and regulatory compliance.
+- **자동화된 데이터 분류:** 자동화 및 커스텀 규칙을 사용하여 중요한 데이터 에셋 - 테이블, 컬럼, 대시보드 및 파이프라인 - 을 비즈니스 용어집의 용어로 태그하는 도구.
 
-## Conclusion
+이러한 솔루션을 구현하면 비즈니스 용어가 모든 팀 전반에 걸쳐 일관되게 정의되고 정확하게 사용되어 신뢰할 수 있는 의사결정과 규정 준수를 지원할 수 있습니다.
 
-Standardizing your business glossary is essential for maintaining consistency, ensuring compliance, and optimizing data use. By implementing best practices and leveraging advanced tools, you can achieve a more efficient and reliable data management process. This investment will lead to better decision-making, reduced compliance risks, and a more cohesive organizational understanding of data.
+## 결론
+
+비즈니스 용어집을 표준화하는 것은 일관성을 유지하고, 규정 준수를 보장하며, 데이터 사용을 최적화하는 데 필수적입니다. 모범 사례를 구현하고 고급 도구를 활용함으로써 더 효율적이고 신뢰할 수 있는 데이터 관리 프로세스를 달성할 수 있습니다. 이 투자는 더 나은 의사결정, 줄어든 규정 준수 위험, 그리고 데이터에 대한 더 응집력 있는 조직적 이해로 이어질 것입니다.

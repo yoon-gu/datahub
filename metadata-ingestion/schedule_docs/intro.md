@@ -1,16 +1,16 @@
-# Introduction to Scheduling Metadata Ingestion
+# 메타데이터 수집 스케줄링 소개
 
-Given a recipe file `/home/ubuntu/datahub_ingest/mysql_to_datahub.yml`.
+recipe 파일 `/home/ubuntu/datahub_ingest/mysql_to_datahub.yml`이 주어진 경우.
 
 ```
 source:
   type: mysql
   config:
-    # Coordinates
+    # 연결 정보
     host_port: localhost:3306
     database: dbname
 
-    # Credentials
+    # 자격 증명
     username: root
     password: example
 
@@ -20,12 +20,12 @@ sink:
   server: http://localhost:8080
 ```
 
-We can do ingestion of our metadata using [DataHub CLI](../../docs/cli.md) as follows
+다음과 같이 [DataHub CLI](../../docs/cli.md)를 사용하여 메타데이터를 수집할 수 있습니다.
 
 ```
 datahub ingest -c /home/ubuntu/datahub_ingest/mysql_to_datahub.yml
 ```
 
-This will ingest metadata from the `mysql` source which is configured in the recipe file. This does ingestion once. As the source system changes we would like to have the changes reflected in DataHub. To do this someone will need to re-run the ingestion command using a recipe file.
+이는 recipe 파일에 구성된 `mysql` source에서 메타데이터를 한 번 수집합니다. source 시스템이 변경되면 DataHub에 변경 사항이 반영되기를 원할 것입니다. 이를 위해 누군가가 recipe 파일을 사용하여 ingestion 명령어를 다시 실행해야 합니다.
 
-An alternate to running the command manually we can schedule the ingestion to run on a regular basis. In this section we give some examples of how scheduling ingestion of metadata into DataHub can be done.
+명령어를 수동으로 실행하는 대신, 정기적으로 실행되도록 ingestion을 예약할 수 있습니다. 이 섹션에서는 DataHub에 메타데이터 ingestion을 예약하는 방법에 대한 몇 가지 예를 제공합니다.

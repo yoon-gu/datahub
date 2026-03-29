@@ -1,38 +1,35 @@
-# Adding a Metadata Ingestion Source
+# 메타데이터 수집 Source 추가하기
 
-:::tip Build Connectors Faster with DataHub Skills
+:::tip DataHub Skills로 커넥터를 더 빠르게 개발하기
 
-The fastest way to build a new connector is with **DataHub Skills** — an AI-assisted framework that generates production-ready connectors from a simple configuration. Before diving into the manual steps below, check out the [DataHub Skills guide](./datahub-skills.md) and build your integration in minutes instead of weeks.
+새로운 커넥터를 개발하는 가장 빠른 방법은 **DataHub Skills**를 사용하는 것입니다. 이는 간단한 구성으로 프로덕션 수준의 커넥터를 생성하는 AI 기반 프레임워크입니다. 아래의 수동 단계를 시작하기 전에, [DataHub Skills 가이드](./datahub-skills.md)를 확인하고 몇 주 대신 몇 분 만에 통합을 구축해 보세요.
 
 :::
 
-There are two ways of adding a metadata ingestion source.
+메타데이터 ingestion source를 추가하는 방법은 두 가지가 있습니다.
 
-1. You are going to contribute the custom source directly to the Datahub project.
-2. You are writing the custom source for yourself and are not going to contribute back (yet).
+1. 커스텀 source를 Datahub 프로젝트에 직접 기여하는 경우.
+2. 직접 사용하기 위해 커스텀 source를 작성하고 (아직) 기여하지 않는 경우.
 
-If you are going for case (1) just follow the steps 1 to 9 below. In case you are building it for yourself you can skip
-steps 4-8 (but maybe write tests and docs for yourself as well) and follow the documentation
-on [how to use custom ingestion sources](../docs/how/add-custom-ingestion-source.md)
-without forking Datahub.
+경우 (1)의 경우 아래 1~9단계를 따르세요. 직접 사용하기 위해 개발하는 경우에는
+4~8단계를 건너뛸 수 있으며(단, 본인을 위한 테스트와 문서 작성은 권장합니다) Datahub를 포크하지 않고
+[커스텀 ingestion source 사용 방법](../docs/how/add-custom-ingestion-source.md)에 대한 문서를 따르세요.
 
 :::note
 
-This guide assumes that you've already followed the metadata ingestion [developing guide](./developing.md) to set up
-your local environment.
+이 가이드는 로컬 환경 설정을 위해 이미 메타데이터 ingestion [개발 가이드](./developing.md)를 따랐다고 가정합니다.
 
 :::
 
-### 1. Set up the configuration model
+### 1. 구성 모델 설정하기
 
-We use [pydantic](https://pydantic-docs.helpmanual.io/) for configuration, and all models must inherit
-from `ConfigModel`. The [file source](./src/datahub/ingestion/source/file.py) is a good example.
+구성에는 [pydantic](https://pydantic-docs.helpmanual.io/)을 사용하며, 모든 모델은 `ConfigModel`을 상속해야 합니다. [file source](./src/datahub/ingestion/source/file.py)가 좋은 예시입니다.
 
-#### Documentation for Configuration Classes
+#### 구성 클래스 문서화
 
-We use [pydantic](https://pydantic-docs.helpmanual.io) conventions for documenting configuration flags. Use the `description` attribute to write rich documentation for your configuration field.
+구성 플래그를 문서화하기 위해 [pydantic](https://pydantic-docs.helpmanual.io) 규칙을 사용합니다. `description` 속성을 사용하여 구성 필드에 대한 풍부한 문서를 작성하세요.
 
-For example, the following code:
+예를 들어 다음 코드:
 
 ```python
 from pydantic import Field
@@ -50,56 +47,53 @@ class LookerAPIConfig(ConfigModel):
     )
 ```
 
-generates the following documentation:
+는 다음과 같은 문서를 생성합니다:
 
 <p align="center">
   <img width="70%"  src="https://raw.githubusercontent.com/datahub-project/static-assets/main/imgs/metadata-ingestion/generated_config_docs.png"/>
 </p>
 
 :::note
-Inline markdown or code snippets are not yet supported for field level documentation.
+인라인 마크다운이나 코드 스니펫은 아직 필드 레벨 문서에서 지원되지 않습니다.
 :::
 
-### 2. Set up the reporter
+### 2. 리포터 설정하기
 
-The reporter interface enables the source to report statistics, warnings, failures, and other information about the run.
-Some sources use the default `SourceReport` class, but others inherit and extend that class.
+리포터 인터페이스를 통해 source는 실행에 대한 통계, 경고, 실패 및 기타 정보를 보고할 수 있습니다.
+일부 source는 기본 `SourceReport` 클래스를 사용하지만, 다른 source는 이 클래스를 상속하고 확장합니다.
 
-### 3. Implement the source itself
+### 3. Source 자체 구현하기
 
-The core for the source is the `get_workunits_internal` method, which produces a stream of metadata events (typically MCP objects) wrapped up in a MetadataWorkUnit.
-The [file source](./src/datahub/ingestion/source/file.py) is a good and simple example.
+source의 핵심은 `get_workunits_internal` 메서드로, 메타데이터 이벤트(일반적으로 MCP 객체)의 스트림을 MetadataWorkUnit으로 감싸서 생성합니다.
+[file source](./src/datahub/ingestion/source/file.py)가 좋고 간단한 예시입니다.
 
-The MetadataChangeEventClass is defined in the metadata models which are generated
-under `metadata-ingestion/src/datahub/metadata/schema_classes.py`. There are also
-some [convenience methods](./src/datahub/emitter/mce_builder.py) for commonly used operations.
+MetadataChangeEventClass는 `metadata-ingestion/src/datahub/metadata/schema_classes.py`에 생성되는 메타데이터 모델에서 정의됩니다. 일반적으로 사용되는 작업을 위한 [편의 메서드](./src/datahub/emitter/mce_builder.py)도 있습니다.
 
-### 4. Set up the dependencies
+### 4. 의존성 설정하기
 
-Note: Steps 4-8 are only required if you intend to contribute the source back to the Datahub project.
+참고: 4~8단계는 source를 Datahub 프로젝트에 기여할 의도가 있는 경우에만 필요합니다.
 
-Declare the source's pip dependencies in the `plugins` variable of the [setup script](./setup.py).
+[설정 스크립트](./setup.py)의 `plugins` 변수에 source의 pip 의존성을 선언합니다.
 
-### 5. Enable discoverability
+### 5. 검색 가능성 활성화하기
 
-Declare the source under the `entry_points` variable of the [setup script](./setup.py). This enables the source to be
-listed when running `datahub check plugins`, and sets up the source's shortened alias for use in recipes.
+[설정 스크립트](./setup.py)의 `entry_points` 변수에 source를 선언합니다. 이를 통해 `datahub check plugins` 실행 시 source가 목록에 표시되고, recipe에서 사용할 source의 단축 별칭을 설정합니다.
 
-### 6. Write tests
+### 6. 테스트 작성하기
 
-Tests go in the `tests` directory. We use the [pytest framework](https://pytest.org/).
+테스트는 `tests` 디렉토리에 작성합니다. [pytest 프레임워크](https://pytest.org/)를 사용합니다.
 
-### 7. Write docs
+### 7. 문서 작성하기
 
-#### 7.1 Set up the source class for automatic documentation
+#### 7.1 자동 문서화를 위한 source 클래스 설정
 
-- Indicate the platform name that this source class produces metadata for using the `@platform_name` decorator. We prefer using the human-readable platform name, so e.g. BigQuery (not bigquery).
-- Indicate the config class being used by the source by using the `@config_class` decorator.
-- Indicate the support status of the connector by using the `@support_status` decorator.
-- Indicate what capabilities the connector supports (and what important capabilities it does NOT support) by using the `@capability` decorator.
-- Add rich documentation for the connector by utilizing docstrings on your Python class. Markdown is supported.
+- `@platform_name` 데코레이터를 사용하여 이 source 클래스가 메타데이터를 생성하는 플랫폼 이름을 표시합니다. 사람이 읽기 쉬운 플랫폼 이름(예: bigquery 대신 BigQuery)을 선호합니다.
+- `@config_class` 데코레이터를 사용하여 source에서 사용하는 구성 클래스를 표시합니다.
+- `@support_status` 데코레이터를 사용하여 커넥터의 지원 상태를 표시합니다.
+- `@capability` 데코레이터를 사용하여 커넥터가 지원하는 기능(및 지원하지 않는 중요 기능)을 표시합니다.
+- Python 클래스의 docstring을 활용하여 커넥터에 대한 풍부한 문서를 추가합니다. 마크다운이 지원됩니다.
 
-See below a simple example of how to do this for any source.
+모든 source에 이를 적용하는 간단한 예시는 아래를 참조하세요.
 
 ```python
 
@@ -138,25 +132,25 @@ class FileSource(Source):
 
 ```
 
-#### 7.2 Write custom documentation
+#### 7.2 커스텀 문서 작성하기
 
-- Create a copy of [`source-docs-template.md`](./source-docs-template.md) and edit all relevant components.
-- Name the document as `<plugin.md>` and move it to `metadata-ingestion/docs/sources/<platform>/<plugin>.md`. For example for the Kafka platform, under the `kafka` plugin, move the document to `metadata-ingestion/docs/sources/kafka/kafka.md`.
-- Add a quickstart recipe corresponding to the plugin under `metadata-ingestion/docs/sources/<platform>/<plugin>_recipe.yml`. For example, for the Kafka platform, under the `kafka` plugin, there is a quickstart recipe located at `metadata-ingestion/docs/sources/kafka/kafka_recipe.yml`.
-- To write platform-specific documentation (that is cross-plugin), write the documentation under `metadata-ingestion/docs/sources/<platform>/README.md`. For example, cross-plugin documentation for the BigQuery platform is located under `metadata-ingestion/docs/sources/bigquery/README.md`.
+- [`source-docs-template.md`](./source-docs-template.md)의 사본을 만들고 관련 구성 요소를 편집합니다.
+- 문서 이름을 `<plugin.md>`로 지정하고 `metadata-ingestion/docs/sources/<platform>/<plugin>.md`로 이동합니다. 예를 들어 Kafka 플랫폼의 `kafka` 플러그인의 경우, 문서를 `metadata-ingestion/docs/sources/kafka/kafka.md`로 이동합니다.
+- 플러그인에 해당하는 빠른 시작 recipe를 `metadata-ingestion/docs/sources/<platform>/<plugin>_recipe.yml`에 추가합니다. 예를 들어 Kafka 플랫폼의 `kafka` 플러그인에는 `metadata-ingestion/docs/sources/kafka/kafka_recipe.yml`에 빠른 시작 recipe가 있습니다.
+- 플랫폼별 문서(플러그인 간 공통)를 작성하려면 `metadata-ingestion/docs/sources/<platform>/README.md`에 문서를 작성합니다. 예를 들어 BigQuery 플랫폼의 플러그인 간 공통 문서는 `metadata-ingestion/docs/sources/bigquery/README.md`에 있습니다.
 
-#### 7.3 Viewing the Documentation
+#### 7.3 문서 확인하기
 
-Documentation for the source can be viewed by running the documentation generator from the `docs-website` module.
+source의 문서는 `docs-website` 모듈에서 문서 생성기를 실행하여 확인할 수 있습니다.
 
-##### Step 1: Build the Ingestion docs
+##### 1단계: 수집 문서 빌드하기
 
 ```console
-# From the root of DataHub repo
+# DataHub 저장소 루트에서
 ./gradlew :metadata-ingestion:docGen
 ```
 
-If this finishes successfully, you will see output messages like:
+성공적으로 완료되면 다음과 같은 출력 메시지가 표시됩니다:
 
 ```console
 Ingestion Documentation Generation Complete
@@ -175,18 +169,18 @@ Ingestion Documentation Generation Complete
 ############################################
 ```
 
-You can also find documentation files generated at `./docs/generated/ingestion/sources` relative to the root of the DataHub repo. You should be able to locate your specific source's markdown file here and investigate it to make sure things look as expected.
+DataHub 저장소 루트를 기준으로 `./docs/generated/ingestion/sources`에 생성된 문서 파일도 확인할 수 있습니다. 특정 source의 마크다운 파일을 찾아 예상대로 보이는지 확인할 수 있습니다.
 
-#### Step 2: Build the Entire Documentation
+#### 2단계: 전체 문서 빌드하기
 
-To view how this documentation looks in the browser, there is one more step. Just build the entire docusaurus page from the `docs-website` module.
+이 문서가 브라우저에서 어떻게 보이는지 확인하려면 한 단계가 더 필요합니다. `docs-website` 모듈에서 전체 docusaurus 페이지를 빌드합니다.
 
 ```console
-# From the root of DataHub repo
+# DataHub 저장소 루트에서
 ./gradlew :docs-website:build
 ```
 
-This will generate messages like:
+이렇게 하면 다음과 같은 메시지가 생성됩니다:
 
 ```console
 ...
@@ -229,37 +223,36 @@ BUILD SUCCESSFUL in 35s
 36 actionable tasks: 16 executed, 20 up-to-date
 ```
 
-After this you need to run the following script from the `docs-website` module.
+이후 `docs-website` 모듈에서 다음 스크립트를 실행해야 합니다.
 
 ```console
 cd docs-website
 npm run serve
 ```
 
-Now, browse to http://localhost:3000 or whichever port npm is running on, to browse the docs.
-Your source should show up on the left sidebar under `Metadata Ingestion / Sources`.
+이제 http://localhost:3000 또는 npm이 실행 중인 포트로 이동하여 문서를 탐색합니다.
+source는 왼쪽 사이드바의 `Metadata Ingestion / Sources` 아래에 표시됩니다.
 
-### 8. Add SQL Alchemy mapping (if applicable)
+### 8. SQL Alchemy 매핑 추가 (해당되는 경우)
 
-Add the source in `get_platform_from_sqlalchemy_uri` function
-in [sql_common.py](./src/datahub/ingestion/source/sql/sql_common.py) if the source has an sqlalchemy source
+source에 sqlalchemy source가 있는 경우 [sql_common.py](./src/datahub/ingestion/source/sql/sql_common.py)의 `get_platform_from_sqlalchemy_uri` 함수에 source를 추가합니다.
 
-### 9. Add logo for the platform
+### 9. 플랫폼 로고 추가하기
 
-Add the logo image in [images folder](../datahub-web-react/src/images) and add it to be ingested at [startup](../metadata-service/configuration/src/main/resources/bootstrap_mcps/data-platforms.yaml)
+[images 폴더](../datahub-web-react/src/images)에 로고 이미지를 추가하고 [시작 시](../metadata-service/configuration/src/main/resources/bootstrap_mcps/data-platforms.yaml) 수집되도록 추가합니다.
 
-### 10. Update Frontend for UI-based ingestion
+### 10. UI 기반 ingestion을 위한 프론트엔드 업데이트
 
-We are currently transitioning to a more dynamic approach to display available sources for UI-based Managed Ingestion. For the time being, adhere to these next steps to get your source to display in the UI Ingestion tab.
+현재 UI 기반 관리 ingestion에서 사용 가능한 source를 표시하는 더 동적인 방식으로 전환 중입니다. 당분간은 다음 단계를 따라 UI Ingestion 탭에 source를 표시하세요.
 
-#### 10.1 Add to sources.json
+#### 10.1 sources.json에 추가하기
 
-Add new source to the list in [sources.json](https://github.com/datahub-project/datahub/blob/master/datahub-web-react/src/app/ingest/source/builder/sources.json) including a default quickstart recipe. This will render your source in the list of options when creating a new recipe in the UI.
+[sources.json](https://github.com/datahub-project/datahub/blob/master/datahub-web-react/src/app/ingest/source/builder/sources.json)의 목록에 기본 빠른 시작 recipe를 포함한 새 source를 추가합니다. 이렇게 하면 UI에서 새 recipe를 생성할 때 옵션 목록에 source가 표시됩니다.
 
-#### 10.2 Add logo to the React app
+#### 10.2 React 앱에 로고 추가하기
 
-Add your source logo to the React [images folder](https://github.com/datahub-project/datahub/tree/master/datahub-web-react/src/images) so your image is available in memory.
+React [images 폴더](https://github.com/datahub-project/datahub/tree/master/datahub-web-react/src/images)에 source 로고를 추가하여 메모리에서 이미지를 사용할 수 있도록 합니다.
 
-#### 10.3 Update constants.ts
+#### 10.3 constants.ts 업데이트하기
 
-Create new constants in [constants.ts](https://github.com/datahub-project/datahub/blob/master/datahub-web-react/src/app/ingest/source/builder/constants.ts) for the source urn and source name. Update PLATFORM_URN_TO_LOGO to map your source urn to the newly added logo in the images folder.
+[constants.ts](https://github.com/datahub-project/datahub/blob/master/datahub-web-react/src/app/ingest/source/builder/constants.ts)에 source URN과 source 이름에 대한 새 상수를 생성합니다. PLATFORM_URN_TO_LOGO를 업데이트하여 source URN을 images 폴더에 새로 추가한 로고에 매핑합니다.

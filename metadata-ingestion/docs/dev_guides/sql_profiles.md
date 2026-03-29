@@ -1,45 +1,45 @@
-# SQL Profiling
+# SQL 프로파일링
 
-SQL Profiling collects table level and column level statistics.
-The SQL-based profiler does not run alone, but rather can be enabled for other SQL-based sources.
-Enabling profiling will slow down ingestion runs.
+SQL 프로파일링은 테이블 수준 및 컬럼 수준 통계를 수집합니다.
+SQL 기반 프로파일러는 단독으로 실행되지 않고, 다른 SQL 기반 소스에 대해 활성화할 수 있습니다.
+프로파일링을 활성화하면 ingestion 실행 속도가 느려집니다.
 
 :::caution
 
-Running profiling against many tables or over many rows can run up significant costs.
-While we've done our best to limit the expensiveness of the queries the profiler runs, you
-should be prudent about the set of tables profiling is enabled on or the frequency
-of the profiling runs.
+많은 테이블이나 많은 행에 대해 프로파일링을 실행하면 상당한 비용이 발생할 수 있습니다.
+프로파일러가 실행하는 쿼리의 비용을 제한하기 위해 최선을 다했지만,
+프로파일링이 활성화된 테이블 집합이나 프로파일링 실행 빈도에 대해
+신중하게 판단해야 합니다.
 
 :::
 
-## Capabilities
+## 기능
 
-Extracts:
+추출 내용:
 
-- Row and column counts for each table
-- For each column, if applicable:
-  - null counts and proportions
-  - distinct counts and proportions
-  - minimum, maximum, mean, median, standard deviation, some quantile values
-  - histograms or frequencies of unique values
+- 각 테이블의 행 수와 컬럼 수
+- 해당하는 경우 각 컬럼에 대해:
+  - null 수와 비율
+  - 고유값 수와 비율
+  - 최솟값, 최댓값, 평균, 중앙값, 표준 편차, 일부 분위수 값
+  - 고유값의 히스토그램 또는 빈도
 
-## Supported Sources
+## 지원되는 소스
 
-SQL profiling is supported for all SQL sources. Check the individual source page to verify if it supports profiling.
+SQL 프로파일링은 모든 SQL 소스에 대해 지원됩니다. 프로파일링 지원 여부는 개별 소스 페이지를 확인하세요.
 
-## Profiler Implementation
+## 프로파일러 구현
 
-DataHub is transitioning from Great Expectations (GE) based profiling to a custom SQLAlchemy profiler.
+DataHub는 Great Expectations(GE) 기반 프로파일링에서 커스텀 SQLAlchemy 프로파일러로 전환하고 있습니다.
 
-### Current State
+### 현재 상태
 
-Two profiler implementations are available:
+두 가지 프로파일러 구현이 사용 가능합니다:
 
-1. **GE Profiler** (default): Uses Great Expectations library
-2. **SQLAlchemy Profiler** (opt-in): Custom implementation with no external GE dependency
+1. **GE 프로파일러** (기본값): Great Expectations 라이브러리 사용
+2. **SQLAlchemy 프로파일러** (옵트인): 외부 GE 종속성 없는 커스텀 구현
 
-The SQLAlchemy profiler can be enabled via `profile.method = "sqlalchemy"`:
+SQLAlchemy 프로파일러는 `profile.method = "sqlalchemy"`를 통해 활성화할 수 있습니다:
 
 ```yaml
 source:
@@ -49,8 +49,8 @@ source:
       method: sqlalchemy
 ```
 
-### Rollout Plan
+### 롤아웃 계획
 
-- **Phase 1 (Current):** SQLAlchemy profiler available as opt-in. Users can test and validate.
-- **Phase 2 (Future):** SQLAlchemy profiler becomes the default. GE profiler still available for compatibility.
-- **Phase 3 (Future):** GE profiler removed from codebase to reduce maintenance and dependencies.
+- **1단계 (현재):** SQLAlchemy 프로파일러를 옵트인으로 사용 가능. 사용자가 테스트하고 검증할 수 있습니다.
+- **2단계 (미래):** SQLAlchemy 프로파일러가 기본값이 됩니다. 호환성을 위해 GE 프로파일러는 여전히 사용 가능합니다.
+- **3단계 (미래):** 유지 관리 및 종속성을 줄이기 위해 GE 프로파일러가 코드베이스에서 제거됩니다.

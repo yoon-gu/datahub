@@ -1,90 +1,90 @@
-# Saving MCPs to a File
+# MCP를 파일로 저장하기
 
-## What is an MCP?
+## MCP란 무엇인가?
 
-A `MetadataChangeProposal` (MCP) represents an atomic unit of change in the DataHub Metadata Graph. Each MCP carries a single aspect in its payload and is used to propose changes to DataHub's metadata.
+`MetadataChangeProposal`(MCP)은 DataHub 메타데이터 그래프에서 변경의 원자적 단위를 나타냅니다. 각 MCP는 페이로드에 단일 aspect를 전달하며 DataHub의 메타데이터에 변경을 제안하는 데 사용됩니다.
 
-- Represents a single aspect change
-- Used for proposing metadata changes to DataHub
-- Serves as the basic building block for metadata ingestion
+- 단일 aspect 변경을 나타냅니다.
+- DataHub에 메타데이터 변경을 제안하는 데 사용됩니다.
+- 메타데이터 수집의 기본 빌딩 블록 역할을 합니다.
 
-For more information, please see guides on [DataHub Metadata Events](../what/mxe.md) and [MCPs](mcp-mcl.md).
+자세한 내용은 [DataHub 메타데이터 이벤트](../what/mxe.md) 및 [MCP](mcp-mcl.md) 가이드를 참조하세요.
 
-## Why Write MCPs as Files?
+## 왜 MCP를 파일로 쓰는가?
 
-MCPs in JSON file format are particularly valuable because they represent the lowest and most granular form of events in DataHub. There are two main use cases for using previously saved MCP files:
+JSON 파일 형식의 MCP는 DataHub에서 가장 낮고 가장 세분화된 이벤트 형식을 나타내기 때문에 특히 가치가 있습니다. 이전에 저장된 MCP 파일을 사용하는 두 가지 주요 사용 사례가 있습니다:
 
-### Testing
+### 테스트
 
-MCPs allow you to easily ingest metadata. You can:
+MCP를 사용하면 메타데이터를 쉽게 수집할 수 있습니다. 다음이 가능합니다:
 
-- Use it for entity ingestion by running a simple command, without a dependency on a ingestion connector:
+- 수집 커넥터에 대한 의존성 없이 간단한 명령으로 entity 수집에 사용할 수 있습니다:
   ```bash
   datahub ingest mcps <file_name>.json
   ```
-- Create reproducible test cases for metadata ingestion
-- Write and run tests when contributing to DataHub (see DataHub Testing Guide for more details)
+- 메타데이터 수집을 위한 재현 가능한 테스트 케이스를 만들 수 있습니다.
+- DataHub에 기여할 때 테스트를 작성하고 실행할 수 있습니다(자세한 내용은 DataHub 테스팅 가이드를 참조하세요).
 
-### Debugging
+### 디버깅
 
-MCPs are valuable for debugging because they let you:
+MCP는 다음을 할 수 있기 때문에 디버깅에 유용합니다:
 
-- Examine entities in your DataHub instance at a granular level
-- Export existing entities to MCP files for analysis
-- Verify entity structures and relationships before ingestion
+- DataHub 인스턴스의 entity를 세분화된 수준에서 검사할 수 있습니다.
+- 분석을 위해 기존 entity를 MCP 파일로 내보낼 수 있습니다.
+- 수집 전 entity 구조와 관계를 확인할 수 있습니다.
 
-For example, if you want to understand the structure of entities in your DataHub instance, you can emit them as MCP files and examine their contents in detail.
+예를 들어, DataHub 인스턴스에서 entity의 구조를 이해하려면 MCP 파일로 내보내고 그 내용을 자세히 검사할 수 있습니다.
 
-## Saving MCPs to a file
+## MCP를 파일로 저장하기
 
-### Exporting from Ingestion Source
+### 수집 소스에서 내보내기
 
-You can export MCPs from an ingestion source (such as BigQuery, Snowflake, etc.) to a file using the `file` sink type in your recipe. This approach is useful when you want to:
+레시피에서 `file` 싱크 타입을 사용하여 수집 소스(BigQuery, Snowflake 등)에서 파일로 MCP를 내보낼 수 있습니다. 이 접근 방식은 다음과 같은 경우에 유용합니다:
 
-- Save MCPs for later ingestion
-- Examine existing entities in the source
-- Debug ingestion issues
+- 나중에 수집하기 위해 MCP 저장
+- 소스에서 기존 entity 검사
+- 수집 문제 디버깅
 
-To get started, create a recipe file (e.g., `export_mcps.yaml`) specifying your target source and the file `sink` type:
+시작하려면 대상 소스와 파일 `sink` 타입을 지정하는 레시피 파일(예: `export_mcps.yaml`)을 만드세요:
 
 ```yaml
 source:
-  type: bigquery # Replace with your source type
-  config: ... # Add your source configuration here
+  type: bigquery # 소스 타입으로 교체하세요
+  config: ... # 소스 설정을 여기에 추가하세요
 sink:
   type: "file"
   config:
     filename: "mcps.json"
 ```
 
-Run the ingestion with the following command:
+다음 명령으로 수집을 실행하세요:
 
 ```python
 datahub ingest -c export_mcps.yaml
 ```
 
-This command will extract all entities from your source and write them to `mcps.json` in MCP format.
+이 명령은 소스에서 모든 entity를 추출하고 MCP 형식으로 `mcps.json`에 씁니다.
 
-For more details about the `file` sink type, please refer to [Metadata File](../../metadata-ingestion/sink_docs/metadata-file.md)
+`file` 싱크 타입에 대한 자세한 내용은 [메타데이터 파일](../../metadata-ingestion/sink_docs/metadata-file.md)을 참조하세요.
 
-### Exporting from DataHub Instance
+### DataHub 인스턴스에서 내보내기
 
-You can also export MCPs directly from an existing DataHub instance using a similar recipe approach. This method is particularly useful when you need to:
+유사한 레시피 접근 방식을 사용하여 기존 DataHub 인스턴스에서 직접 MCP를 내보낼 수도 있습니다. 이 방법은 다음과 같은 경우에 특히 유용합니다:
 
-- Examine entities already in your DataHub instance
-- Create test cases based on real data
-- Debug entity relationships
+- DataHub 인스턴스에 이미 있는 entity 검사
+- 실제 데이터를 기반으로 테스트 케이스 만들기
+- entity 관계 디버깅
 
-The process is similar to exporting from an ingestion source, with the only difference being that you'll use `datahub` as the source type.
-Create a recipe file (e.g., `export_mcps.yaml`) with this configuration:
+프로세스는 수집 소스에서 내보내는 것과 유사하며, 유일한 차이점은 소스 타입으로 `datahub`를 사용한다는 것입니다.
+다음 설정으로 레시피 파일(예: `export_mcps.yaml`)을 만드세요:
 
 ```yaml
 source:
   type: datahub
   config:
-    # Add your DataHub connection configuration here
+    # DataHub 연결 설정을 여기에 추가하세요
     server: "http://localhost:8080"
-    token: "your-access-token" # If authentication is required
+    token: "your-access-token" # 인증이 필요한 경우
 
 sink:
   type: "file"
@@ -92,17 +92,17 @@ sink:
     filename: "mcps.json"
 ```
 
-Run the ingestion:
+수집을 실행하세요:
 
 ```python
 datahub ingest -c export_mcps.yaml
 ```
 
-This will extract all entities from your DataHub instance and save them to `mcps.json` in MCP format.
+이렇게 하면 DataHub 인스턴스에서 모든 entity를 추출하고 MCP 형식으로 `mcps.json`에 저장합니다.
 
-### Creating MCPs with Python SDK
+### Python SDK로 MCP 만들기
 
-You can use the `write_metadata_file` helper to generate MCPs programmatically:
+`write_metadata_file` 헬퍼를 사용하여 프로그래밍 방식으로 MCP를 생성할 수 있습니다:
 
 ```python
 from datahub.ingestion.sink.file import write_metadata_file
@@ -128,15 +128,15 @@ write_metadata_file(
 )
 ```
 
-Edit `records` to create the event and entities for your needs.
+필요에 맞는 이벤트와 entity를 만들기 위해 `records`를 편집하세요.
 
-Run the Python script to generate your defined MCPs and save them to a file:
+Python 스크립트를 실행하여 정의된 MCP를 생성하고 파일에 저장하세요:
 
 ```bash
 python <file_name>.py
 ```
 
-For example, the above script will generate an MCP file with a single dataset entity.
+예를 들어, 위 스크립트는 단일 dataset entity가 포함된 MCP 파일을 생성합니다.
 
 ```json
 [

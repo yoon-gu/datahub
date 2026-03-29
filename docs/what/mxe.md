@@ -1,54 +1,48 @@
-# Metadata Events
+# 메타데이터 이벤트
 
-DataHub makes use a few important Kafka events for operation. The most notable of these include
+DataHub는 운영을 위해 몇 가지 중요한 Kafka 이벤트를 사용합니다. 가장 주목할 만한 이벤트는 다음과 같습니다.
 
 1. Metadata Change Proposal
-2. Metadata Change Log (Versioned + Timeseries)
+2. Metadata Change Log (버전 관리형 + 시계열형)
 3. Platform Event
 
-Each event is originally authored using [PDL](https://linkedin.github.io/rest.li/pdl_schema), a modeling language developed by LinkedIn, and
-then converted into their Avro equivalents, which are used when writing and reading the events to Kafka.
+각 이벤트는 LinkedIn이 개발한 모델링 언어인 [PDL](https://linkedin.github.io/rest.li/pdl_schema)을 사용하여 작성된 후, Kafka에서 이벤트를 쓰고 읽을 때 사용되는 Avro 형식으로 변환됩니다.
 
-In the document, we'll describe each of these events in detail - including notes about their structure & semantics.
+이 문서에서는 각 이벤트의 구조 및 의미론적 특성을 포함하여 각 이벤트를 상세히 설명합니다.
 
 ## Metadata Change Proposal (MCP)
 
-A Metadata Change Proposal represents a request to change to a specific [aspect](aspect.md) on an enterprise's Metadata
-Graph. Each MCP provides a new value for a given aspect. For example, a single MCP can
-be emitted to change ownership or documentation or domains or deprecation status for a data asset.
+Metadata Change Proposal은 기업의 메타데이터 그래프에서 특정 [aspect](aspect.md)를 변경하기 위한 요청을 나타냅니다. 각 MCP는 주어진 aspect의 새로운 값을 제공합니다. 예를 들어, 단일 MCP로 데이터 자산의 소유권, 문서, 도메인 또는 사용 중단 상태를 변경하도록 발행할 수 있습니다.
 
-### Emission
+### 발행 (Emission)
 
-MCPs may be emitted by clients of DataHub's low-level ingestion APIs (e.g. ingestion sources)
-during the process of metadata ingestion. The DataHub Python API exposes an interface for
-easily sending MCPs into DataHub.
+MCP는 메타데이터 ingestion 과정에서 DataHub의 저수준 ingestion API 클라이언트(예: ingestion 소스)가 발행할 수 있습니다. DataHub Python API는 MCP를 DataHub로 쉽게 전송할 수 있는 인터페이스를 제공합니다.
 
-The default Kafka topic name for MCPs is `MetadataChangeProposal_v1`.
+MCP의 기본 Kafka 토픽 이름은 `MetadataChangeProposal_v1`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-DataHub's storage layer actively listens for new Metadata Change Proposals, attempts
-to apply the requested change to the Metadata Graph.
+DataHub의 스토리지 계층은 새로운 Metadata Change Proposal을 능동적으로 수신하여 메타데이터 그래프에 요청된 변경 사항을 적용하려고 시도합니다.
 
-### Schema
+### 스키마
 
-| Name               | Type   | Description                                                                                                                                                                                                                                       | Optional |
-| ------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| entityUrn          | String | The unique identifier for the Entity being changed. For example, a Dataset's urn.                                                                                                                                                                 | False    |
-| entityType         | String | The type of the entity the new aspect is associated with. This corresponds to the entity name in the DataHub Entity Registry, for example 'dataset'.                                                                                              | False    |
-| entityKeyAspect    | Object | The key struct of the entity that was changed. Only present if the Metadata Change Proposal contained the raw key struct.                                                                                                                         | True     |
-| changeType         | String | The change type. CREATE, UPSERT and DELETE are currently supported. PATCH has limited support for specific aspects                                                                                                                                | False    |
-| aspectName         | String | The entity aspect which was changed.                                                                                                                                                                                                              | False    |
-| aspect             | Object | The new aspect value. Null if the aspect was deleted.                                                                                                                                                                                             | True     |
-| aspect.contentType | String | The serialization type of the aspect itself. The only supported value is `application/json`.                                                                                                                                                      | False    |
-| aspect.value       | String | The serialized aspect. This is a JSON-serialized representing the aspect document originally defined in PDL. See https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin for more.                   | False    |
-| systemMetadata     | Object | The new system metadata. This includes the the ingestion run-id, model registry and more. For the full structure, see https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl | True     |
+| 이름               | 타입   | 설명                                                                                                                                                                                                                                       | 선택적 여부 |
+| ------------------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| entityUrn          | String | 변경 대상 Entity의 고유 식별자. 예: Dataset의 URN.                                                                                                                                                                                         | False    |
+| entityType         | String | 새 aspect와 연관된 entity의 타입. DataHub Entity Registry의 entity 이름에 해당합니다. 예: 'dataset'.                                                                                                                                       | False    |
+| entityKeyAspect    | Object | 변경된 entity의 키 구조체. Metadata Change Proposal이 원시 키 구조체를 포함한 경우에만 존재합니다.                                                                                                                                          | True     |
+| changeType         | String | 변경 타입. 현재 CREATE, UPSERT, DELETE가 지원됩니다. PATCH는 특정 aspect에 대해 제한적으로 지원됩니다.                                                                                                                                      | False    |
+| aspectName         | String | 변경된 entity aspect.                                                                                                                                                                                                                       | False    |
+| aspect             | Object | 새로운 aspect 값. aspect가 삭제된 경우 Null.                                                                                                                                                                                                | True     |
+| aspect.contentType | String | aspect 자체의 직렬화 타입. 지원되는 유일한 값은 `application/json`입니다.                                                                                                                                                                   | False    |
+| aspect.value       | String | 직렬화된 aspect. PDL로 정의된 aspect 문서를 JSON으로 직렬화한 것입니다. 자세한 내용은 https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin 을 참조하세요.                                   | False    |
+| systemMetadata     | Object | 새로운 시스템 메타데이터. ingestion 실행 ID, 모델 레지스트리 등을 포함합니다. 전체 구조는 https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl 을 참조하세요.         | True     |
 
-The PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeProposal.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeProposal.pdl)에서 확인할 수 있습니다.
 
-### Examples
+### 예시
 
-An MCP representing a request to update the 'ownership' aspect for a particular Dataset:
+특정 Dataset의 'ownership' aspect 업데이트 요청을 나타내는 MCP:
 
 ```json
 {
@@ -70,62 +64,53 @@ An MCP representing a request to update the 'ownership' aspect for a particular 
 }
 ```
 
-Note how the aspect payload is serialized as JSON inside the "value" field. The exact structure
-of the aspect is determined by its PDL schema. (For example, the [ownership](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/common/Ownership.pdl) schema)
+aspect 페이로드가 "value" 필드 내에 JSON으로 직렬화된 방식에 주목하세요. aspect의 정확한 구조는 PDL 스키마에 의해 결정됩니다. (예: [ownership](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/common/Ownership.pdl) 스키마)
 
 ## Metadata Change Log (MCL)
 
-A Metadata Change Log represents _any_ change which has been made to the Metadata Graph.
-Metadata Change Log events are emitted to Kafka immediately after writing the change
-the durable storage.
+Metadata Change Log는 메타데이터 그래프에 적용된 _모든_ 변경 사항을 나타냅니다.
+Metadata Change Log 이벤트는 변경 사항이 내구성 있는 스토리지에 기록된 직후 Kafka로 발행됩니다.
 
-There are 2 flavors of Metadata Change Log: _versioned_ and _timeseries_. These correspond to the type
-of aspects which were updated for a given change. **Versioned** aspects are those
-which represent the "latest" state of some attributes, for example the most recent owners of an asset
-or its documentation. **Timeseries** aspects are those which represent events related to an asset
-that occurred at a particular time, for example profiling of a Dataset.
+Metadata Change Log에는 _버전 관리형(versioned)_ 과 _시계열형(timeseries)_ 의 두 가지 유형이 있습니다. 이는 주어진 변경에 대해 업데이트된 aspect의 타입에 해당합니다. **버전 관리형** aspect는 일부 속성의 "최신" 상태를 나타내는 것으로, 예를 들어 자산의 가장 최근 소유자나 문서가 해당됩니다. **시계열형** aspect는 특정 시점에 발생한 자산 관련 이벤트를 나타내는 것으로, 예를 들어 Dataset의 프로파일링이 해당됩니다.
 
-### Emission
+### 발행 (Emission)
 
-MCLs are emitted when _any_ change is made to an entity on the DataHub Metadata Graph, this includes
-writing to any aspect of an entity.
+MCL은 DataHub 메타데이터 그래프의 entity에 _어떠한_ 변경이든 적용될 때 발행됩니다. 여기에는 entity의 어떤 aspect에 대한 쓰기도 포함됩니다.
 
-Two distinct topics are maintained for Metadata Change Log. The default Kafka topic name for **versioned** aspects is `MetadataChangeLog_Versioned_v1` and for
-**timeseries** aspects is `MetadataChangeLog_Timeseries_v1`.
+Metadata Change Log에는 두 개의 별도 토픽이 유지됩니다. **버전 관리형** aspect의 기본 Kafka 토픽 이름은 `MetadataChangeLog_Versioned_v1`이고, **시계열형** aspect의 경우 `MetadataChangeLog_Timeseries_v1`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-DataHub ships with a Kafka Consumer Job (mae-consumer-job) which listens for MCLs and uses them to update DataHub's search and graph indices,
-as well as to generate derived Platform Events (described below).
+DataHub는 MCL을 수신하여 DataHub의 검색 및 그래프 인덱스를 업데이트하고, 아래에서 설명하는 파생 Platform Event를 생성하는 Kafka Consumer Job(mae-consumer-job)과 함께 제공됩니다.
 
-In addition, the [Actions Framework](../actions/README.md) consumes Metadata Change Logs to power its [Metadata Change Log](../actions/events/metadata-change-log-event.md) event API.
+또한, [Actions Framework](../actions/README.md)는 [Metadata Change Log](../actions/events/metadata-change-log-event.md) 이벤트 API를 지원하기 위해 Metadata Change Log를 소비합니다.
 
-### Schema
+### 스키마
 
-| Name                            | Type   | Description                                                                                                                                                                                                                                            | Optional |
-| ------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
-| entityUrn                       | String | The unique identifier for the Entity being changed. For example, a Dataset's urn.                                                                                                                                                                      | False    |
-| entityType                      | String | The type of the entity the new aspect is associated with. This corresponds to the entity name in the DataHub Entity Registry, for example 'dataset'.                                                                                                   | False    |
-| entityKeyAspect                 | Object | The key struct of the entity that was changed. Only present if the Metadata Change Proposal contained the raw key struct.                                                                                                                              | True     |
-| changeType                      | String | The change type. CREATE, UPSERT and DELETE are currently supported.                                                                                                                                                                                    | False    |
-| aspectName                      | String | The entity aspect which was changed.                                                                                                                                                                                                                   | False    |
-| aspect                          | Object | The new aspect value. Null if the aspect was deleted.                                                                                                                                                                                                  | True     |
-| aspect.contentType              | String | The serialization type of the aspect itself. The only supported value is `application/json`.                                                                                                                                                           | False    |
-| aspect.value                    | String | The serialized aspect. This is a JSON-serialized representing the aspect document originally defined in PDL. See https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin for more.                        | False    |
-| previousAspectValue             | Object | The previous aspect value. Null if the aspect did not exist previously.                                                                                                                                                                                | True     |
-| previousAspectValue.contentType | String | The serialization type of the aspect itself. The only supported value is `application/json`                                                                                                                                                            | False    |
-| previousAspectValue.value       | String | The serialized aspect. This is a JSON-serialized representing the aspect document originally defined in PDL. See https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin for more.                        | False    |
-| systemMetadata                  | Object | The new system metadata. This includes the the ingestion run-id, model registry and more. For the full structure, see https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl      | True     |
-| previousSystemMetadata          | Object | The previous system metadata. This includes the the ingestion run-id, model registry and more. For the full structure, see https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl | True     |
-| created                         | Object | Audit stamp about who triggered the Metadata Change and when.                                                                                                                                                                                          | False    |
-| created.time                    | Number | The timestamp in milliseconds when the aspect change occurred.                                                                                                                                                                                         | False    |
-| created.actor                   | String | The URN of the actor (e.g. corpuser) that triggered the change.                                                                                                                                                                                        |
+| 이름                            | 타입   | 설명                                                                                                                                                                                                                                            | 선택적 여부 |
+| ------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| entityUrn                       | String | 변경 대상 Entity의 고유 식별자. 예: Dataset의 URN.                                                                                                                                                                                              | False    |
+| entityType                      | String | 새 aspect와 연관된 entity의 타입. DataHub Entity Registry의 entity 이름에 해당합니다. 예: 'dataset'.                                                                                                                                             | False    |
+| entityKeyAspect                 | Object | 변경된 entity의 키 구조체. Metadata Change Proposal이 원시 키 구조체를 포함한 경우에만 존재합니다.                                                                                                                                               | True     |
+| changeType                      | String | 변경 타입. 현재 CREATE, UPSERT, DELETE가 지원됩니다.                                                                                                                                                                                             | False    |
+| aspectName                      | String | 변경된 entity aspect.                                                                                                                                                                                                                             | False    |
+| aspect                          | Object | 새로운 aspect 값. aspect가 삭제된 경우 Null.                                                                                                                                                                                                     | True     |
+| aspect.contentType              | String | aspect 자체의 직렬화 타입. 지원되는 유일한 값은 `application/json`입니다.                                                                                                                                                                        | False    |
+| aspect.value                    | String | 직렬화된 aspect. PDL로 정의된 aspect 문서를 JSON으로 직렬화한 것입니다. 자세한 내용은 https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin 을 참조하세요.                                        | False    |
+| previousAspectValue             | Object | 이전 aspect 값. 해당 aspect가 이전에 존재하지 않았다면 Null.                                                                                                                                                                                     | True     |
+| previousAspectValue.contentType | String | aspect 자체의 직렬화 타입. 지원되는 유일한 값은 `application/json`입니다.                                                                                                                                                                        | False    |
+| previousAspectValue.value       | String | 직렬화된 aspect. PDL로 정의된 aspect 문서를 JSON으로 직렬화한 것입니다. 자세한 내용은 https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin 을 참조하세요.                                        | False    |
+| systemMetadata                  | Object | 새로운 시스템 메타데이터. ingestion 실행 ID, 모델 레지스트리 등을 포함합니다. 전체 구조는 https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl 을 참조하세요.              | True     |
+| previousSystemMetadata          | Object | 이전 시스템 메타데이터. ingestion 실행 ID, 모델 레지스트리 등을 포함합니다. 전체 구조는 https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/SystemMetadata.pdl 을 참조하세요.               | True     |
+| created                         | Object | 메타데이터 변경을 트리거한 사람과 시점에 대한 감사 스탬프.                                                                                                                                                                                       | False    |
+| created.time                    | Number | aspect 변경이 발생한 시점의 밀리초 단위 타임스탬프.                                                                                                                                                                                              | False    |
+| created.actor                   | String | 변경을 트리거한 행위자(예: corpuser)의 URN.                                                                                                                                                                                                      |
 
-The PDL schema for can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeLog.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeLog.pdl)에서 확인할 수 있습니다.
 
-### Examples
+### 예시
 
-An MCL corresponding to a change in the 'ownership' aspect for a particular Dataset:
+특정 Dataset의 'ownership' aspect 변경에 해당하는 MCL:
 
 ```json
 {
@@ -163,51 +148,48 @@ An MCL corresponding to a change in the 'ownership' aspect for a particular Data
 }
 ```
 
-Note how the aspect payload is serialized as JSON inside the "value" field. The exact structure
-of the aspect is determined by its PDL schema. (For example, the [ownership](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/common/Ownership.pdl) schema)
+aspect 페이로드가 "value" 필드 내에 JSON으로 직렬화된 방식에 주목하세요. aspect의 정확한 구조는 PDL 스키마에 의해 결정됩니다. (예: [ownership](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/common/Ownership.pdl) 스키마)
 
 ## Platform Event (PE)
 
-A Platform Event represents an arbitrary business-logic event emitted by DataHub. Each
-Platform Event has a `name` which determines its contents.
+Platform Event는 DataHub가 발행하는 임의의 비즈니스 로직 이벤트를 나타냅니다. 각
+Platform Event는 콘텐츠를 결정하는 `name`을 가집니다.
 
-### Types
+### 타입
 
-- **Entity Change Event** (entityChangeEvent): The most important Platform Event is named **Entity Change Event**, and represents a log of semantic changes
-  (tag addition, removal, deprecation change, etc) that have occurred on DataHub. It is used an important
-  component of the DataHub Actions Framework.
+- **Entity Change Event** (entityChangeEvent): 가장 중요한 Platform Event로 **Entity Change Event**라고 하며, DataHub에서 발생한 의미론적 변경(태그 추가, 제거, 사용 중단 변경 등)의 로그를 나타냅니다. DataHub Actions Framework의 중요한 구성 요소로 사용됩니다.
 
-All registered Platform Event types are declared inside the DataHub Entity Registry (`entity-registry.yml`).
+등록된 모든 Platform Event 타입은 DataHub Entity Registry(`entity-registry.yml`) 내에 선언됩니다.
 
-### Emission
+### 발행 (Emission)
 
-All Platform Events are generated by DataHub itself during normal operation.
+모든 Platform Event는 DataHub 자체의 정상 운영 중에 생성됩니다.
 
-PEs are extremely dynamic - they can contain arbitrary payloads depending on the `name`. Thus,
-can be emitted in a variety of circumstances.
+PE는 매우 동적입니다. `name`에 따라 임의의 페이로드를 포함할 수 있으므로,
+다양한 상황에서 발행될 수 있습니다.
 
-The default Kafka topic name for all Platform Events is `PlatformEvent_v1`.
+모든 Platform Event의 기본 Kafka 토픽 이름은 `PlatformEvent_v1`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-The [Actions Framework](../actions/README.md) consumes Platform Events to power its [Entity Change Event](../actions/events/entity-change-event.md) API.
+[Actions Framework](../actions/README.md)는 [Entity Change Event](../actions/events/entity-change-event.md) API를 지원하기 위해 Platform Event를 소비합니다.
 
-### Schema
+### 스키마
 
-| Name                   | Type   | Description                                                                                                                                                                                                                       | Optional |
-| ---------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| header                 | Object | Header fields                                                                                                                                                                                                                     | False    |
-| header.timestampMillis | Long   | The time at which the event was generated.                                                                                                                                                                                        | False    |
-| name                   | String | The name / type of the event.                                                                                                                                                                                                     | False    |
-| payload                | Object | The event itself.                                                                                                                                                                                                                 | False    |
-| payload.contentType    | String | The serialization type of the event payload. The only supported value is `application/json`.                                                                                                                                      | False    |
-| payload.value          | String | The serialized payload. This is a JSON-serialized representing the payload document originally defined in PDL. See https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin for more. | False    |
+| 이름                   | 타입   | 설명                                                                                                                                                                                                                       | 선택적 여부 |
+| ---------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| header                 | Object | 헤더 필드                                                                                                                                                                                                                  | False    |
+| header.timestampMillis | Long   | 이벤트가 생성된 시점.                                                                                                                                                                                                      | False    |
+| name                   | String | 이벤트의 이름/타입.                                                                                                                                                                                                        | False    |
+| payload                | Object | 이벤트 자체.                                                                                                                                                                                                               | False    |
+| payload.contentType    | String | 이벤트 페이로드의 직렬화 타입. 지원되는 유일한 값은 `application/json`입니다.                                                                                                                                              | False    |
+| payload.value          | String | 직렬화된 페이로드. PDL로 정의된 페이로드 문서를 JSON으로 직렬화한 것입니다. 자세한 내용은 https://github.com/datahub-project/datahub/tree/master/metadata-models/src/main/pegasus/com/linkedin 을 참조하세요.              | False    |
 
-The full PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/PlatformEvent.pdl).
+전체 PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/PlatformEvent.pdl)에서 확인할 수 있습니다.
 
-### Examples
+### 예시
 
-An example of an 'Entity Change Event' Platform Event that is emitted when a new owner is added to a Dataset:
+Dataset에 새 소유자가 추가될 때 발행되는 'Entity Change Event' Platform Event 예시:
 
 ```json
 {
@@ -221,70 +203,62 @@ An example of an 'Entity Change Event' Platform Event that is emitted when a new
 }
 ```
 
-Note how the actual payload for the event is serialized as JSON inside the 'payload' field. The exact
-structure of the Platform Event is determined by its PDL schema. (For example, the [Entity Change Event](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/platform/event/v1/EntityChangeEvent.pdl) schema)
+이벤트의 실제 페이로드가 'payload' 필드 내에 JSON으로 직렬화된 방식에 주목하세요. Platform Event의 정확한 구조는 PDL 스키마에 의해 결정됩니다. (예: [Entity Change Event](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/platform/event/v1/EntityChangeEvent.pdl) 스키마)
 
 ## Failed Metadata Change Proposal (FMCP)
 
-When a Metadata Change Proposal cannot be processed successfully, the event is written to a [dead letter queue](https://en.wikipedia.org/wiki/Dead_letter_queue)
-in an event called Failed Metadata Change Proposal (FMCP).
+Metadata Change Proposal을 성공적으로 처리할 수 없는 경우, 해당 이벤트는 Failed Metadata Change Proposal (FMCP)라는 이벤트로 [dead letter queue](https://en.wikipedia.org/wiki/Dead_letter_queue)에 기록됩니다.
 
-The event simply wraps the original Metadata Change Proposal and an error message, which contains the reason for rejection.
-This event can be used for debugging any potential ingestion issues, as well as for re-playing any previous rejected proposal if necessary.
+이 이벤트는 원본 Metadata Change Proposal과 거부 이유가 담긴 오류 메시지를 단순히 래핑합니다.
+이 이벤트는 잠재적인 ingestion 문제를 디버깅하거나 필요 시 이전에 거부된 proposal을 재처리하는 데 활용할 수 있습니다.
 
-### Emission
+### 발행 (Emission)
 
-FMCEs are emitted when MCEs cannot be successfully committed to DataHub's storage layer.
+FMCE는 MCE를 DataHub의 스토리지 계층에 성공적으로 커밋할 수 없을 때 발행됩니다.
 
-The default Kafka topic name for FMCPs is `FailedMetadataChangeProposal_v1`.
+FMCPs의 기본 Kafka 토픽 이름은 `FailedMetadataChangeProposal_v1`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-No active consumers.
+활성 소비자 없음.
 
-### Schema
+### 스키마
 
-The PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/FailedMetadataChangeProposal.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/FailedMetadataChangeProposal.pdl)에서 확인할 수 있습니다.
 
-# Deprecated Events
+# 사용 중단된 이벤트
 
-DataHub ships with a set of deprecated events, which were historically used for proposing and logging
-changes to the Metadata Graph.
+DataHub에는 메타데이터 그래프에 대한 변경을 제안하고 기록하는 데 과거에 사용된 사용 중단된 이벤트 세트가 포함되어 있습니다.
 
-Each event in this category was deprecated due to its inflexibility - namely the fact that
-the schemas had to be updated when a new aspect was introduced. These events have since been replaced
-by the more flexible events described above (Metadata Change Proposal, Metadata Change Log).
+이 카테고리의 각 이벤트는 비유연성으로 인해 사용 중단되었습니다. 구체적으로는 새로운 aspect가 도입될 때마다 스키마를 업데이트해야 했던 문제가 있었습니다. 이 이벤트들은 위에서 설명한 더 유연한 이벤트(Metadata Change Proposal, Metadata Change Log)로 대체되었습니다.
 
-It is not recommended to build dependencies on deprecated events.
+사용 중단된 이벤트에 의존성을 구축하는 것은 권장되지 않습니다.
 
 ## Metadata Change Event (MCE)
 
-A Metadata Change Event represents a request to change multiple aspects for the same entity.
-It leverages a deprecated concept of `Snapshot`, which is a strongly-typed list of aspects for the same
-entity.
+Metadata Change Event는 동일한 entity에 대한 여러 aspect 변경 요청을 나타냅니다.
+이는 동일한 entity에 대한 강타입 aspect 목록인 `Snapshot`이라는 사용 중단된 개념을 활용합니다.
 
-A MCE is a "proposal" for a set of metadata changes, as opposed to [MAE](#metadata-audit-event-mae), which is conveying a committed change.
-Consequently, only successfully accepted and processed MCEs will lead to the emission of a corresponding MAE / MCLs.
+MCE는 메타데이터 변경 집합에 대한 "제안"이며, 이는 커밋된 변경을 전달하는 [MAE](#metadata-audit-event-mae)와 대조됩니다.
+따라서 성공적으로 수락 및 처리된 MCE만이 해당 MAE / MCL의 발행으로 이어집니다.
 
-### Emission
+### 발행 (Emission)
 
-MCEs may be emitted by clients of DataHub's low-level ingestion APIs (e.g. ingestion sources)
-during the process of metadata ingestion.
+MCE는 메타데이터 ingestion 과정에서 DataHub의 저수준 ingestion API 클라이언트(예: ingestion 소스)가 발행할 수 있습니다.
 
-The default Kafka topic name for MCEs is `MetadataChangeEvent_v4`.
+MCE의 기본 Kafka 토픽 이름은 `MetadataChangeEvent_v4`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-DataHub's storage layer actively listens for new Metadata Change Events, attempts
-to apply the requested changes to the Metadata Graph.
+DataHub의 스토리지 계층은 새로운 Metadata Change Event를 능동적으로 수신하여 메타데이터 그래프에 요청된 변경 사항을 적용하려고 시도합니다.
 
-### Schema
+### 스키마
 
-The PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeEvent.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataChangeEvent.pdl)에서 확인할 수 있습니다.
 
-### Examples
+### 예시
 
-An example of an MCE emitted to change the 'ownership' aspect for an Entity:
+Entity의 'ownership' aspect를 변경하기 위해 발행된 MCE 예시:
 
 ```json
 {
@@ -321,32 +295,31 @@ An example of an MCE emitted to change the 'ownership' aspect for an Entity:
 
 ## Metadata Audit Event (MAE)
 
-A Metadata Audit Event captures changes made to one or multiple metadata [aspects](aspect.md) associated with a particular [entity](entity.md), in the form of a metadata [snapshot](snapshot.md) (deprecated) before the change, and a metadata snapshot after the change.
+Metadata Audit Event는 특정 [entity](entity.md)와 연관된 하나 또는 여러 메타데이터 [aspect](aspect.md)에 대한 변경을 캡처합니다. 변경 전의 메타데이터 [snapshot](snapshot.md)(사용 중단됨)과 변경 후의 메타데이터 snapshot 형태로 표현됩니다.
 
-Every source-of-truth for a particular metadata aspect is expected to emit a MAE whenever a change is committed to that aspect. By ensuring that, any listener of MAE will be able to construct a complete view of the latest state for all aspects.
-Furthermore, because each MAE contains the "after image", any mistake made in emitting the MAE can be easily mitigated by emitting a follow-up MAE with the correction. By the same token, the initial bootstrap problem for any newly added entity can also be solved by emitting a MAE containing all the latest metadata aspects associated with that entity.
+특정 메타데이터 aspect의 모든 진실의 원천(source-of-truth)은 해당 aspect에 변경이 커밋될 때마다 MAE를 발행해야 합니다. 이를 보장함으로써, MAE의 모든 리스너는 모든 aspect의 최신 상태에 대한 완전한 뷰를 구성할 수 있습니다.
+또한 각 MAE에는 "변경 후 이미지"가 포함되어 있으므로, MAE 발행 시 실수가 발생하더라도 수정된 내용으로 후속 MAE를 발행함으로써 쉽게 수정할 수 있습니다. 같은 이유로, 새로 추가된 entity에 대한 초기 부트스트랩 문제도 해당 entity와 연관된 모든 최신 메타데이터 aspect를 포함한 MAE를 발행함으로써 해결할 수 있습니다.
 
-### Emission
+### 발행 (Emission)
 
-> Note: In recent versions of DataHub (mid 2022), MAEs are no longer actively emitted, and will soon be completely removed from DataHub.
-> Use Metadata Change Log instead.
+> 참고: DataHub의 최근 버전(2022년 중반 이후)에서는 MAE가 더 이상 능동적으로 발행되지 않으며, 곧 DataHub에서 완전히 제거될 예정입니다.
+> 대신 Metadata Change Log를 사용하세요.
 
-MAEs are emitted once any metadata change has been successfully committed into DataHub's storage
-layer.
+MAE는 메타데이터 변경이 DataHub의 스토리지 계층에 성공적으로 커밋된 후 발행됩니다.
 
-The default Kafka topic name for MAEs is `MetadataAuditEvent_v4`.
+MAE의 기본 Kafka 토픽 이름은 `MetadataAuditEvent_v4`입니다.
 
-### Consumption
+### 소비 (Consumption)
 
-No active consumers.
+활성 소비자 없음.
 
-### Schema
+### 스키마
 
-The PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataAuditEvent.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/MetadataAuditEvent.pdl)에서 확인할 수 있습니다.
 
-### Examples
+### 예시
 
-An example of an MAE emitted representing a change made to the 'ownership' aspect for an Entity (owner removed):
+Entity의 'ownership' aspect 변경(소유자 제거)을 나타내는 MAE 예시:
 
 ```json
 {
@@ -406,21 +379,21 @@ An example of an MAE emitted representing a change made to the 'ownership' aspec
 
 ## Failed Metadata Change Event (FMCE)
 
-When a Metadata Change Event cannot be processed successfully, the event is written to a [dead letter queue](https://en.wikipedia.org/wiki/Dead_letter_queue) in an event called Failed Metadata Change Event (FMCE).
+Metadata Change Event를 성공적으로 처리할 수 없는 경우, 해당 이벤트는 Failed Metadata Change Event (FMCE)라는 이벤트로 [dead letter queue](https://en.wikipedia.org/wiki/Dead_letter_queue)에 기록됩니다.
 
-The event simply wraps the original Metadata Change Event and an error message, which contains the reason for rejection.
-This event can be used for debugging any potential ingestion issues, as well as for re-playing any previous rejected proposal if necessary.
+이 이벤트는 원본 Metadata Change Event와 거부 이유가 담긴 오류 메시지를 단순히 래핑합니다.
+이 이벤트는 잠재적인 ingestion 문제를 디버깅하거나 필요 시 이전에 거부된 proposal을 재처리하는 데 활용할 수 있습니다.
 
-### Emission
+### 발행 (Emission)
 
-FMCEs are emitted when MCEs cannot be successfully committed to DataHub's storage layer.
+FMCE는 MCE를 DataHub의 스토리지 계층에 성공적으로 커밋할 수 없을 때 발행됩니다.
 
-### Consumption
+### 소비 (Consumption)
 
-No active consumers.
+활성 소비자 없음.
 
-### Schema
+### 스키마
 
-The PDL schema can be found [here](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/FailedMetadataChangeEvent.pdl).
+PDL 스키마는 [여기](https://github.com/datahub-project/datahub/blob/master/metadata-models/src/main/pegasus/com/linkedin/mxe/FailedMetadataChangeEvent.pdl)에서 확인할 수 있습니다.
 
-The default Kafka topic name for FMCEs is `FailedMetadataChangeEvent_v4`.
+FMCE의 기본 Kafka 토픽 이름은 `FailedMetadataChangeEvent_v4`입니다.
