@@ -20,23 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.12"
+          node-version: 18
 
-      - name: Install MkDocs and plugins
-        run: pip install mkdocs-material
-
-      - name: Build site-docs
+      - name: Assemble docs into genDocs
         run: bash scripts/build-site-docs.sh
 
-      - name: Build MkDocs
-        run: mkdocs build --strict 2>&1 || mkdocs build
+      - name: Install dependencies
+        working-directory: docs-website
+        run: npm install --legacy-peer-deps
+
+      - name: Build Docusaurus
+        working-directory: docs-website
+        run: npx docusaurus build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: docs-website/build
 
   deploy:
     needs: build

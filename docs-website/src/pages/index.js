@@ -3,8 +3,8 @@ import { Redirect } from "@docusaurus/router";
 
 export default function Home() {
   useEffect(() => {
-    window.location.href = "/docs/features";
+    window.location.href = "/datahub/docs";
   }, []);
 
-  return <Redirect to="/docs/features" />;
+  return <Redirect to="/datahub/docs" />;
 }

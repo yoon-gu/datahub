@@ -43,7 +43,7 @@ airflow webserver --port 8090 -d
 airflow scheduler
 
 # airflow 서비스에 접속하여 DAG 실행
-# http://localhost:8090/을 엽니다
+# http://localhost:8090/ 을 엽니다
 # 원하는 DAG를 선택하고 `play arrow` 버튼을 클릭하여 DAG 시작
 
 # 코드베이스에 디버그 줄 추가, 예: ./src/datahub_airflow_plugin/datahub_listener.py

@@ -1,6 +1,8 @@
-# MkDocs build output
-site/
-site-docs/
+# Docusaurus build output
+docs-website/genDocs/
+docs-website/build/
+docs-website/.docusaurus/
+docs-website/node_modules/
 
 # Gradle & Avro
 .project
