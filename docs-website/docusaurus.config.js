@@ -8,6 +8,7 @@ module.exports = {
   favicon: "img/favicon.ico",
   organizationName: "yoon-gu",
   projectName: "datahub",
+  trailingSlash: false,
   staticDirectories: ["static"],
   markdown: {
     format: "md",
@@ -31,8 +32,8 @@ module.exports = {
       },
       items: [
         {
-          to: "/docs",
-          activeBasePath: "docs",
+          to: "/",
+          activeBasePath: "/",
           label: "문서",
           position: "left",
         },
@@ -49,9 +50,9 @@ module.exports = {
         {
           title: "문서",
           items: [
-            { label: "핵심 개념", to: "docs/what-is-datahub/datahub-concepts" },
-            { label: "아키텍처", to: "docs/architecture/architecture" },
-            { label: "Lineage", to: "docs/features/feature-guides/lineage" },
+            { label: "핵심 개념", to: "what-is-datahub/datahub-concepts" },
+            { label: "아키텍처", to: "architecture/architecture" },
+            { label: "Lineage", to: "features/feature-guides/lineage" },
           ],
         },
         {
@@ -79,6 +80,7 @@ module.exports = {
       {
         docs: {
           path: "genDocs",
+          routeBasePath: "/",
           sidebarPath: require.resolve("./sidebars.js"),
           numberPrefixParser: false,
           showLastUpdateAuthor: false,
