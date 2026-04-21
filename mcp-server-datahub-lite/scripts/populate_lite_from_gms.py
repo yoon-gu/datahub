@@ -17,20 +17,16 @@ GraphQL 스키마 차이 때문에 직접 GraphQL 을 쓰기보다 DataHub CLI �
 
 from __future__ import annotations
 
-import json
 import os
 import sys
 import time
 from typing import Iterator
 
+from datahub.emitter.mcp import MetadataChangeProposalWrapper
 from datahub.ingestion.graph.client import DataHubGraph, DataHubGraphConfig
 from datahub.lite.duckdb_lite import DuckDBLite
 from datahub.lite.duckdb_lite_config import DuckDBLiteConfig
-from datahub.metadata.schema_classes import (
-    MetadataChangeProposalClass,
-    SystemMetadataClass,
-)
-from datahub.emitter.serialization_helper import pre_json_transform
+from datahub.metadata.schema_classes import SystemMetadataClass
 
 
 GMS_URL = os.environ.get("DATAHUB_GMS_URL", "http://localhost:8080")
@@ -63,21 +59,8 @@ ENTITY_TYPES = [
 ]
 
 
-def iter_urns(graph: DataHubGraph, entity_type: str, batch: int = 100) -> Iterator[str]:
-    start = 0
-    while True:
-        page = graph.get_urns_by_filter(
-            entity_types=[entity_type],
-            batch_size=batch,
-            start=start,
-        )
-        found = 0
-        for urn in page:
-            found += 1
-            yield urn
-        if found == 0:
-            break
-        start += found
+def iter_urns(graph: DataHubGraph, entity_type: str) -> Iterator[str]:
+    yield from graph.get_urns_by_filter(entity_types=[entity_type], batch_size=500)
 
 
 def emit_to_lite(lite: DuckDBLite, urn: str, aspects: dict) -> int:
@@ -87,28 +70,16 @@ def emit_to_lite(lite: DuckDBLite, urn: str, aspects: dict) -> int:
         if aspect_obj is None:
             continue
         try:
-            aspect_dict = pre_json_transform(aspect_obj.to_obj())
-        except Exception:
-            continue
-        mcp = MetadataChangeProposalClass(
-            entityUrn=urn,
-            entityType=urn.split(":")[2],
-            aspectName=aspect_name,
-            changeType="UPSERT",
-            aspect=None,
-        )
-        mcp_dict = {
-            "entityType": mcp.entityType,
-            "entityUrn": urn,
-            "changeType": "UPSERT",
-            "aspectName": aspect_name,
-            "aspect": {"value": json.dumps(aspect_dict), "contentType": "application/json"},
-            "systemMetadata": SystemMetadataClass(lastObserved=now_ms, runId="populate-from-gms").to_obj(),
-        }
-        try:
-            lite.write(
-                record=mcp_dict,
+            mcp = MetadataChangeProposalWrapper(
+                entityUrn=urn,
+                aspect=aspect_obj,
+                systemMetadata=SystemMetadataClass(
+                    lastObserved=now_ms,
+                    runId="populate-from-gms",
+                    properties={},
+                ),
             )
+            lite.write(mcp)
             written += 1
         except Exception as e:
             print(f"  [skip] {urn} / {aspect_name}: {e}", file=sys.stderr)
