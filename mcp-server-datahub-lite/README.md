@@ -7,14 +7,21 @@ DataHub 메타데이터를 로컬 `datahub-lite` (DuckDB) 인스턴스에서 읽
 
 ## 노출 도구
 
-| 도구 | 상태 |
-|---|---|
-| `search` | TODO |
-| `get_entities` | TODO |
-| `list_schema_fields` | TODO |
-| `get_lineage` | TODO |
-| `get_lineage_paths_between` | TODO |
-| `get_dataset_queries` | TODO |
+원본 `mcp-server-datahub` 의 6개 tool 을 lite 에서 재구현. 파라미터 이름은 가능한 한 동일.
+
+| 도구 | 구현 상태 | 비고 |
+|---|---|---|
+| `search` | ✅ | `/q` prefix + `+`AND / OR / NOT / "phrase". 필터는 `=` AND-only 서브셋. 와일드카드·facet 미지원 |
+| `get_entities` | ✅ | 단일 또는 배열, `{urn,exists,entity_type,aspects}` 반환 |
+| `list_schema_fields` | ✅ | keywords (단일=정확매치 / 리스트=OR), limit/offset |
+| `get_lineage` | ✅ | BFS, DataJob 을 실제 노드로 포함, `degree`=hop 거리 |
+| `get_lineage_paths_between` | ✅ | `nx.all_simple_paths`, column 레벨 fineGrained 엣지까지 포함 |
+| `get_dataset_queries` | ✅ | `querySubjects` 역인덱스, `column` 지정 시 schemaField URN 매칭 |
+
+원본 대비 차이:
+- 풀텍스트 검색: DuckDB 해이스택 위 substring 매칭 — Elasticsearch 의 랭킹/와일드카드/facet aggregation 없음
+- 컬럼 리니지 경로: `fineGrainedLineages` 가 기록된 edge 만 경로에 노출
+- `sort_by=lastOperationTime` 같은 프로파일링-의존 필드 미지원
 
 ## 셋업 (개발)
 
