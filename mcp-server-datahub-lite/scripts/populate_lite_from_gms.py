@@ -30,10 +30,12 @@ from datahub.metadata.schema_classes import SystemMetadataClass
 
 
 GMS_URL = os.environ.get("DATAHUB_GMS_URL", "http://localhost:8080")
-GMS_TOKEN = os.environ.get(
-    "DATAHUB_GMS_TOKEN",
-    "",
-)
+GMS_TOKEN = os.environ.get("DATAHUB_GMS_TOKEN")
+if not GMS_TOKEN:
+    sys.exit(
+        "DATAHUB_GMS_TOKEN environment variable is required. "
+        "Generate a personal access token in DataHub UI and export it."
+    )
 
 ENTITY_TYPES = [
     "dataset",

@@ -27,10 +27,12 @@ from datahub.ingestion.graph.client import DataHubGraph, DataHubGraphConfig
 
 LITE_DB = os.environ.get("DATAHUB_LITE_DB", "/Users/yoon-gu/.datahub/lite/datahub.duckdb")
 GMS_URL = os.environ.get("DATAHUB_GMS_URL", "http://localhost:8080")
-GMS_TOKEN = os.environ.get(
-    "DATAHUB_GMS_TOKEN",
-    "",
-)
+GMS_TOKEN = os.environ.get("DATAHUB_GMS_TOKEN")
+if not GMS_TOKEN:
+    sys.exit(
+        "DATAHUB_GMS_TOKEN environment variable is required. "
+        "Generate a personal access token in DataHub UI and export it."
+    )
 
 
 def load_lite_graph() -> Tuple[Dict[str, Set[str]], Dict[str, Set[str]]]:
