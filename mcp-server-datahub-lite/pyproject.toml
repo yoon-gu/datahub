@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcp-server-datahub-lite"
+version = "0.1.0"
+description = "MCP server exposing DataHub metadata from a local datahub-lite (DuckDB) instance — offline/air-gapped friendly."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "DS3 team" },
+]
+dependencies = [
+    "fastmcp>=2.0.0",
+    "duckdb>=1.1.0",
+    "networkx>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+]
+
+[project.scripts]
+mcp-server-datahub-lite = "mcp_server_datahub_lite.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
