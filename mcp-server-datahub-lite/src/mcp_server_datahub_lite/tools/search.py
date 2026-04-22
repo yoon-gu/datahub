@@ -250,6 +250,9 @@ def search(
             }
         )
 
+    # DuckDB 의 SELECT DISTINCT 는 ORDER BY 없으면 호출마다 순서가 뒤섞일 수 있어,
+    # pagination consistency 를 위해 URN 알파벳 정렬 고정.
+    results.sort(key=lambda r: r["urn"])
     total = len(results)
     page = results[offset : offset + num_results]
 
