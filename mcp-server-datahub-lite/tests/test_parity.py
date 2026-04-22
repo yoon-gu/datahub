@@ -18,7 +18,13 @@ from typing import Any, Dict, Iterable, List, Optional, Set
 
 import pytest
 
-from tests.conftest import SAMPLE_DATASETS, SAMPLE_LINEAGE_PAIRS
+from tests.test_cases import (
+    DATASETS as SAMPLE_DATASETS,
+    DATASETS_WITH_SCHEMA,
+    DATASETS_WITH_QUERIES,
+    LINEAGE_PAIRS as SAMPLE_LINEAGE_PAIRS,
+    SEARCH_CASES,
+)
 
 
 # ------------------------------------------------------------------
@@ -149,12 +155,6 @@ def test_get_entities_returns_same_aspect_set(full_client, lite_client, urn):
 # list_schema_fields
 # ------------------------------------------------------------------
 
-DATASETS_WITH_SCHEMA = [
-    "urn:li:dataset:(urn:li:dataPlatform:mysql,sequence_ai.evt_A01,DEV)",
-    "urn:li:dataset:(urn:li:dataPlatform:mysql,sequence_ai.evt_B01,DEV)",
-]
-
-
 @pytest.mark.parametrize("urn", DATASETS_WITH_SCHEMA)
 def test_list_schema_fields_same_fieldpath_set(full_client, lite_client, urn):
     def fieldpaths(resp: Any) -> Set[str]:
@@ -169,9 +169,6 @@ def test_list_schema_fields_same_fieldpath_set(full_client, lite_client, urn):
     full_fields = fieldpaths(full_client.call("list_schema_fields", {"urn": urn, "limit": 500}))
     lite_fields = fieldpaths(lite_client.call("list_schema_fields", {"urn": urn, "limit": 500}))
 
-    assert full_fields and lite_fields, (
-        f"schema field lookup returned empty for {urn}: full={len(full_fields)} lite={len(lite_fields)}"
-    )
     assert full_fields == lite_fields, _format_set_diff(f"list_schema_fields({urn})", full_fields, lite_fields)
 
 
@@ -254,11 +251,6 @@ def test_get_lineage_paths_between_both_find_path(full_client, lite_client, sour
 # get_dataset_queries — Query URN 집합 일치 (populate 가 querySubjects 옮겼어야 함)
 # ------------------------------------------------------------------
 
-DATASETS_WITH_QUERIES = [
-    "urn:li:dataset:(urn:li:dataPlatform:mysql,sequence_ai.cust_evnt_dtl_itm_dev,DEV)",
-]
-
-
 @pytest.mark.parametrize("urn", DATASETS_WITH_QUERIES)
 def test_get_dataset_queries_same_query_urns(full_client, lite_client, urn):
     def query_urns(resp: Any) -> Set[str]:
@@ -281,22 +273,16 @@ def test_get_dataset_queries_same_query_urns(full_client, lite_client, urn):
 # search — 공통분만 (basic entity_type filter)
 # ------------------------------------------------------------------
 
-def test_search_entity_type_filter_counts_match(full_client, lite_client):
+@pytest.mark.parametrize("label,args", SEARCH_CASES)
+def test_search_urn_set_match(full_client, lite_client, label, args):
     def hit_urns(resp: Any) -> Set[str]:
         data = _result_payload(resp)
         if isinstance(data, dict):
             return _extract_urns(data.get("results") or data.get("searchResults") or [])
         return set()
 
-    full_resp = full_client.call(
-        "search", {"query": "*", "filter": "entity_type = query", "num_results": 100}
-    )
-    lite_resp = lite_client.call(
-        "search", {"query": "*", "filter": "entity_type = query", "num_results": 100}
-    )
+    call_args = dict(args, num_results=200)
+    full_q = hit_urns(full_client.call("search", call_args))
+    lite_q = hit_urns(lite_client.call("search", call_args))
 
-    full_q = hit_urns(full_resp)
-    lite_q = hit_urns(lite_resp)
-
-    # Query 엔티티는 populate 가 모두 복사했어야 함
-    assert full_q == lite_q, _format_set_diff("search entity_type=query", full_q, lite_q)
+    assert full_q == lite_q, _format_set_diff(f"search [{label}]", full_q, lite_q)

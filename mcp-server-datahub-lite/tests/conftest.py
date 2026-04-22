@@ -27,16 +27,7 @@ def lite_client() -> McpStdioClient:
     client.close()
 
 
-SAMPLE_DATASETS = [
-    "urn:li:dataset:(urn:li:dataPlatform:mysql,sequence_ai.cust_evnt_dtl_itm_dev,DEV)",
-    "urn:li:dataset:(urn:li:dataPlatform:universe,ptag_age_group,DEV)",
-    "urn:li:dataset:(urn:li:dataPlatform:universe,dtag_card_loan_pred,DEV)",
-    "urn:li:dataset:(urn:li:dataPlatform:mysql,sequence_ai.evt_B01,DEV)",
-]
-
-SAMPLE_LINEAGE_PAIRS = [
-    (
-        "urn:li:dataset:(urn:li:dataPlatform:universe,ptag_age_group,DEV)",
-        "urn:li:dataset:(urn:li:dataPlatform:universe,dtag_card_loan_pred,DEV)",
-    ),
-]
+from tests.test_cases import (  # noqa: E402,F401
+    DATASETS as SAMPLE_DATASETS,
+    LINEAGE_PAIRS as SAMPLE_LINEAGE_PAIRS,
+)
