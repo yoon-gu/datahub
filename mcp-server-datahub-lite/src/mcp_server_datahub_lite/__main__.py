@@ -23,6 +23,9 @@ def main() -> int:
         choices=["stdio", "sse", "http"],
         default="stdio",
     )
+    parser.add_argument("--host", default="127.0.0.1", help="Only used for http/sse transports")
+    parser.add_argument("--port", type=int, default=8765, help="Only used for http/sse transports")
+    parser.add_argument("--path", default="/mcp", help="Only used for http transport")
     args = parser.parse_args()
 
     if args.lite_db:
@@ -41,7 +44,10 @@ def main() -> int:
     LiteClient(db_path)  # probe
 
     register_all_tools()
-    mcp.run(transport=args.transport)
+    if args.transport == "stdio":
+        mcp.run(transport="stdio")
+    else:
+        mcp.run(transport=args.transport, host=args.host, port=args.port, path=args.path)
     return 0
 
 
